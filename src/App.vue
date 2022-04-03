@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <a-layout id="components-layout-demo-custom-trigger">
-      <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%', minHeight: '6vh' }" class="header">
+      <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%', minHeight: '8vh' }" class="header">
         <div class="logo" />
         <div class="header-left">
            <a-menu
@@ -36,7 +36,7 @@
         </div>
       </a-layout-header>
       <a-layout-content :style="{ padding: '0 50px', marginTop: '64px', minHeight: '89vh' }">
-        <div :style="{ background: '#fff', padding: '20px', minHeight: '50vh',marginTop: '32px' }">
+        <div :style="{ background: '#fff', padding: '20px', minHeight: '80vh',marginTop: '32px' }">
           <router-view/>
         </div>
       </a-layout-content>
@@ -84,6 +84,8 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+  
+  
 }
 .header {
   display: flex;
