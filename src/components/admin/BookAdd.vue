@@ -11,7 +11,8 @@
             list-type="picture-card"
             class="avatar-uploader"
             :show-upload-list="false"
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            :customRequest="upload"
+            @change="handleChange"
           >
             <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
             <div v-else>
@@ -580,6 +581,31 @@ export default {
           });
         }
       },
+      upload(option) {
+        let that = this;
+        this.loading = true;
+        const reader = new FileReader();
+        reader.readAsDataURL(option.file);
+        reader.onloadend = function(e) {
+          let base64 = e.target.result.toString().split(',')[1];
+          if (e && e.target && e.target.result) {
+            var raw = base64;
+            var requestOptions = {
+              method: 'POST',
+              body: raw,
+            };
+
+            fetch("https://service-rb270dgm-1301774019.gz.apigw.tencentcs.com/release/SPM_uploadimage", requestOptions)
+              .then(response => response.text())
+              .then(result => {
+                this.loading = false;
+                that.imageUrl = result;
+                console.log(result);
+              })
+              .catch(error => {console.log('error', error);that.loading = false});
+          }
+        };
+      }
     },
     filter(inputValue, path) {
       return path.some(
@@ -603,5 +629,8 @@ export default {
 .ant-upload-select-picture-card .ant-upload-text {
   margin-top: 8px;
   color: #666;
+}
+img {
+  height: 220px;
 }
 </style>
