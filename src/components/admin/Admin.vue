@@ -1,6 +1,10 @@
 <template>
   <a-layout style="background: #fff; height:100%">
-    <a-layout-sider width="200" style="background: #fff">
+    <a-layout-sider width="200" style="background: #fff" 
+      breakpoint="lg"
+      collapsed-width="0"
+      @collapse="onCollapse"
+      @breakpoint="onBreakpoint">
       <a-menu
         mode="inline"
         style="height: 100%"
@@ -35,7 +39,13 @@ export default {
     methods: {
         changeContent(i){
             this.contentNumber = i;
-        }
+        },
+        onCollapse(collapsed, type) {
+            console.log(collapsed, type);
+        },
+        onBreakpoint(broken) {
+            console.log(broken);
+        },
     }
 }
 </script>
