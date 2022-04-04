@@ -47,7 +47,7 @@ const routes = [
         component: () => import('../components/user/Borrowing.vue')
     },
     {
-        path: '/user/borrowing/:id',
+        path: '/user/borrowing/:id/detail',
         name: '在借图书详情',
         component: () => import('../components/user/BorrowingDetail.vue')
     },
