@@ -26,68 +26,67 @@
         :label="bookName"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.book_name"
+        
       >
-        <a-input :placeholder="bookNameInput" />
+        <a-input :placeholder="bookNameInput" v-model="newBookInfo.book_name"/>
       </a-form-item>
       <a-form-item
         :label="author"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.author"
+        
       >
-        <a-input :placeholder="authorInput"/>
+        <a-input :placeholder="authorInput" v-model="newBookInfo.author"/>
       </a-form-item>
       <a-form-item
         :label="publisher"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.publisher"
+        
       >
-        <a-input :placeholder="publisherInput"/>
+        <a-input :placeholder="publisherInput" v-model="newBookInfo.publisher"/>
       </a-form-item>
       <a-form-item
         :label="ISBN"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.ISBN"
+        
       >
-        <a-input :placeholder="ISBNInput"/>
+        <a-input :placeholder="ISBNInput" v-model="newBookInfo.ISBN"/>
       </a-form-item>
       <a-form-item
         :label="publishedTime"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.published_time"
       >
         <a-month-picker
             :placeholder="publishedTimeInput"
             style="width: 100%"
-            @change="onChange"
+            v-model="newBookInfo.published_time"
         />
       </a-form-item>
       <a-form-item
         :label="category"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.category"
+        
       >
          <a-cascader
             :options="options"
             :placeholder="categoryInput"
             :show-search="{ filter }"
+            v-model="newBookInfo.category"
         />
       </a-form-item>
       <a-form-item
         :label="briefIntroduction"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.brief_introduction"
       >
-        <a-textarea rows="4" :placeholder="briefIntroductionInput"/>
+        <a-textarea rows="4" :placeholder="briefIntroductionInput" v-model="newBookInfo.brief_introduction"/>
       </a-form-item>
       <a-form-item style="margin-top: 24px" :wrapperCol="{span: 10, offset: 7}">
-        <a-button type="primary">提交</a-button>
+        <a-button @click="submit" type="primary">提交</a-button>
       </a-form-item>
     </a-form>
   </a-card>
@@ -103,6 +102,7 @@ export default {
     name: "BookAdd",
     data() {
         return {
+            baseUrl: "https://www.fastmock.site/mock/0aee7559464fadc986c2e38e63492a86/spm",
             loading: false,
             imageUrl: '',
             bookName: "书名",
@@ -120,14 +120,14 @@ export default {
             briefIntroduction: "简介",
             briefIntroductionInput: "请输入简介",
             newBookInfo: {
-                book_name: "",
-                author: "",
-                publisher: "",
-                ISBN: "",
-                category: '',
-                published_time:'',
-                cover: '',
-                brief_introduction: '',
+                book_name: undefined,
+                author: undefined,
+                publisher: undefined,
+                ISBN: undefined,
+                category: undefined,
+                published_time: undefined,
+                cover: undefined,
+                brief_introduction: undefined,
             },
             options: [
                 {
@@ -604,13 +604,52 @@ export default {
               .catch(error => {console.log('error', error);that.loading = false});
           }
         };
-      }
-    },
-    filter(inputValue, path) {
-      return path.some(
-        (option) =>
-          option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
-      );
+      },
+      showAlert(type, message){
+        this.alert.showAlert = true
+        this.alert.type = type;
+        this.alert.message = message;
+      },
+      submit(){
+        let newBookInfoSubmit = { ... this.newBookInfo };
+        newBookInfoSubmit.category = this.newBookInfo.category[1];
+        // 处理时间为2020-02
+        newBookInfoSubmit.published_time = newBookInfoSubmit.published_time.format("YYYY-MM");
+        console.log(newBookInfoSubmit);
+        // 提交
+        var myHeaders = new Headers();
+        myHeaders.append("access_token", "test");
+        myHeaders.append("Content-Type", "text/plain");
+        var body = newBookInfoSubmit;
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body,
+        };
+        console.log(typeof(this.newBookInfo.published_time));
+        fetch(`${this.baseUrl}/api/admin/book/add`, requestOptions)
+          .then(response => response.json())
+          .then(result => {
+            if(result.error_code === 0 || result.error_code === "0"){
+              this.showAlert('success', '提交成功')
+              setTimeout(() => {
+                this.$route.push("/admin?tab=user");
+              }, 200)
+            }else{
+              this.showAlert('error', result.error_msg);
+            }
+          })
+          .catch(error => {
+            this.showAlert("error", "接口调用错误")
+          });
+        // 提交
+      },
+      filter(inputValue, path) {
+        return path.some(
+          (option) =>
+            option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
+        );
+      },
     },
 }
 </script>

@@ -12,7 +12,6 @@
             class="avatar-uploader"
             :show-upload-list="false"
             :customRequest="upload"
-            @change="handleChange"
           >
             <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
             <div v-else>
@@ -27,68 +26,67 @@
         :label="bookName"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.book_name"
+        
       >
-        <a-input :placeholder="bookNameInput" />
+        <a-input :placeholder="bookNameInput" v-model="bookInfo.book_name"/>
       </a-form-item>
       <a-form-item
         :label="author"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.author"
+        
       >
-        <a-input :placeholder="authorInput"/>
+        <a-input :placeholder="authorInput" v-model="bookInfo.author"/>
       </a-form-item>
       <a-form-item
         :label="publisher"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.publisher"
+        
       >
-        <a-input :placeholder="publisherInput"/>
+        <a-input :placeholder="publisherInput" v-model="bookInfo.publisher"/>
       </a-form-item>
       <a-form-item
         :label="ISBN"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.ISBN"
+        
       >
-        <a-input :placeholder="ISBNInput"/>
+        <a-input :placeholder="ISBNInput" v-model="bookInfo.ISBN"/>
       </a-form-item>
       <a-form-item
         :label="publishedTime"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.published_time"
       >
         <a-month-picker
             :placeholder="publishedTimeInput"
             style="width: 100%"
-            @change="onChange"
+            v-model="bookInfo.published_time"
         />
       </a-form-item>
       <a-form-item
         :label="category"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.category"
+        
       >
          <a-cascader
             :options="options"
             :placeholder="categoryInput"
             :show-search="{ filter }"
+            v-model="bookInfo.category"
         />
       </a-form-item>
       <a-form-item
         :label="briefIntroduction"
         :labelCol="{span: 7}"
         :wrapperCol="{span: 10}"
-        v-model="newBookInfo.brief_introduction"
       >
-        <a-textarea rows="4" :placeholder="briefIntroductionInput"/>
+        <a-textarea rows="4" :placeholder="briefIntroductionInput" v-model="bookInfo.brief_introduction"/>
       </a-form-item>
       <a-form-item style="margin-top: 24px" :wrapperCol="{span: 10, offset: 7}">
-        <a-button type="primary">提交</a-button>
+        <a-button @click="submit" type="primary">提交</a-button>
       </a-form-item>
     </a-form>
   </a-card>
@@ -101,9 +99,10 @@ function getBase64(img, callback) {
   reader.readAsDataURL(img);
 }
 export default {
-    name: "BookEdit",
+    name: "BookAdd",
     data() {
         return {
+            baseUrl: "https://www.fastmock.site/mock/0aee7559464fadc986c2e38e63492a86/spm",
             loading: false,
             imageUrl: '',
             bookName: "书名",
@@ -120,15 +119,15 @@ export default {
             publishedTimeInput: "请选择出版时间",
             briefIntroduction: "简介",
             briefIntroductionInput: "请输入简介",
-            newBookInfo: {
-                book_name: "",
-                author: "",
-                publisher: "",
-                ISBN: "",
-                category: '',
-                published_time:'',
-                cover: '',
-                brief_introduction: '',
+            bookInfo: {
+                book_name: undefined,
+                author: undefined,
+                publisher: undefined,
+                ISBN: undefined,
+                category: undefined,
+                published_time: undefined,
+                cover: undefined,
+                brief_introduction: undefined,
             },
             options: [
                 {
@@ -605,14 +604,55 @@ export default {
               .catch(error => {console.log('error', error);that.loading = false});
           }
         };
-      }
+      },
+      showAlert(type, message){
+        this.alert.showAlert = true
+        this.alert.type = type;
+        this.alert.message = message;
+      },
+      submit(){
+        let bookInfoSubmit = this.bookInfo;
+        bookInfoSubmit.category = this.bookInfo.category[1];
+        console.log(bookInfoSubmit);
+        // 提交
+        var myHeaders = new Headers();
+        myHeaders.append("access_token", "test");
+        myHeaders.append("Content-Type", "text/plain");
+        var body = bookInfoSubmit;
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body,
+        };
+        fetch(`${this.baseUrl}/api/admin/book/update`, requestOptions)
+          .then(response => response.json())
+          .then(result => {
+            if(result.error_code === 0 || result.error_code === "0"){
+              this.showAlert('success', '提交成功')
+              setTimeout(() => {
+                this.$route.push("/admin?tab=user");
+              }, 200)
+            }else{
+              this.showAlert('error', result.error_msg);
+            }
+          })
+          .catch(error => {
+            this.showAlert("error", "接口调用错误")
+          });
+        // 提交
+      },
+      filter(inputValue, path) {
+        return path.some(
+          (option) =>
+            option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
+        );
+      },
     },
-    filter(inputValue, path) {
-      return path.some(
-        (option) =>
-          option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
-      );
-    },
+    created(){
+        console.log(111);
+        const ISBN = this.$route.params.id;
+        this.bookInfo.ISBN = ISBN;
+    }
 }
 </script>
 

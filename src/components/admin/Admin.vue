@@ -9,7 +9,7 @@
       <a-menu
         mode="inline"
         style="height: 100%"
-        :default-selected-keys="['1']"
+        :default-selected-keys="defaultSelectedKeys"
       >
         <a-menu-item key="1" @click="changeContent(1)">图书管理</a-menu-item>
         <a-menu-item key="2" @click="changeContent(2)">用户管理</a-menu-item>
@@ -33,7 +33,8 @@ export default {
     name: 'Admin',
     data() {
         return {
-            contentNumber: 1
+            contentNumber: 1,
+            defaultSelectedKeys: ['1']
         }
     },
     components: {BookManage, UserManage},
@@ -46,7 +47,7 @@ export default {
         },
         onBreakpoint(broken) {
             console.log(broken);
-        },
+        }
     }
 }
 </script>

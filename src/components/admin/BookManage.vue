@@ -80,7 +80,6 @@
                 <a-cascader
                   :options="options"
                   placeholder="请输入或选择分类"
-                  @change="onChangeCategory"
                   :show-search="{ filter }"
                 />
               </a-form-item>
@@ -196,7 +195,7 @@ const columns = [
   },
   {
     title: "描述",
-    dataIndex: "bref_introduction",
+    dataIndex: "brief_introduction",
     scopedSlots: { customRender: "description" },
   },
   {
@@ -749,7 +748,18 @@ export default {
       .then((result) => {
         if (result.error_code == 0 || result.error_code == "0") {
           setTimeout(() => {
-            that.dataSource = result.book_list;
+            for(let i of result.book_list){
+              that.dataSource.push({
+                key: i.ISBN,
+                cover: i.cover,
+                book_name: i.book_name,
+                brief_introduction: i.brief_introduction,
+                publisher: i.publisher,
+                published_time: i.published_time,
+                author: i.author,
+                category: i.category
+              })
+            }
             that.loading = false;
           }, 200);
         }

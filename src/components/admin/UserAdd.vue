@@ -1,5 +1,5 @@
 <template>
-  <a-card :body-style="{padding: '24px 32px'}" :bordered="false" title="新增图书">
+  <a-card :body-style="{padding: '24px 32px'}" :bordered="false" title="新增用户">
     <a-form>
         <a-form-item
           label="头像"
@@ -75,7 +75,7 @@
         <a-input :placeholder="phoneNumberInput" v-model="newUserInfo.phone_number"/>
       </a-form-item>
       <a-form-item style="margin-top: 24px" :wrapperCol="{span: 10, offset: 7}">
-        <a-alert :type="alert.type" :message="alert.message" v-if="alert.showAlert" banner />
+        <a-alert :type="alert.type" :message="alert.message" v-if="alert.showAlert" style="margin-bottom: 20px" banner />
         <a-button @click="submit" type="primary">提交</a-button>
       </a-form-item>
     </a-form>
@@ -92,6 +92,7 @@ export default {
     name: "UserAdd",
     data() {
         return {
+            baseUrl: "https://www.fastmock.site/mock/0aee7559464fadc986c2e38e63492a86/spm",
             loading: false,
             imageUrl: '',
             id: "学号（工号）",
@@ -114,8 +115,8 @@ export default {
                 id: "",
                 name: "",
                 avatar: "",
-                gender: "",
-                position: "",
+                gender: -1,
+                position: -1,
                 email: '',
                 phone_number:'',
                 password: '',
@@ -167,14 +168,61 @@ export default {
           }
         };
       },
-      submit(){
-          this.checkAndParsePhoneNumber();
+      showAlert(type, message){
+        this.alert.showAlert = true
+        this.alert.type = type;
+        this.alert.message = message;
       },
-      checkAndParsePhoneNumber(){
-          let reg = /^\d{11}$/;
-          if(reg.test(this.newUserInfo.phoneNumber)){
-              return true;
-          }
+      submit(){
+        if(this.newUserInfo.gender < 0){
+          this.showAlert("warning", "请选择性别")
+          return;
+        }
+        if(this.newUserInfo.position < 0){
+          this.showAlert('warning', '请选择职位')
+        }
+        // 检查学号位数
+        let regId = /^\d{11}$/
+        if(regId.test(this.newUserInfo.id)){
+          this.newUserInfo.id = parseInt(this.newUserInfo.id);
+        }else{
+          this.showAlert('warning', '学工号有误');
+          return;
+        }
+        // 检查手机号位数
+        let reg = /^\d{11}$/;
+        if(regId.test(this.newUserInfo.phone_number)){
+          this.newUserInfo.phoneNumber = parseInt(this.newUserInfo.phoneNumber);
+        }else{
+          this.showAlert("warning", "手机号有误");
+          return;
+        }
+        // 提交
+        var myHeaders = new Headers();
+        myHeaders.append("access_token", "test");
+        myHeaders.append("Content-Type", "text/plain");
+        var body = this.newUserInfo;
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body,
+        };
+        fetch(`${this.baseUrl}/api/admin/user/add`, requestOptions)
+          .then(response => response.json())
+          .then(result => {
+            if(result.error_code === 0 || result.error_code === "0"){
+              this.showAlert('success', '提交成功')
+              setTimeout(() => {
+                this.$router.push("/admin?tab=user");
+              }, 200)
+            }else{
+              this.showAlert('error', result.error_msg);
+            }
+          })
+          .catch(error => {
+            this.showAlert("error", "接口调用错误")
+          });
+        // 提交
       }
     },
     filter(inputValue, path) {
