@@ -124,31 +124,40 @@
       </a-row>
     </a-form>
 
-    <!-- 查询结果表单 -->
-    <div class="search-result-list">
-      <a-table
-        :columns="columns"
-         rowKey="id"
-        :data-source="data"
+    <hr />
+
+    <a-card title="查询结果">
+      <a-list
+        item-layout="vertical"
+        size="large"
         :pagination="pagination"
-        :loading="loading"
-        @change="handleTableChange"
+        :data-source="data"
       >
-        <!-- <template slot="name" slot-scope="name">
-          {{ name.first }} {{ name.last }}
-        </template> -->
+        <a-list-item slot="renderItem" key="item.ISBN" slot-scope="item">
+          <a-list-item-meta>
+            <a-icon type="book" />
+            <a slot="title" :href="item.ISBN">{{ item.book_name }}</a>
+          </a-list-item-meta>
 
-        <template slot="book_number" slot-scope="book_number">
-          <p v-if="book_number > 0">
-            <a-tag color="green"> YES </a-tag>
-          </p>
-          <p v-if="book_number == 0">
-            <a-tag color="red"> NO </a-tag>
-          </p>
-        </template>
-
-      </a-table>
-    </div>
+          <a-row>
+            <a-col :span="4">
+              <img height="220" alt="logo" :src="item.cover | imgChange" />
+            </a-col>
+            <a-col :span="8" type="flex">
+              <p>作者：{{ item.author }}</p>
+              <p>出版社：{{ item.publisher }}</p>
+              <p>类别：{{ item.category }}</p>
+              <p>ISBN：{{ item.ISBN }}</p>
+              <p>是否馆藏：<a-tag color="green"> YES </a-tag></p>
+              评分：<a-rate :default-value="5" disabled />
+            </a-col>
+            <a-col :span="10" type="flex">
+              <p id="intro">简介：{{ item.intorduction }}</p>
+            </a-col>
+          </a-row>
+        </a-list-item>
+      </a-list>
+    </a-card>
   </div>
 </template>
 
@@ -161,45 +170,6 @@ const queryData = async (params) => {
   });
   return axios.get("https://randomuser.me/api", { params: params });
 };
-//列元素
-const columns = [
-  {
-    //是否支持省略
-    ellipsis: true,
-    //标题
-    title: "书名",
-    dataIndex: "book_name",
-    key: "book_name",
-    //是否排序
-    sorter: true,
-  },
-  {
-    title: "作者",
-    dataIndex: "author",
-    key: 'author',
-  },
-  {
-    title: "ISBN",
-    dataIndex: "ISBN",
-    key: 'ISBN'
-  },
-  {
-    title: "是否馆藏",
-    dataIndex: "book_number",
-    scopedSlots: { customRender: "book_number" },
-    key: 'book_number',
-  },
-  {
-    title: "出版社",
-    dataIndex: "publisher",
-    key: 'publisher',
-  },
-  {
-    title: "类别",
-    dataIndex: "category",
-    key: 'category',
-  },
-];
 
 export default {
   name: "Search",
@@ -208,57 +178,57 @@ export default {
     return {
       data: [
         {
-          id: 1,
-          book_name: "book1",
-          author: "author1",
-          subject: "subject1",
-          publisher: "publisher1",
           ISBN: "ISBN1",
-          book_number: 12,
+          book_name: "book1",
+          publisher: "publisher1",
+          published_time: "published_time1",
+          author: "author1",
+          cover:
+            "https://img1.doubanio.com/view/subject/s/public/s34080469.jpg",
           category: "category1",
-          pub_year: "pub_year1",
-          pub_month: "pub_month1",
+          intorduction:
+            "intorduction1https://img1.doubanio.com/view/subject/s/public/s34080469.jpghttps://img1.doubanio.com/view/subject/s/public/s34080469.jpghttps://img1.doubanio.com/view/subject/s/public/s34080469.jpg",
         },
         {
-          id: 2,
-          book_name: "book2",
-          author: "author2",
-          subject: "subject2",
-          publisher: "publisher2",
           ISBN: "ISBN2",
-          book_number: 1,
+          book_name: "book2",
+          publisher: "publisher2",
+          published_time: "published_time2",
+          author: "author2",
+          cover:
+            "https://img1.doubanio.com/view/subject/s/public/s34080469.jpg",
           category: "category2",
-          pub_year: "pub_year2",
-          pub_month: "pub_month2",
+          intorduction: "intorduction2",
         },
         {
-          id: 3,
+          ISBN: "ISBN1",
           book_name: "book3",
-          author: "author3",
-          subject: "subject3",
           publisher: "publisher3",
-          ISBN: "ISBN3",
-          book_number: 0,
+          published_time: "published_time3",
+          author: "author3",
+          cover:
+            "https://img1.doubanio.com/view/subject/s/public/s34080469.jpg",
           category: "category3",
-          pub_year: "pub_year3",
-          pub_month: "pub_month3",
+          intorduction: "intorduction3",
         },
         {
-          id: 4,
-          book_name: "book4",
-          author: "author4",
-          subject: "subject4",
-          publisher: "publisher4",
           ISBN: "ISBN4",
-          book_number: 0,
-          category: "categor4",
-          pub_year: "pub_year4",
-          pub_month: "pub_month4",
+          book_name: "book4",
+          publisher: "publisher4",
+          published_time: "published_time4",
+          author: "author4",
+          cover:
+            "https://img1.doubanio.com/view/subject/s/public/s34080469.jpg",
+          category: "category4",
+          intorduction: "intorduction4",
         },
       ],
-      pagination: {},
-      loading: false,
-      columns,
+      pagination: {
+        onChange: (page) => {
+          console.log(page);
+        },
+        pageSize: 10,
+      },
 
       //查询表单
       form: this.$form.createForm(this, { name: "advanced_search" }),
@@ -266,6 +236,12 @@ export default {
   },
   computed: {},
 
+  filters: {
+    //解决豆瓣图书api图片无法显示的问题
+    imgChange(str) {
+      return str.replace(/img./, "img4");
+    },
+  },
   props: {
     msg: String,
   },
@@ -276,6 +252,19 @@ export default {
       this.form.validateFields((error, values) => {
         console.log("error", error);
         console.log("Received values of form: ", values);
+
+        this.data.push({
+          ISBN: "ISBN1",
+          book_name: "book1",
+          publisher: "publisher1",
+          published_time: "published_time1",
+          author: "author1",
+          cover:
+            "https://img1.doubanio.com/view/subject/s/public/s34080469.jpg",
+          category: "category1",
+          intorduction:
+            "intorduction1https://img1.doubanio.com/view/subject/s/public/s34080469.jpghttps://img1.doubanio.com/view/subject/s/public/s34080469.jpghttps://img1.doubanio.com/view/subject/s/public/s34080469.jpg",
+        });
       });
     },
 
@@ -284,36 +273,36 @@ export default {
       this.form.resetFields();
     },
 
-    //处理分页
-    handleTableChange(pagination, filters, sorter) {
-      console.log(pagination);
-      const pager = { ...this.pagination };
-      pager.current = pagination.current;
-      this.pagination = pager;
-      this.fetch({
-        results: pagination.pageSize,
-        page: pagination.current,
-        sortField: sorter.field,
-        sortOrder: sorter.order,
-        ...filters,
-      });
-    },
+    // //处理分页
+    // handleTableChange(pagination, filters, sorter) {
+    //   console.log(pagination);
+    //   const pager = { ...this.pagination };
+    //   pager.current = pagination.current;
+    //   this.pagination = pager;
+    //   this.fetch({
+    //     results: pagination.pageSize,
+    //     page: pagination.current,
+    //     sortField: sorter.field,
+    //     sortOrder: sorter.order,
+    //     ...filters,
+    //   });
+    // },
 
-    fetch(params = {}) {
-      this.loading = true;
-      queryData({
-        results: 10,
-        ...params,
-      }).then(({ data }) => {
-        const pagination = { ...this.pagination };
-        // Read total count from server
-        // pagination.total = data.totalCount;
-        pagination.total = 200;
-        this.loading = false;
-        this.data = data.results;
-        this.pagination = pagination;
-      });
-    },
+    // fetch(params = {}) {
+    //   this.loading = true;
+    //   queryData({
+    //     results: 10,
+    //     ...params,
+    //   }).then(({ data }) => {
+    //     const pagination = { ...this.pagination };
+    //     // Read total count from server
+    //     // pagination.total = data.totalCount;
+    //     pagination.total = 200;
+    //     this.loading = false;
+    //     this.data = data.results;
+    //     this.pagination = pagination;
+    //   });
+    // },
   },
 
   created() {
@@ -349,5 +338,8 @@ export default {
   min-height: 200px;
   text-align: center;
   padding-top: 80px;
+}
+#intro {
+  word-wrap: break-word;
 }
 </style>

@@ -7,7 +7,7 @@ import './plugins/ant-design-vue.js'
 // import 'codemirror/lib/codemirror.css'
 // import "echarts";
 import axios from 'axios'
-axios.defaults.baseURL = 'http://ip/api'
+axios.defaults.baseURL = 'http://ip'
 Vue.prototype.$http = axios
 
 
