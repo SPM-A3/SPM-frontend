@@ -12,7 +12,6 @@
             class="avatar-uploader"
             :show-upload-list="false"
             :customRequest="upload"
-            @change="handleChange"
           >
             <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
             <div v-else>

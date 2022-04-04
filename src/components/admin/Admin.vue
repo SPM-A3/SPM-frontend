@@ -3,6 +3,7 @@
     <a-layout-sider width="200" style="background: #fff" 
       breakpoint="lg"
       collapsed-width="0"
+      theme="light"
       @collapse="onCollapse"
       @breakpoint="onBreakpoint">
       <a-menu
