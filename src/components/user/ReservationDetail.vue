@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       reservationDetail: [],
-      isRouterAlive:true
+      isRouterAlive: true
     };
   },
   created() {
@@ -60,6 +60,7 @@ export default {
   },
   methods: {
     getReservationDetail(reservation_id) {
+      console.log(reservation_id)
       let that = this;
 
       var myHeaders = new Headers();
