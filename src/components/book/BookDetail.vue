@@ -9,7 +9,7 @@
             <a-card
               :title="bookInfo.book_name"
               style="width: 500px; height: 250px"
-              :bordered="true"
+              :bordered="false"
             >
               <p>ISBN：{{ bookInfo.ISBN }}</p>
               <p>作者：{{ bookInfo.author }}</p>
@@ -21,21 +21,42 @@
           <a-col :offset="16">
             <a-card
               style="height: 200px; width: 200px"
-              :bordered="true"
+              :bordered="false"
               size="small"
             >
               <br /><br />
-              <p>余量：</p>
-              <a-button type="primary">预约</a-button>
+              <p>
+                余量：{{ avail_book_number }}&nbsp;
+                <a-tag
+                  v-if="avail_book_number / book_number >= 0.5"
+                  color="green"
+                  >余量充足</a-tag
+                >
+                <a-tag v-if="avail_book_number / book_number < 0.5" color="red"
+                  >余量紧张</a-tag
+                >
+              </p>
+
+              <a-progress
+                type="circle"
+                :width="150"
+                :percent="(parseInt(avail_book_number / book_number  * 100 ))"
+                size="small"
+                status="active"
+                style="color: green"
+              />
               <br /><br />
-              <a-button type="primary">借阅</a-button>
+
+              <!-- <a-button type="primary">预约</a-button> -->
+              <br /><br />
+              <!-- <a-button type="primary">借阅</a-button> -->
             </a-card>
           </a-col>
         </a-row>
 
         <a-row>
           <a-col :span="8">
-            <a-card style="width: 750px; height: 200px" :bordered="true">
+            <a-card style="width: 750px; height: 200px" :bordered="false">
               <p>摘要：{{ bookInfo.introduction }}</p>
             </a-card>
           </a-col>
@@ -55,7 +76,7 @@
       <a-table :columns="columns" :data-source="locationData">
         <template slot="status" slot-scope="status">
           <a-tag v-if="status == 1" color="green">可借阅</a-tag>
-          <a-tag v-else-if="status == 0" color="red">不可借阅</a-tag>
+          <a-tag v-else-if="status == 0" color="red">已借出</a-tag>
         </template>
 
         <template slot="operation" slot-scope="text, record">
@@ -106,11 +127,13 @@ const columns = [
   },
 ];
 
-
 export default {
   name: "Detail",
   data() {
     return {
+      book_number: "",
+      avail_book_number: "",
+
       locationData: [],
       columns,
 
@@ -131,6 +154,7 @@ export default {
       return this.$route.params.id;
     },
 
+    //借阅接口
     onBorrow(key) {},
 
     getBookInfo() {
@@ -180,11 +204,17 @@ export default {
         .then((result) => {
           console.log(result);
           if (result.error_code == 0) {
+            this.book_number = result.locations.length;
+            let num = 0;
+            for (let i of result.locations) {
+              if (i.status == 1) num++;
+            }
+            this.avail_book_number = num;
             setTimeout(() => {
               var key = 0;
               for (let i of result.locations) {
                 that.locationData.push({
-                  key : key,
+                  key: key,
                   status: i.status,
                   room_number: i.room_number,
                   book_shelf: i.book_shelf,
@@ -206,7 +236,6 @@ export default {
 
     this.getBookInfo();
     this.getBookLocations();
-    console.log(this.bookInfo.cover);
   },
 };
 </script>

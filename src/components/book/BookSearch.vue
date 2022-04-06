@@ -155,10 +155,11 @@
             <a-col :span="8" type="flex">
               <p>作者：{{ item.author }}</p>
               <p>出版社：{{ item.publisher }}</p>
+              <p>出版社：{{ item.published_time }}</p>
               <p>类别：{{ item.category }}</p>
               <p>ISBN：{{ item.ISBN }}</p>
               <p>是否馆藏：<a-tag color="green"> YES </a-tag></p>
-              评分：<a-rate :default-value="5" disabled />
+              
             </a-col>
             <a-col :span="10" type="flex">
               <p id="intro">简介：{{ item.introduction }}</p>
