@@ -1,173 +1,187 @@
 <template>
   <div id="book-search">
-    <!-- from表单搜索部件 -->
-    <a-form class="search-form" :form="form" @submit="handleSearch">
-      <a-row>
-        <a-col :md="8" :sm="24">
-          <a-form-item
-            label="书名"
-            :labelCol="{ span: 5 }"
-            :wrapperCol="{ span: 18, offset: 1 }"
-          >
-            <a-input
-              v-decorator="[
-                'book_name',
-                { rules: [{ required: false, message: '' }] },
-              ]"
-              placeholder="请输入"
-            >
-              <a-icon slot="suffix" type="book" />
-            </a-input>
-          </a-form-item>
-        </a-col>
-
-        <a-col :md="8" :sm="24">
-          <a-form-item
-            label="作者"
-            :labelCol="{ span: 5 }"
-            :wrapperCol="{ span: 18, offset: 1 }"
-          >
-            <a-input
-              v-decorator="[
-                'author',
-                { rules: [{ required: false, message: '' }] },
-              ]"
-              placeholder="请输入"
-            >
-              <a-icon slot="suffix" type="user" />
-            </a-input>
-          </a-form-item>
-        </a-col>
-
-        <a-col :md="8" :sm="24">
-          <a-form-item
-            label="主题"
-            :labelCol="{ span: 5 }"
-            :wrapperCol="{ span: 18, offset: 1 }"
-          >
-            <a-input
-              v-decorator="[
-                'subject',
-                { rules: [{ required: false, message: '' }] },
-              ]"
-              placeholder="请输入"
-            >
-              <a-icon slot="suffix" type="star" />
-            </a-input>
-          </a-form-item>
-        </a-col>
-      </a-row>
-
-      <a-row>
-        <a-col :md="8" :sm="24">
-          <a-form-item
-            label="出版社"
-            :labelCol="{ span: 5 }"
-            :wrapperCol="{ span: 18, offset: 1 }"
-          >
-            <a-input
-              v-decorator="[
-                'publisher',
-                { rules: [{ required: false, message: '' }] },
-              ]"
-              placeholder="请输入"
-            >
-              <a-icon slot="suffix" type="deployment-unit" />
-            </a-input>
-          </a-form-item>
-        </a-col>
-        <a-col :md="8" :sm="24">
-          <a-form-item
-            label="ISBN"
-            :labelCol="{ span: 5 }"
-            :wrapperCol="{ span: 18, offset: 1 }"
-          >
-            <a-input
-              v-decorator="[
-                'ISBN',
-                { rules: [{ required: false, message: '' }] },
-              ]"
-              placeholder="请输入"
-            >
-              <a-icon slot="suffix" type="barcode" />
-            </a-input>
-          </a-form-item>
-        </a-col>
-        <a-col :md="8" :sm="24">
-          <a-form-item
-            label="图书分类"
-            :labelCol="{ span: 5 }"
-            :wrapperCol="{ span: 18, offset: 1 }"
-          >
-            <a-cascader
-              v-model="cascaderData"
-              ref="text"
-              :options="options"
-              placeholder="请输入或选择分类"
-              :show-search="{ filter }"
-            />
-          </a-form-item>
-        </a-col>
-      </a-row>
-
-      <a-row>
-        <a-col :md="8" :sm="24">
-          <a-form-item
-            label="出版日期"
-            :labelCol="{ span: 5 }"
-            :wrapperCol="{ span: 18, offset: 1 }"
-          >
-            <a-month-picker
-              placeholder="请输入出版日期"
-              style="width: 100%"
-              @change="onChange"
-            />
-          </a-form-item>
-        </a-col>
-
-        <a-col :span="16" :style="{ textAlign: 'right' }">
-          <a-button type="primary" html-type="submit"> 查询 </a-button>
-          <a-button :style="{ marginLeft: '8px' }" @click="handleReset"
-            >重置</a-button
-          >
-        </a-col>
-      </a-row>
-    </a-form>
-
-    <hr />
-
-    <a-card title="查询结果">
-      <a-list
-        item-layout="vertical"
-        size="large"
-        :pagination="pagination"
-        :data-source="data"
-      >
-        <a-list-item slot="renderItem" key="item.ISBN" slot-scope="item">
-          <a-list-item-meta>
-            <a slot="title" :href="item.ISBN">{{ item.book_name }}</a>
-          </a-list-item-meta>
-
+    <a-layout style="background: #fff; height: 100%">
+      <a-layout-sider width="250" style="background: #fff">
+        <a-menu
+          mode="inline"
+          style="height: 100%"
+          :default-selected-keys="['1']"
+        >
+          <a-menu-item key="1">图书查询</a-menu-item>
+          <a-menu-item key="2" disabled>图书详情</a-menu-item>
+        </a-menu>
+      </a-layout-sider>
+      <a-layout-content :style="{ padding: '0 24px', minHeight: '50vh' }">
+        <!-- from表单搜索部件 -->
+        <a-form class="search-form" :form="form" @submit="handleSearch">
           <a-row>
-            <a-col :span="4">
-              <img height="220" alt="logo" :src="item.cover | imgChange" />
+            <a-col :md="8" :sm="24">
+              <a-form-item
+                label="书名"
+                :labelCol="{ span: 5 }"
+                :wrapperCol="{ span: 18, offset: 1 }"
+              >
+                <a-input
+                  v-decorator="[
+                    'book_name',
+                    { rules: [{ required: false, message: '' }] },
+                  ]"
+                  placeholder="请输入"
+                >
+                  <a-icon slot="suffix" type="book" />
+                </a-input>
+              </a-form-item>
             </a-col>
-            <a-col :span="8" type="flex">
-              <p>作者：{{ item.author }}</p>
-              <p>出版社：{{ item.publisher }}</p>
-              <p>出版社：{{ item.published_time }}</p>
-              <p>类别：{{ item.category }}</p>
-              <p>ISBN：{{ item.ISBN }}</p>
-              <p>是否馆藏：<a-tag color="green"> YES </a-tag></p>
-              
+
+            <a-col :md="8" :sm="24">
+              <a-form-item
+                label="作者"
+                :labelCol="{ span: 5 }"
+                :wrapperCol="{ span: 18, offset: 1 }"
+              >
+                <a-input
+                  v-decorator="[
+                    'author',
+                    { rules: [{ required: false, message: '' }] },
+                  ]"
+                  placeholder="请输入"
+                >
+                  <a-icon slot="suffix" type="user" />
+                </a-input>
+              </a-form-item>
             </a-col>
-            <a-col :span="10" type="flex">
-              <p id="intro">简介：{{ item.introduction }}</p>
+
+            <a-col :md="8" :sm="24">
+              <a-form-item
+                label="主题"
+                :labelCol="{ span: 5 }"
+                :wrapperCol="{ span: 18, offset: 1 }"
+              >
+                <a-input
+                  v-decorator="[
+                    'subject',
+                    { rules: [{ required: false, message: '' }] },
+                  ]"
+                  placeholder="请输入"
+                >
+                  <a-icon slot="suffix" type="star" />
+                </a-input>
+              </a-form-item>
             </a-col>
           </a-row>
-        </a-list-item>
-      </a-list>
-    </a-card>
+
+          <a-row>
+            <a-col :md="8" :sm="24">
+              <a-form-item
+                label="出版社"
+                :labelCol="{ span: 5 }"
+                :wrapperCol="{ span: 18, offset: 1 }"
+              >
+                <a-input
+                  v-decorator="[
+                    'publisher',
+                    { rules: [{ required: false, message: '' }] },
+                  ]"
+                  placeholder="请输入"
+                >
+                  <a-icon slot="suffix" type="deployment-unit" />
+                </a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item
+                label="ISBN"
+                :labelCol="{ span: 5 }"
+                :wrapperCol="{ span: 18, offset: 1 }"
+              >
+                <a-input
+                  v-decorator="[
+                    'ISBN',
+                    { rules: [{ required: false, message: '' }] },
+                  ]"
+                  placeholder="请输入"
+                >
+                  <a-icon slot="suffix" type="barcode" />
+                </a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item
+                label="图书分类"
+                :labelCol="{ span: 5 }"
+                :wrapperCol="{ span: 18, offset: 1 }"
+              >
+                <a-cascader
+                  v-model="cascaderData"
+                  ref="text"
+                  :options="options"
+                  placeholder="请输入或选择分类"
+                  :show-search="{ filter }"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+
+          <a-row>
+            <a-col :md="8" :sm="24">
+              <a-form-item
+                label="出版日期"
+                :labelCol="{ span: 5 }"
+                :wrapperCol="{ span: 18, offset: 1 }"
+              >
+                <a-month-picker
+                  placeholder="请输入出版日期"
+                  style="width: 100%"
+                  @change="onChange"
+                />
+              </a-form-item>
+            </a-col>
+
+            <a-col :span="16" :style="{ textAlign: 'right' }">
+              <a-button type="primary" html-type="submit"> 查询 </a-button>
+              <a-button :style="{ marginLeft: '8px' }" @click="handleReset"
+                >重置</a-button
+              >
+            </a-col>
+          </a-row>
+        </a-form>
+
+        
+
+        <a-card title="查询结果" :bordered="false">
+          <a-list
+            item-layout="vertical"
+            size="large"
+            :pagination="pagination"
+            :data-source="data"
+            
+          >
+            <a-list-item slot="renderItem" key="item.ISBN" slot-scope="item">
+              <a-list-item-meta>
+                <a slot="title" :href="item.ISBN">{{ item.book_name }}</a>
+              </a-list-item-meta>
+
+              <a-row>
+                <a-col :span="4">
+                  <img height="220" alt="logo" :src="item.cover | imgChange" />
+                </a-col>
+                <a-col :span="8" type="flex">
+                  <p>作者：{{ item.author }}</p>
+                  <p>出版社：{{ item.publisher }}</p>
+                  <p>出版社：{{ item.published_time }}</p>
+                  <p>类别：{{ item.category }}</p>
+                  <p>ISBN：{{ item.ISBN }}</p>
+                  <p>是否馆藏：<a-tag color="green"> YES </a-tag></p>
+                </a-col>
+                <a-col :span="10" type="flex">
+                  <p id="intro">简介：{{ item.introduction }}</p>
+                </a-col>
+              </a-row>
+            </a-list-item>
+          </a-list>
+        </a-card>
+      </a-layout-content>
+    </a-layout>
   </div>
 </template>
 
@@ -712,7 +726,7 @@ export default {
 .search-form {
   padding: 24px;
   background: #ffffff;
-  border: 1px solid #a42929;
+  border: 1px solid #ffffff;
   border-radius: 6px;
 }
 
