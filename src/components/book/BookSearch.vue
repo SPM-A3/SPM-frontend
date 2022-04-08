@@ -1,17 +1,6 @@
 <template>
   <div id="book-search">
-    <a-layout style="background: #fff; height: 100%">
-      <a-layout-sider width="250" style="background: #fff">
-        <a-menu
-          mode="inline"
-          style="height: 100%"
-          :default-selected-keys="['1']"
-        >
-          <a-menu-item key="1">图书查询</a-menu-item>
-          <a-menu-item key="2" disabled>图书详情</a-menu-item>
-        </a-menu>
-      </a-layout-sider>
-      <a-layout-content :style="{ padding: '0 24px', minHeight: '50vh' }">
+    
         <!-- from表单搜索部件 -->
         <a-form class="search-form" :form="form" @submit="handleSearch">
           <a-row>
@@ -53,18 +42,18 @@
 
             <a-col :md="8" :sm="24">
               <a-form-item
-                label="主题"
+                label="ISBN"
                 :labelCol="{ span: 5 }"
                 :wrapperCol="{ span: 18, offset: 1 }"
               >
                 <a-input
                   v-decorator="[
-                    'subject',
+                    'ISBN',
                     { rules: [{ required: false, message: '' }] },
                   ]"
                   placeholder="请输入"
                 >
-                  <a-icon slot="suffix" type="star" />
+                  <a-icon slot="suffix" type="barcode" />
                 </a-input>
               </a-form-item>
             </a-col>
@@ -90,23 +79,6 @@
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item
-                label="ISBN"
-                :labelCol="{ span: 5 }"
-                :wrapperCol="{ span: 18, offset: 1 }"
-              >
-                <a-input
-                  v-decorator="[
-                    'ISBN',
-                    { rules: [{ required: false, message: '' }] },
-                  ]"
-                  placeholder="请输入"
-                >
-                  <a-icon slot="suffix" type="barcode" />
-                </a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item
                 label="图书分类"
                 :labelCol="{ span: 5 }"
                 :wrapperCol="{ span: 18, offset: 1 }"
@@ -120,9 +92,6 @@
                 />
               </a-form-item>
             </a-col>
-          </a-row>
-
-          <a-row>
             <a-col :md="8" :sm="24">
               <a-form-item
                 label="出版日期"
@@ -136,8 +105,10 @@
                 />
               </a-form-item>
             </a-col>
+          </a-row>
 
-            <a-col :span="16" :style="{ textAlign: 'right' }">
+          <a-row>
+            <a-col :span="24" :style="{ textAlign: 'right' }">
               <a-button type="primary" html-type="submit"> 查询 </a-button>
               <a-button :style="{ marginLeft: '8px' }" @click="handleReset"
                 >重置</a-button
@@ -158,7 +129,9 @@
           >
             <a-list-item slot="renderItem" key="item.ISBN" slot-scope="item">
               <a-list-item-meta>
-                <a slot="title" :href="item.ISBN">{{ item.book_name }}</a>
+                <router-link :to="'/book/'+item.ISBN" slot="title"><h3>{{ item.book_name }}</h3> </router-link>
+                <!-- <a slot="title" :href="item.ISBN" >{{ item.book_name }}</a> -->
+                <!-- <button slot="title" @click="$router.push(item.ISBN)">{{ item.book_name }}</button> -->
               </a-list-item-meta>
 
               <a-row>
@@ -180,8 +153,7 @@
             </a-list-item>
           </a-list>
         </a-card>
-      </a-layout-content>
-    </a-layout>
+     
   </div>
 </template>
 
@@ -738,8 +710,9 @@ export default {
   flex: 1;
 }
 
-#book-search .ant-form {
+#book-search {
   max-width: none;
+  padding: 10px 100px 15px 100px;;
 }
 #book-search .search-result-list {
   margin-top: 16px;

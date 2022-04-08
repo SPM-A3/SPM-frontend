@@ -2,18 +2,7 @@
   <div>
     
     
-    <a-layout style="background: #fff; height: 100%">
-      <a-layout-sider width="250" style="background: #fff">
-        <a-menu
-          mode="inline"
-          style="height: 100%"
-          :default-selected-keys="['2']"
-        >
-          <a-menu-item key="1" @click="changeContent()">图书查询</a-menu-item>
-          <a-menu-item key="2">图书详情</a-menu-item>
-        </a-menu>
-      </a-layout-sider>
-      <a-layout-content :style="{ padding: '0 24px', minHeight: '50vh' }">
+    
         <!-- 图书详情：{{ $route.params.id }}
     使用$route.params.id可以获取图书id，使用这个id调用图书api -->
         <a-card :bordered="false">
@@ -105,8 +94,7 @@
             </template>
           </a-table>
         </a-card>
-      </a-layout-content>
-    </a-layout>
+     
   </div>
 </template>
 
