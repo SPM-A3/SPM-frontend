@@ -130,8 +130,11 @@
             <a-list-item slot="renderItem" key="item.ISBN" slot-scope="item">
               <a-list-item-meta>
                 <router-link :to="'/book/'+item.ISBN" slot="title"><h3>{{ item.book_name }}</h3> </router-link>
+<<<<<<< HEAD
                 <!-- <a slot="title" :href="item.ISBN" >{{ item.book_name }}</a> -->
                 <!-- <button slot="title" @click="$router.push(item.ISBN)">{{ item.book_name }}</button> -->
+=======
+>>>>>>> fbd68a2084c1bd64f0009d181f76a2171a2a22b4
               </a-list-item-meta>
 
               <a-row>
