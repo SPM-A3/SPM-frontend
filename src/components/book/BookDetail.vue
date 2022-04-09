@@ -14,31 +14,31 @@
                   style="width: 500px; height: 250px"
                   :bordered="false"
                 >
-                  <p>ISBN：{{ bookInfo.ISBN }}</p>
-                  <p>作者：{{ bookInfo.author }}</p>
-                  <p>类别：{{ bookInfo.category }}</p>
-                  <p>出版社：{{ bookInfo.publisher }}</p>
-                  <p>出版时间：{{ bookInfo.published_time }}</p>
+                  <p>ISBN: {{ bookInfo.ISBN }}</p>
+                  <p>Author: {{ bookInfo.author }}</p>
+                  <p>Category: {{ bookInfo.category }}</p>
+                  <p>Publisher: {{ bookInfo.publisher }}</p>
+                  <p>Published Time: {{ bookInfo.published_time }}</p>
                 </a-card>
               </a-col>
               <a-col :offset="16">
                 <a-card
-                  style="height: 200px; width: 200px"
+                  style="height: 200px; width: 300px"
                   :bordered="false"
                   size="small"
                 >
                   <br /><br />
                   <p>
-                    余量：{{ avail_book_number }}&nbsp;
+                    <b>Available Number: {{ avail_book_number }}</b>&nbsp;
                     <a-tag
                       v-if="avail_book_number / book_number >= 0.5"
                       color="green"
-                      >余量充足</a-tag
+                      >Adequate</a-tag
                     >
                     <a-tag
                       v-if="avail_book_number / book_number < 0.5"
                       color="red"
-                      >余量紧张</a-tag
+                      >Nervous</a-tag
                     >
                   </p>
 
@@ -62,7 +62,7 @@
             <a-row>
               <a-col :span="8">
                 <a-card style="width: 750px; height: 200px" :bordered="false">
-                  <p>摘要：{{ bookInfo.introduction }}</p>
+                  <p>Introduction: {{ bookInfo.introduction }}</p>
                 </a-card>
               </a-col>
             </a-row>
@@ -80,8 +80,8 @@
         <a-card>
           <a-table :columns="columns" :data-source="locationData">
             <template slot="status" slot-scope="status">
-              <a-tag v-if="status == 1" color="green">可借阅</a-tag>
-              <a-tag v-else-if="status == 0" color="red">已借出</a-tag>
+              <a-tag v-if="status == 1" color="green">Available</a-tag>
+              <a-tag v-else-if="status == 0" color="red">Lent</a-tag>
             </template>
 
             <template slot="operation" slot-scope="text, record">
@@ -101,33 +101,33 @@
 <script>
 const columns = [
   {
-    title: "房间号",
+    title: "Room_number",
     dataIndex: "room_number",
     key: "room_number",
   },
   {
-    title: "bookshelf书架",
+    title: "Bookshelf",
     dataIndex: "book_shelf",
     key: "book_shelf",
   },
   {
-    title: "side边",
+    title: "Side",
     dataIndex: "side",
     key: "side",
   },
   {
-    title: "layer层",
+    title: "Layer",
     dataIndex: "layer",
     key: "layer",
   },
   {
-    title: "status状态",
+    title: "Status",
     dataIndex: "status",
     key: "status",
     scopedSlots: { customRender: "status" },
   },
   {
-    title: "操作",
+    title: "Operation",
     key: "operation",
     scopedSlots: { customRender: "operation" },
   },

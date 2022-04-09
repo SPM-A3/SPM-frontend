@@ -6,7 +6,7 @@
           <a-row>
             <a-col :md="8" :sm="24">
               <a-form-item
-                label="书名"
+                label="Book Name"
                 :labelCol="{ span: 5 }"
                 :wrapperCol="{ span: 18, offset: 1 }"
               >
@@ -15,7 +15,7 @@
                     'book_name',
                     { rules: [{ required: false, message: '' }] },
                   ]"
-                  placeholder="请输入"
+                  placeholder="Please Input"
                 >
                   <a-icon slot="suffix" type="book" />
                 </a-input>
@@ -24,7 +24,7 @@
 
             <a-col :md="8" :sm="24">
               <a-form-item
-                label="作者"
+                label="Author"
                 :labelCol="{ span: 5 }"
                 :wrapperCol="{ span: 18, offset: 1 }"
               >
@@ -33,7 +33,7 @@
                     'author',
                     { rules: [{ required: false, message: '' }] },
                   ]"
-                  placeholder="请输入"
+                  placeholder="Please Input"
                 >
                   <a-icon slot="suffix" type="user" />
                 </a-input>
@@ -51,7 +51,7 @@
                     'ISBN',
                     { rules: [{ required: false, message: '' }] },
                   ]"
-                  placeholder="请输入"
+                  placeholder="Please Input"
                 >
                   <a-icon slot="suffix" type="barcode" />
                 </a-input>
@@ -62,7 +62,7 @@
           <a-row>
             <a-col :md="8" :sm="24">
               <a-form-item
-                label="出版社"
+                label="Publisher"
                 :labelCol="{ span: 5 }"
                 :wrapperCol="{ span: 18, offset: 1 }"
               >
@@ -71,7 +71,7 @@
                     'publisher',
                     { rules: [{ required: false, message: '' }] },
                   ]"
-                  placeholder="请输入"
+                  placeholder="Please Input"
                 >
                   <a-icon slot="suffix" type="deployment-unit" />
                 </a-input>
@@ -79,7 +79,7 @@
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item
-                label="图书分类"
+                label="Category"
                 :labelCol="{ span: 5 }"
                 :wrapperCol="{ span: 18, offset: 1 }"
               >
@@ -87,19 +87,19 @@
                   v-model="cascaderData"
                   ref="text"
                   :options="options"
-                  placeholder="请输入或选择分类"
+                  placeholder="Please Input"
                   :show-search="{ filter }"
                 />
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item
-                label="出版日期"
+                label="Date"
                 :labelCol="{ span: 5 }"
                 :wrapperCol="{ span: 18, offset: 1 }"
               >
                 <a-month-picker
-                  placeholder="请输入出版日期"
+                  placeholder="Please Input"
                   style="width: 100%"
                   @change="onChange"
                 />
@@ -109,9 +109,9 @@
 
           <a-row>
             <a-col :span="24" :style="{ textAlign: 'right' }">
-              <a-button type="primary" html-type="submit"> 查询 </a-button>
+              <a-button type="primary" html-type="submit"> SEARCH </a-button>
               <a-button :style="{ marginLeft: '8px' }" @click="handleReset"
-                >重置</a-button
+                >RESET</a-button
               >
             </a-col>
           </a-row>
@@ -119,7 +119,7 @@
 
         
 
-        <a-card title="查询结果" :bordered="false">
+        <a-card title="SEARCH RESULT" :bordered="false">
           <a-list
             item-layout="vertical"
             size="large"
@@ -130,11 +130,6 @@
             <a-list-item slot="renderItem" key="item.ISBN" slot-scope="item">
               <a-list-item-meta>
                 <router-link :to="'/book/'+item.ISBN" slot="title"><h3>{{ item.book_name }}</h3> </router-link>
-<<<<<<< HEAD
-                <!-- <a slot="title" :href="item.ISBN" >{{ item.book_name }}</a> -->
-                <!-- <button slot="title" @click="$router.push(item.ISBN)">{{ item.book_name }}</button> -->
-=======
->>>>>>> fbd68a2084c1bd64f0009d181f76a2171a2a22b4
               </a-list-item-meta>
 
               <a-row>
@@ -142,15 +137,15 @@
                   <img height="220" alt="logo" :src="item.cover | imgChange" />
                 </a-col>
                 <a-col :span="8" type="flex">
-                  <p>作者：{{ item.author }}</p>
-                  <p>出版社：{{ item.publisher }}</p>
-                  <p>出版社：{{ item.published_time }}</p>
-                  <p>类别：{{ item.category }}</p>
-                  <p>ISBN：{{ item.ISBN }}</p>
-                  <p>是否馆藏：<a-tag color="green"> YES </a-tag></p>
+                  <p><b>Author</b>: {{ item.author }}</p>
+                  <p><b>Publisher</b>: {{ item.publisher }}</p>
+                  <p><b>Published Time</b>: {{ item.published_time }}</p>
+                  <p><b>Category</b>: {{ item.category }}</p>
+                  <p><b>ISBN</b>: {{ item.ISBN }}</p>
+                  <p><b>Available</b>: <a-tag color="green"> YES </a-tag></p>
                 </a-col>
                 <a-col :span="10" type="flex">
-                  <p id="intro">简介：{{ item.introduction }}</p>
+                  <p id="intro"><b>Introduction</b>: {{ item.introduction }}</p>
                 </a-col>
               </a-row>
             </a-list-item>
