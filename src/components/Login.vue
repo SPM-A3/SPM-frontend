@@ -1,5 +1,5 @@
 <template>
-  <common-layout>
+  <div>
     <div class = "top">
       <div class = "header">
         <span class="title">SPM图书管理系统</span>
@@ -45,11 +45,10 @@
         </div>
       </a-form>
     </div>
-  </common-layout>
+  </div>
 </template>
 
 <script>
-import CommonLayout from '@/layouts/CommonLayout'
 /*
 import {login, getRoutesConfig} from '@/services/user'
 import {setAuthorization} from '@/utils/request'
@@ -58,7 +57,6 @@ import {mapMutations} from 'vuex'
 
 export default {
   name: 'Login',
-  components: {CommonLayout},
   /*
   data () {
     return {
