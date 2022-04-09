@@ -6,6 +6,10 @@ import './plugins/ant-design-vue.js'
 // import VueCodemirror from 'vue-codemirror'
 // import 'codemirror/lib/codemirror.css'
 // import "echarts";
+import axios from 'axios'
+axios.defaults.baseURL = 'http://ip'
+Vue.prototype.$http = axios
+
 
 Vue.config.productionTip = false
 // Vue.use(VueCodemirror)
