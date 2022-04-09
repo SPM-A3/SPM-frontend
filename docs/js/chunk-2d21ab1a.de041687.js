@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d21ab1a"],{bd35:function(n,a,e){"use strict";e.r(a);var r=function(){var n=this,a=n.$createElement,e=n._self._c||a;return e("div",[n._v(" 借阅记录详细信息"+n._s(n.$route.params.id)+" 使用$route.params.id可以获取borrowing_id，使用这个id调用api ")])},i=[],t={},u=t,o=e("2877"),s=Object(o["a"])(u,r,i,!1,null,null,null);a["default"]=s.exports}}]);
+//# sourceMappingURL=chunk-2d21ab1a.de041687.js.map

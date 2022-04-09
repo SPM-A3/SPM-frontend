@@ -87,11 +87,10 @@ const routes = [
         component: () => import('../components/admin/UserEdit.vue')
     }
 ]
- 
+
 const router = new VueRouter({
     mode: 'history',
     routes
 })
 
 export default router;
-  
