@@ -1,0 +1,57 @@
+<template>
+  <a-layout style="background: #fff; height:100%">
+    <a-layout-sider width="200" style="background: #fff" 
+      breakpoint="lg"
+      collapsed-width="0"
+      theme="light"
+      @collapse="onCollapse"
+      @breakpoint="onBreakpoint">
+      <a-menu
+        mode="inline"
+        style="height: 100%"
+        :default-selected-keys="defaultSelectedKeys"
+      >
+        <a-menu-item key="1" @click="changeContent(1)">图书管理</a-menu-item>
+        <a-menu-item key="2" @click="changeContent(2)">用户管理</a-menu-item>
+      </a-menu>
+    </a-layout-sider>
+    <a-layout-content :style="{ padding: '0 24px', minHeight: '50vh' }">
+      <div v-if="contentNumber==1">
+        <book-manage/>
+      </div>
+      <div v-else>
+        <user-manage/>
+      </div>
+    </a-layout-content>
+  </a-layout>
+</template>
+
+<script>
+import BookManage from './BookManage.vue'
+import UserManage from './UserManage.vue'
+export default {
+    name: 'Admin',
+    data() {
+        return {
+            contentNumber: 1,
+            defaultSelectedKeys: ['1']
+        }
+    },
+    components: {BookManage, UserManage},
+    methods: {
+        changeContent(i){
+            this.contentNumber = i;
+        },
+        onCollapse(collapsed, type) {
+            console.log(collapsed, type);
+        },
+        onBreakpoint(broken) {
+            console.log(broken);
+        }
+    }
+}
+</script>
+
+<style>
+
+</style>
