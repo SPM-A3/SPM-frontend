@@ -1,7 +1,18 @@
 <template>
   <div>
     <template>
+      <a-card hoverable style="width: 240px">
+        <template #cover>
+          <img :src="bookInfo.cover" />
+        </template>
+      </a-card>
+    </template>
+
+    <template>
       <a-descriptions title="Borrowing Info" size="default" bordered>
+        <a-descriptions-item label="book name ">{{
+          bookInfo.book_name
+        }}</a-descriptions-item>
         <a-descriptions-item label="borrowing id">{{
           borrowingDetail.borrowing_id
         }}</a-descriptions-item>
@@ -38,17 +49,10 @@
       placement="top"
       v-if="borrowingDetail.status === 0"
     >
-      <a-button
-        type="primary"
-        icon="el-icon-edit"
-        @click="returnBook()"
-      >
+      <a-button type="primary" icon="el-icon-edit" @click="returnBook()">
         归还
       </a-button>
-      <a-button
-        type="primary"
-        icon="el-icon-edit"
-        @click="renewBook()"
+      <a-button type="primary" icon="el-icon-edit" @click="renewBook()"
         >续借</a-button
       >
     </a-tooltip>
@@ -60,6 +64,7 @@ export default {
   data() {
     return {
       borrowingDetail: [],
+      bookInfo: [],
     };
   },
   created() {
@@ -67,6 +72,7 @@ export default {
   },
   methods: {
     getBorrowingDetail(borrowing_id) {
+      // 获得借书详情
       let that = this;
 
       var myHeaders = new Headers();
@@ -86,11 +92,26 @@ export default {
           that.borrowingDetail = data;
         })
         .catch((err) => console.log("Request Failed", err));
-        console.log(this.borrowingDetail)
+      console.log(this.borrowingDetail);
+
+      // 获得图书详情
+
+      var myInit2 = { method: "GET" };
+      var myUrl2 =
+        "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/book/detail?ISBN=" +
+        this.borrowingDetail.ISBN;
+      var myRequest2 = new Request(myUrl2, myInit2);
+
+      fetch(myRequest2)
+        .then((response) => response.json())
+        .then(function (data) {
+          console.log(data);
+          that.bookInfo = data.book_info;
+        });
     },
     // 归还图书
     returnBook() {
-      let borrowing_id=this.borrowingDetail.borrowing_id
+      let borrowing_id = this.borrowingDetail.borrowing_id;
       console.log(borrowing_id);
 
       var myHeaders = new Headers();
@@ -112,7 +133,7 @@ export default {
     },
     // 续借图书
     renewBook() {
-      let borrowing_id=this.borrowingDetail.borrowing_id
+      let borrowing_id = this.borrowingDetail.borrowing_id;
       console.log(borrowing_id);
 
       var myHeaders = new Headers();
