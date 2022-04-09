@@ -47,7 +47,7 @@ const routes = [
         component: () => import('../components/user/Borrowing.vue')
     },
     {
-        path: '/user/borrowing/:id',
+        path: '/user/borrowing/:id/detail',
         name: '在借图书详情',
         component: () => import('../components/user/BorrowingDetail.vue')
     },
@@ -68,11 +68,7 @@ const routes = [
     },
     {
         path: '/admin',
-        redirect: '/admin/book'
-    },
-    {
-        path: '/admin/book',
-        component: () => import('../components/admin/BookManage.vue')
+        component: () => import('../components/admin/Admin.vue')
     },
     {
         path: '/admin/book/add',
@@ -81,10 +77,6 @@ const routes = [
     {
         path: '/admin/book/:id/edit',
         component: () => import('../components/admin/BookEdit.vue')
-    },
-    {
-        path: '/admin/user',
-        component: () => import('../components/admin/UserManage.vue')
     },
     {
         path: '/admin/user/add',

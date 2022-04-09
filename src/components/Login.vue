@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <template>
   <div>
     <div class = "top">
@@ -154,3 +155,5 @@ export default {
     transition: color 0.3s;
   }
 </style>
+=======
+>>>>>>> main
