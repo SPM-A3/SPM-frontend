@@ -2,7 +2,6 @@
   <common-layout>
     <div class = "top">
       <div class = "header">
-        <img alt="logo" class="logo" src="@/assets/logo.png" />
         <span class="title">SPM图书管理系统</span>
       </div>
       <div class="desc">SPM Course Design</div>
@@ -16,7 +15,7 @@
               <a-input
                 autocomplete="autocomplete"
                 size="large"
-                placeholder="admin"
+                placeholder="请输入学号（工号）"
                 v-decorator="['name', {rules: [{ required: true, message: '请输入账户名', whitespace: true}]}]"
               >
                 <a-icon slot="prefix" type="user" />
@@ -25,7 +24,7 @@
             <a-form-item>
               <a-input
                 size="large"
-                placeholder="888888"
+                placeholder="请输入密码"
                 autocomplete="autocomplete"
                 type="password"
                 v-decorator="['password', {rules: [{ required: true, message: '请输入密码', whitespace: true}]}]"
@@ -106,59 +105,54 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-  .common-layout{
-    .top {
-      text-align: center;
-      .header {
-        height: 44px;
-        line-height: 44px;
-        a {
-          text-decoration: none;
-        }
-        .logo {
-          height: 44px;
-          vertical-align: top;
-          margin-right: 16px;
-        }
-        .title {
-          font-size: 33px;
-          color: red;
-          font-family: 'Myriad Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-          font-weight: 600;
-          position: relative;
-          top: 2px;
-        }
-      }
-      .desc {
+<style>
+  .top {
+    text-align: center;
+  }
+  .desc {
+    font-size: 14px;
+    color: black;
+    margin-top: 12px;
+    margin-bottom: 40px;
+  }
+  .header {
+    height: 44px;
+    line-height: 44px;
+  }
+  .header a {
+    text-decoration: none;
+  }
+  .logo {
+    height: 44px;
+    vertical-align: top;
+    margin-right: 16px;
+  }
+  .title {
+    font-size: 33px;
+    color: red;
+    font-family: 'Myriad Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    position: relative;
+    top: 2px;
+  }
+  .login{
+    width: 368px;
+    margin: 0 auto;
+    @media screen and (max-width: 576px) {
+      width: 95%;
+    }
+    @media screen and (max-width: 320px) {
+      .captcha-button{
         font-size: 14px;
-        color: black;
-        margin-top: 12px;
-        margin-bottom: 40px;
       }
     }
-    .login{
-      width: 368px;
-      margin: 0 auto;
-      @media screen and (max-width: 576px) {
-        width: 95%;
-      }
-      @media screen and (max-width: 320px) {
-        .captcha-button{
-          font-size: 14px;
-        }
-      }
-      .icon {
-        font-size: 24px;
-        color: gray;
-        margin-left: 16px;
-        vertical-align: middle;
-        cursor: pointer;
-        transition: color 0.3s;
-        &:hover {
-          color: white;
-        }
-      }
-    }
+  }
+  .icon {
+    font-size: 24px;
+    color: gray;
+    margin-left: 16px;
+    vertical-align: middle;
+    cursor: pointer;
+    transition: color 0.3s;
   }
 </style>
