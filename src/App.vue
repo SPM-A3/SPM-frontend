@@ -1,8 +1,8 @@
 <template>
-  <a-locale-provider :locale="locale">
+  <a-config-provider :locale="locale">
     <div id="app">
       <a-layout id="components-layout-demo-custom-trigger">
-        <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%', minHeight: '6vh' }" class="header">
+        <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%', height: '6vh' }" class="header">
           <div class="logo" />
           <div class="header-left">
             <a-menu
@@ -20,18 +20,18 @@
         
           <div class="header-right">
             <span class="header-msg">
-              <a-dropdown class="avatar" v-if="isLogin">
+              <a-dropdown class="avatar" v-if="$global.IS_LOGIN">
                 <a-menu slot="overlay">
-                  <a-menu-item @click="changeMenu('/user')"> 个人中心 </a-menu-item>
-                  <a-menu-item @click="changeMenu('/logout')"> 退出登录 </a-menu-item>
+                  <a-menu-item @click="changeMenu('/user')"> user center </a-menu-item>
+                  <a-menu-item @click="handleLogout" > logout </a-menu-item>
                 </a-menu>
                   <a-space>
-                    <a-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" style="backgroundColor:#87d068" />
-                    <span style="color: white">用户名</span><a-icon type="down" />
+                    <a-avatar :src="userInfo.avatar" style="backgroundColor:#87d068" />
+                    <span style="color: white">{{userInfo.name}}</span><a-icon type="down" />
                   </a-space>
               </a-dropdown>
               <a-button type="link" v-else block>
-                登录
+                <router-link to="/login">Login</router-link>
               </a-button>
             </span>
           </div>
@@ -46,32 +46,65 @@
           </a-layout-footer>
       </a-layout>
     </div>
-  </a-locale-provider>
+  </a-config-provider>
 </template>
 
 <script>
-import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN';
+import enUS from 'ant-design-vue/lib/locale-provider/en_US';
+import {tokenLogin, setUserInfo, logout, clearUserInfo} from './services/user'
 export default {
   name: "app",
   data() {
     return {
       collapsed: false,
-      isLogin: true,
-      locale: zhCN,
+      locale: enUS,
+      userInfo: {}
     };
   },
   methods: {
     changeMenu(route) {
-      console.log(route);
+      if(!this.$global.IS_LOGIN){
+        this.$router.push('/login');
+
+      }
       //获取路由对象并切换
       this.$router.push(route).catch((err) => {
         console.log("输出报错", err);
       });
     },
+    handleLogout(){
+      logout();
+      this.$global.IS_LOGIN = false;
+      this.userInfo = {};
+      this.$router.push('/login');
+    }
   },
   components: {
     
   },
+  created(){
+    let that = this;
+    tokenLogin()
+      .then(res => res.json())
+      .then( res => {
+        const {data, code, msg} = res;
+        console.log(res)
+        if(code == 0 || code == '0'){
+          that.userInfo = data;
+          that.$global.IS_LOGIN = true;
+          setUserInfo(data);
+          console.log(data);
+        }else{
+          clearUserInfo()
+          that.$router.push('/login')
+        }
+      })
+      .catch( err => {
+        console.log(err);
+        that.$router.push('/login');
+        // that.showAlert("error", err.msg)
+      })
+  }
 };
 </script>
 
@@ -88,8 +121,6 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  
-  
 }
 .header {
   display: flex;

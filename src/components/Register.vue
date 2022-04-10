@@ -1,5 +1,5 @@
 <template>
-  <a-form :form="form" @submit="handleSubmit">
+  <a-form :form="form" @submit="handleSubmit" v-if="!$global.IS_LOGIN">
     <a-form-item v-bind="formItemLayout" label="ID">
       <a-input
         v-decorator="[
@@ -75,96 +75,64 @@
     </a-form-item>
     <a-form-item v-bind="formItemLayout">
       <span slot="label">
-        Nickname&nbsp;
-        <a-tooltip title="What do you want others to call you?">
-          <a-icon type="question-circle-o" />
-        </a-tooltip>
+        Name
       </span>
       <a-input
         v-decorator="[
-          'nickname',
+          'name',
           {
-            rules: [{ required: true, message: 'Please input your nickname!', whitespace: true }],
+            rules: [{ required: true, message: 'Please input your name!', whitespace: true }],
           },
         ]"
       />
     </a-form-item>
-    <a-form-item v-bind="formItemLayout" label="Sex">
-      <a-select default-value="1">
-        <a-select-option value="1">
+    <a-form-item v-bind="formItemLayout" label="gender">
+      <a-select  v-decorator="[
+          'gender',
+          {
+            rules: [{ required: true, message: 'Please select your gender!', whitespace: true, type: 'number' }],
+          },
+        ]">
+        <a-select-option :value="0">
           Male
         </a-select-option>
-        <a-select-option value="2">
+        <a-select-option :value="1">
           Female
         </a-select-option>
       </a-select>
     </a-form-item>
-    <a-form-item v-bind="formItemLayout" label="Vocation">
-      <a-select default-value="1">
-        <a-select-option value="1">
-          Undergraduate
+    <a-form-item v-bind="formItemLayout" label="Position">
+      <a-select v-decorator="[
+          'position',
+          {
+            rules: [{ required: true, message: 'Please select your position!', whitespace: true, type: 'number' }],
+          },
+        ]">
+        <a-select-option :value="0">
+          Student
         </a-select-option>
-        <a-select-option value="2">
-          Postgraduate
-        </a-select-option>
-        <a-select-option value="3">
+        <a-select-option :value="1">
           Teacher
+        </a-select-option>
+        <a-select-option :value="2">
+          Staff
         </a-select-option>
       </a-select>
     </a-form-item>
     <a-form-item v-bind="formItemLayout" label="Phone Number">
       <a-input
         v-decorator="[
-          'phone',
+          'phone_number',
           {
             rules: [{ required: true, message: 'Please input your phone number!' }],
           },
         ]"
         style="width: 100%"
       >
-        <a-select
-          slot="addonBefore"
-          v-decorator="['prefix', { initialValue: '86' }]"
-          style="width: 70px"
-        >
-          <a-select-option value="86">
-            +86
-          </a-select-option>
-          <a-select-option value="87">
-            +87
-          </a-select-option>
-        </a-select>
       </a-input>
     </a-form-item>
-    <a-form-item
-      v-bind="formItemLayout"
-      label="Captcha"
-      extra="We must make sure that your are a human."
-    >
-      <a-row :gutter="8">
-        <a-col :span="12">
-          <a-input
-            v-decorator="[
-              'captcha',
-              { rules: [{ required: true, message: 'Please input the captcha you got!' }] },
-            ]"
-          />
-        </a-col>
-        <a-col :span="12">
-          <a-button>Get captcha</a-button>
-        </a-col>
-      </a-row>
-    </a-form-item>
     <a-form-item v-bind="tailFormItemLayout">
-      <a-checkbox v-decorator="['agreement', { valuePropName: 'checked' }]">
-        I have read the
-        <a href="">
-          agreement
-        </a>
-      </a-checkbox>
-    </a-form-item>
-    <a-form-item v-bind="tailFormItemLayout">
-      <a-button type="primary" html-type="submit">
+      <a-button :loading="loading" type="primary" html-type="submit">
         Register
       </a-button>
     </a-form-item>
@@ -172,6 +140,8 @@
 </template>
 
 <script>
+import {tokenLogin, setUserInfo, setAccessToken} from '../services/user'
+
 export default {
   data() {
     return {
@@ -199,18 +169,61 @@ export default {
           },
         },
       },
+      loading: false,
     };
   },
   beforeCreate() {
+    let that = this;
+    tokenLogin()
+      .then(res => res.json())
+      .then(res => {
+        const {data, code, msg} = res;
+        if(code == 0 || code == '0'){
+          setUserInfo(data);
+          that.$message.error('You have already logged in.', 1)
+          that.$router.push('/');
+        }else{
+          that.$global.IS_LOGIN = false;
+        }
+      })
+      .catch(err => that.$global.IS_LOGIN = false)
     this.form = this.$form.createForm(this, { name: 'register' });
   },
   methods: {
     handleSubmit(e) {
+      let that = this;
+      this.loading = true
       e.preventDefault();
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
-          console.log('Received values of form: ', values);
-          this.$router.push("/login");
+          // console.log('Received values of form: ', values);
+          console.log(values)
+          var requestOptions = {
+            method: 'POST',
+            body: JSON.stringify(values),
+          };
+
+          fetch(`${that.$global.BASE_URL}/api/user/register`, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+              console.log(result);
+              if(result.code == 0 || result.code == '0'){
+                that.loading = false;
+                that.$message.success("success", "Register successfully");
+                setAccessToken(result.data);
+                that.$router.push('/');
+              }else{
+                that.loading = false;
+                that.$message.error(result.msg);
+              }
+            })
+            .catch(error => {
+              console.log('error', error);
+              that.loading = false;
+              that.$messge.error("API call error."); 
+            });
+        }else{
+          this.loading = false;
         }
       });
     },
@@ -234,5 +247,7 @@ export default {
       callback();
     },
   },
+  created(){
+  }
 };
 </script>
