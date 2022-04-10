@@ -43,7 +43,7 @@
 
 <script>
 
-import {login, setAccessToken, getAccessToken, getUserInfo, setUserInfo, tokenLogin} from '../services/user'
+import {login, setAccessToken, getAccessToken, setUserInfo, tokenLogin} from '../services/user'
 
 export default {
   name: 'Login',
@@ -81,9 +81,20 @@ export default {
         setAccessToken(data);
         this.$message.success("Login successfully, redirecting...", 1);
         console.log("token", getAccessToken());
-        setTimeout(()=>{
-          this.$router.push('/')
-        }, 1000)
+        this.$global.IS_LOGIN = true;
+        setTimeout(() => {
+          this.$router.go('/')
+        }, 500)
+        // let that = this;
+        // tokenLogin()
+        //   .then(res => res.json())
+        //   .then(res => {
+        //     const {data, code, msg} = res;
+        //     if(code == 0 || code == '0'){
+        //       setUserInfo(data);
+        //       that.$router.push('/');
+        //     }
+        //   })
       } else {
         this.error = msg;
       }
