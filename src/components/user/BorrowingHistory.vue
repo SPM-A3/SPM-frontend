@@ -6,15 +6,13 @@
         :rowKey="(record) => record.borrowing_id"
         :loading ="loading"
       >
-        <a-table-column title="book_name" data-index="book_name" />
-        <a-table-column title="borrowing_id" data-index="borrowing_id" />
+        <a-table-column title="book name" data-index="book_name" />
+        <a-table-column title="borrowing id" data-index="borrowing_id" />
         <a-table-column title="ISBN" data-index="ISBN" />
-        <a-table-column title="borrow_time" data-index="borrow_time" />
-        <a-table-column title="due_time" data-index="due_time">
+        <a-table-column title="borrow time" data-index="borrow_time" />
+        <a-table-column title="due time" data-index="due_time">
         </a-table-column>
-        <a-table-column title="return_time" data-index="return_time">
-        </a-table-column>
-        <a-table-column title="fine" data-index="fine"> </a-table-column>
+        
         <a-table-column title="Action">
           <template slot-scope="text, record">
             <!-- 详情按钮 -->
@@ -29,9 +27,7 @@
                 type="primary"
                 icon="el-icon-edit"
                 @click="routeToDetail(record.borrowing_id)"
-              >
-                借阅详情
-              </a-button>
+              >borrowing detail</a-button>
             </a-tooltip>
           </template>
         </a-table-column>
@@ -41,6 +37,7 @@
 </template>
 
 <script>
+import { getAccessToken } from "../../services/user";
 export default {
   data() {
     return {
@@ -58,12 +55,13 @@ export default {
       let that = this;
 
       var myHeaders = new Headers();
-      myHeaders.append("access_token", this.access_token);
+      myHeaders.append("token", getAccessToken());
+      myHeaders.append("Content-Type", "application/json")
 
       var myInit = { method: "GET", headers: myHeaders };
 
       var myRequest = new Request(
-        "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/user/borrowing/history",
+        this.$global.BASE_URL+"/api/user/borrowing/history",
         myInit
       );
 
@@ -72,7 +70,8 @@ export default {
       await fetch(myRequest)
         .then((response) => response.json())
         .then(function (data) {
-          tmpHistory = data.borrowing_history;
+          console.log("history",data)
+          tmpHistory = data.data;
         })
         .catch((err) => console.log("Request Failed", err));
 
@@ -80,16 +79,25 @@ export default {
 
       for (let i = 0; i < tmpHistory.length; i++) {
         // 获得图书详情
-        var myInit2 = { method: "GET" };
-        var myUrl2 =
-          "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/book/detail?ISBN=" +
-          tmpHistory.ISBN;
-        var myRequest2 = new Request(myUrl2, myInit2);
+        var myHeaders2 = new Headers();
+        myHeaders2.append("Content-Type", "application/json");
+        myHeaders2.append("token", getAccessToken());
 
-        await fetch(myRequest2)
+        let requestOptions2 = {
+          method: "GET",
+          headers: myHeaders2,
+        };
+
+        var myUrl2 =
+          this.$global.BASE_URL+"/api/admin/book/detail?ISBN=" +
+          tmpHistory[i].ISBN;
+
+
+        await fetch(myUrl2, requestOptions2)
           .then((response) => response.json())
           .then(function (data) {
-            tmpHistory[i].book_name = data.book_info.book_name;
+            console.log("book_detail",data)
+            tmpHistory[i].book_name = data.data[0].bookName;
           });
       }
 

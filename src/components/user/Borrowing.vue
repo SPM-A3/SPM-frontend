@@ -5,57 +5,35 @@
       :rowKey="(record) => record.borrowing_id"
       :loading="loading"
     >
-      <a-table-column title="book_name" data-index="book_name" />
+      <a-table-column title="book name" data-index="book_name" />
+      <a-table-column title="borrowing id" data-index="borrowing_id" />
       <a-table-column title="ISBN" data-index="ISBN" />
-      <a-table-column title="borrow_date" data-index="borrow_date" />
-      <a-table-column title="due_date" data-index="due_date"> </a-table-column>
+      <a-table-column title="borrow date" data-index="borrow_date" />
+      <a-table-column title="due date" data-index="due_date"> </a-table-column>
       <a-table-column title="Action">
         <template slot-scope="text, record">
-          <a-tooltip
-            class="item"
-            effect="dark"
-            size="small"
-            content="详情"
-            placement="top"
-          >
-            <a-button
-              type="primary"
-              icon="el-icon-edit"
-              @click="routeToDetail(record.borrowing_id)"
-            >
-              详情
-            </a-button>
-          </a-tooltip>
+          <a-button
+            type="primary"
+            icon="el-icon-edit"
+            @click="routeToDetail(record.borrowing_id)"
+          >detail</a-button>
+
           <!-- 归还按钮 -->
-          <a-tooltip
-            class="item"
-            effect="dark"
-            size="small"
-            content="归还"
-            placement="top"
+          <a-popconfirm
+            title="Title"
+            @confirm="returnBook(record.borrowing_id)"
+            @cancel="cancel"
           >
-            <a-button
-              type="primary"
-              icon="el-icon-edit"
-              @click="returnBook(record.borrowing_id)"
-            >
-              归还
-            </a-button>
-          </a-tooltip>
-          <a-tooltip
-            class="item"
-            effect="dark"
-            size="small"
-            content="续借"
-            placement="top"
+            <a-button type="primary" :style="{ marginLeft: '8px' }" icon="el-icon-edit">return</a-button>
+          </a-popconfirm>
+
+          <a-popconfirm
+            title="Title"
+            @confirm="renewBook(record.borrowing_id)"
+            @cancel="cancel"
           >
-            <a-button
-              type="primary"
-              icon="el-icon-edit"
-              @click="renewBook(record.borrowing_id)"
-              >续借</a-button
-            >
-          </a-tooltip>
+            <a-button type="primary" :style="{ marginLeft: '8px' }" icon="el-icon-edit">renew</a-button>
+          </a-popconfirm>
         </template>
       </a-table-column>
     </a-table>
@@ -63,6 +41,7 @@
 </template>
 
 <script>
+import { getAccessToken } from "../../services/user";
 export default {
   data() {
     return {
@@ -79,36 +58,46 @@ export default {
       var that = this;
 
       var myHeaders = new Headers();
-      myHeaders.append("access_token", this.access_token);
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("token", getAccessToken());
 
-      var myInit = { method: "GET", headers: myHeaders };
-
-      var myRequest = new Request(
-        "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/usr/borrowing",
-        myInit
-      );
+      let requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+      };
 
       let tmpBorrowing;
 
-      await fetch(myRequest)
+      await fetch(this.$global.BASE_URL + "/api/user/borrowing", requestOptions)
         .then((response) => response.json())
         .then(function (data) {
-          tmpBorrowing = data.borrowings;
+          console.log("token", getAccessToken());
+          console.log("data", data.data);
+          tmpBorrowing = data.data;
         })
         .catch((err) => console.log("Request Failed", err));
 
       for (let i = 0; i < tmpBorrowing.length; i++) {
         // 获得图书详情
-        var myInit2 = { method: "GET" };
-        var myUrl2 =
-          "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/book/detail?ISBN=" +
-          tmpBorrowing[i].ISBN;
-        var myRequest2 = new Request(myUrl2, myInit2);
+        var myHeaders2 = new Headers();
+        myHeaders2.append("Content-Type", "application/json");
+        myHeaders2.append("token", getAccessToken());
 
-        await fetch(myRequest2)
+        let requestOptions2 = {
+          method: "GET",
+          headers: myHeaders2,
+        };
+
+        var myUrl2 =
+          this.$global.BASE_URL +
+          "/api/admin/book/detail?ISBN=" +
+          tmpBorrowing[i].ISBN;
+
+        await fetch(myUrl2, requestOptions2)
           .then((response) => response.json())
           .then(function (data) {
-            tmpBorrowing[i].book_name = data.book_info.book_name;
+            console.log("book detail", data);
+            tmpBorrowing[i].book_name = data.data[0].bookName;
           });
       }
 
@@ -123,39 +112,63 @@ export default {
     },
     // 归还图书
     returnBook(borrowing_id) {
+      let that = this;
       console.log(borrowing_id);
 
       var myHeaders = new Headers();
-      myHeaders.append("access_token", this.access_token);
+      myHeaders.append("token", getAccessToken());
+      myHeaders.append("Content-Type", "application/json");
 
-      var myInit = { method: "POST", body: borrowing_id, headers: myHeaders };
+      var myBody = {
+        borrowing_id: borrowing_id,
+      };
 
-      var myRequest = new Request(
-        "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/borrowing/return",
-        myInit
-      );
+      var myInit = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(myBody),
+      };
+
+      var myUrl = this.$global.BASE_URL + "/api/borrowing/return";
+
+      var myRequest = new Request(myUrl, myInit);
 
       fetch(myRequest)
         .then((response) => response.json())
         .then(function (data) {
-          console.log(data);
-          if (data.error_code == 0) {
-            <a-alert message="Success Text" type="success" />;
+          console.log("return", data);
+          if (data.code === 0) {
+            that.$message.success("return successfully!");
+          } else {
+            that.$message.error(data.msg);
           }
         })
         .catch((err) => console.log("Request Failed", err));
     },
+    cancel() {
+      this.$message.error("Click on No");
+    },
     // 续借图书
     renewBook(borrowing_id) {
+      let that=this
       console.log(borrowing_id);
 
       var myHeaders = new Headers();
-      myHeaders.append("access_token", this.access_token);
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("token", getAccessToken());
 
-      var myInit = { method: "POST", body: borrowing_id, headers: myHeaders };
+      var myBody = {
+        borrowing_id: borrowing_id,
+      };
+
+      var myInit = {
+        method: "POST",
+        body: JSON.stringify(myBody),
+        headers: myHeaders,
+      };
 
       var myRequest = new Request(
-        "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/borrowing/renew",
+        this.$global.BASE_URL + "/api/borrowing/renew",
         myInit
       );
 
@@ -163,6 +176,11 @@ export default {
         .then((response) => response.json())
         .then(function (data) {
           console.log(data);
+          if (data.code === 0) {
+            that.$message.success("renew successfully!");
+          } else {
+            that.$message.error(data.msg);
+          }
         })
         .catch((err) => console.log("Request Failed", err));
     },

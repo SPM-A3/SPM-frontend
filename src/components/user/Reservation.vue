@@ -6,11 +6,11 @@
         :rowKey="(record) => record.reservation_id"
         :loading="loading"
       >
-        <a-table-column title="book_name" data-index="book_name" />
-        <a-table-column title="reservation_id" data-index="reservation_id" />
+        <a-table-column title="book name" data-index="book_name" />
+        <a-table-column title="reservation id" data-index="reservation_id" />
         <a-table-column title="ISBN" data-index="ISBN" />
         <a-table-column
-          title="reservation_time"
+          title="reservation time"
           data-index="reservation_time"
         />
         <a-table-column title="status" data-index="status" />
@@ -27,9 +27,7 @@
                 type="primary"
                 icon="el-icon-edit"
                 @click="routeToDetail(record.reservation_id)"
-              >
-                详情
-              </a-button>
+              >reservation detail</a-button>
             </a-tooltip>
           </template>
         </a-table-column>
@@ -39,6 +37,7 @@
 </template>
 
 <script>
+import { getAccessToken } from "../../services/user";
 export default {
   data() {
     return {
@@ -55,12 +54,13 @@ export default {
       let that = this;
 
       var myHeaders = new Headers();
-      myHeaders.append("access_token", this.access_token);
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("token", getAccessToken());
 
       var myInit = { method: "GET", headers: myHeaders };
 
       var myRequest = new Request(
-        "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/reservation",
+        this.$global.BASE_URL + "/api/reservation",
         myInit
       );
 
@@ -69,7 +69,8 @@ export default {
       await fetch(myRequest)
         .then((response) => response.json())
         .then(function (data) {
-          tmpReservation = data.reservation;
+          console.log("reservation",data)
+          tmpReservation = data.data;
         })
         .catch((err) => console.log("Request Failed", err));
 
@@ -77,16 +78,20 @@ export default {
 
       for (let i = 0; i < tmpReservation.length; i++) {
         // 获得图书详情
-        var myInit2 = { method: "GET" };
+        var myHeaders2 = new Headers();
+        myHeaders2.append("Content-Type", "application/json");
+        myHeaders2.append("token", getAccessToken());
+
+        var myInit2 = { method: "GET" , headers: myHeaders2};
         var myUrl2 =
-          "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/book/detail?ISBN=" +
+          this.$global.BASE_URL+"/api/admin/book/detail?ISBN=" +
           tmpReservation[i].ISBN;
         var myRequest2 = new Request(myUrl2, myInit2);
 
         await fetch(myRequest2)
           .then((response) => response.json())
           .then(function (data) {
-            tmpReservation[i].book_name = data.book_info.book_name;
+            tmpReservation[i].book_name = data.data[0].bookName;
           });
       }
 
