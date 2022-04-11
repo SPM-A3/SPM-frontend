@@ -11,7 +11,7 @@
                 :labelCol="{ span: 8 }"
                 :wrapperCol="{ span: 15, offset: 1 }"
               >
-                <a-input placeholder="Please input book name" />
+                <a-input placeholder="Please input book name" v-model="searchQuery.book_name"/>
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
@@ -20,7 +20,7 @@
                 :labelCol="{ span: 8 }"
                 :wrapperCol="{ span: 15, offset: 1 }"
               >
-                <a-input placeholder="Please input author" />
+                <a-input placeholder="Please input author" v-model="searchQuery.author"/>
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
@@ -29,7 +29,7 @@
                 :labelCol="{ span: 8 }"
                 :wrapperCol="{ span: 15 , offset: 1 }"
               >
-                <a-input style="width: 100%" placeholder="Please input publisher" />
+                <a-input style="width: 100%" placeholder="Please input publisher" v-model="searchQuery.publisher"/>
               </a-form-item>
             </a-col>
           </a-row>
@@ -44,6 +44,7 @@
                   placeholder="Please select publish date"
                   style="width: 100%"
                   @change="onChange"
+                  v-model="searchQuery.date"
                 />
               </a-form-item>
             </a-col>
@@ -96,10 +97,10 @@
           </a-row>
         </div>
         <span style="float: right; margin-top: 3px">
-          <a-button type="primary">查询</a-button>
-          <a-button style="margin-left: 8px">重置</a-button>
+          <a-button type="primary" @click="search">Search</a-button>
+          <a-button style="margin-left: 8px" @click="resetQuery">Reset</a-button>
           <a @click="toggleAdvanced" style="margin-left: 8px">
-            {{ advanced ? "收起" : "展开" }}
+            {{ advanced ? "fold" : "unfold" }}
             <a-icon :type="advanced ? 'up' : 'down'" />
           </a>
         </span>
@@ -112,7 +113,7 @@
         <a-dropdown>
           <a-menu @click="handleMenuClick" slot="overlay">
             <a-menu-item key="delete">delete</a-menu-item>
-            <a-menu-item key="audit"></a-menu-item>
+            <a-menu-item key="audit">take down</a-menu-item>
           </a-menu>
           <a-button> actions <a-icon type="down" /> </a-button>
         </a-dropdown>
@@ -244,7 +245,15 @@ export default {
       dataSource: [],
       selectedRows: [],
       loading: true,
-      options: options.options
+      options: options.options,
+      searchQuery: {
+        book_name: "",
+        author: "",
+        publisher: "",
+        ISBN: "",
+        category: undefined,
+        date: ""
+      }
     };
   },
   authorize: {
@@ -296,6 +305,60 @@ export default {
     onChangeGategory(value, selectedOptions) {
       console.log(value, selectedOptions);
     },
+    getFormatCatgory(){
+      if(this.searchQuery.category === undefined || this.searchQuery.category === []){
+        return ""
+      }else{
+        return this.searchQuery.category[0];
+      }
+    },
+    search(){
+      var myHeaders = new Headers();
+      myHeaders.append("token", getAccessToken());
+
+      var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+      };
+      this.loading = true;
+      let that = this;
+      fetch(`${this.$global.BASE_URL}/api/book/search?book_name=${this.searchQuery.book_name}&author=${this.searchQuery.author}&publisher=${this.searchQuery.publisher}&ISBN=${this.searchQuery.ISBN}&category=${this.getFormatCatgory()}&pub_year=${this.searchQuery.date?this.searchQuery.date.year():''}&pub_month=${this.searchQuery.date?this.searchQuery.date.month():''}`, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+          if (result.code == 0 || result.code == "0") {
+            setTimeout(() => {
+              that.dataSource = [];
+              for(let i of result.data){
+                that.dataSource.push({
+                  key: i.ISBN,
+                  cover: i.cover,
+                  book_name: i.book_name,
+                  brief_introduction: i.brief_introduction+"",
+                  publisher: i.publisher,
+                  published_time: i.published_time,
+                  author: i.author,
+                  category: i.status
+                })
+              }
+              that.loading = false;
+            }, 200);
+          }else{
+            that.$messgae.error(result.msg)
+            that.loading = false;
+          }
+        })
+        .catch(error => {that.$messgae.error("API call failed.");that.loading = false});
+    },
+    resetQuery(){
+      this.searchQuery = {
+        book_name: "",
+        author: "",
+        publisher: "",
+        ISBN: "",
+        category: undefined,
+        date: ""
+      }
+    }
   },
   created() {
     this.loading = true;

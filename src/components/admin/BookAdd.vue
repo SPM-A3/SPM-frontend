@@ -1,5 +1,5 @@
 <template>
-  <a-card :body-style="{padding: '24px 32px'}" :bordered="false" title="新增图书">
+  <a-card :body-style="{padding: '24px 32px'}" :bordered="false" title="Add book">
     <a-form>
         <a-form-item
           label="cover"
@@ -86,7 +86,7 @@
         <a-textarea rows="4" :placeholder="briefIntroductionInput" v-model="newBookInfo.brief_introduction"/>
       </a-form-item>
       <a-form-item style="margin-top: 24px" :wrapperCol="{span: 10, offset: 7}">
-        <a-button @click="submit" type="primary">提交</a-button>
+        <a-button @click="submit" type="primary">Add</a-button>
       </a-form-item>
     </a-form>
   </a-card>
