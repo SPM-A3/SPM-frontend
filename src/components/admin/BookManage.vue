@@ -307,7 +307,7 @@ export default {
       headers: myHeaders,
     };
     let that = this;
-    fetch(`${this.$global.BASE_URL}/api/admin/book/getAll?page_size=10&current_page=1`, requestoptions)
+    fetch(`${this.$global.BASE_URL}/api/admin/book/getAll?page_size=100&current_page=1`, requestoptions)
       .then((response) => response.json())
       .then((result) => {
         if (result.code == 0 || result.code == "0") {
@@ -317,11 +317,11 @@ export default {
                 key: i.ISBN,
                 cover: i.cover,
                 book_name: i.book_name,
-                brief_introduction: i.brief_introduction,
+                brief_introduction: i.brief_introduction+"",
                 publisher: i.publisher,
                 published_time: i.published_time,
                 author: i.author,
-                category: i.category
+                category: i.status
               })
             }
             that.loading = false;

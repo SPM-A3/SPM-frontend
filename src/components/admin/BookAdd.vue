@@ -13,11 +13,11 @@
             :show-upload-list="false"
             :customRequest="upload"
           >
-            <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+            <img v-if="newBookInfo.cover" :src="newBookInfo.cover" alt="avatar" />
             <div v-else>
             <a-icon :type="loading ? 'loading' : 'plus'" />
             <div class="ant-upload-text">
-                上传封面
+                UPLOAD COVER
             </div>
             </div>
           </a-upload>
@@ -106,7 +106,6 @@ export default {
         return {
             baseUrl: "https://www.fastmock.site/mock/0aee7559464fadc986c2e38e63492a86/spm",
             loading: false,
-            imageUrl: '',
             bookName: "Book name",
             bookNameInput: "Please input book name",
             author: "Author",
@@ -145,7 +144,7 @@ export default {
         if (info.file.status === 'done') {
           // Get this url from response in real world.
           getBase64(info.file.originFileObj, imageUrl => {
-            this.imageUrl = imageUrl;
+            this.newBookInfo.cover = imageUrl;
             this.loading = false;
           });
         }
@@ -168,7 +167,7 @@ export default {
               .then(response => response.text())
               .then(result => {
                 this.loading = false;
-                that.imageUrl = result;
+                that.newBookInfo.cover = result;
                 console.log(result);
               })
               .catch(error => {console.log('error', error);that.loading = false});
@@ -184,6 +183,7 @@ export default {
         // 提交
         var myHeaders = new Headers();
         myHeaders.append("token", getAccessToken());
+        myHeaders.append("Content-Type", "application/json");
         var body = newBookInfoSubmit;
         var requestOptions = {
           method: 'POST',
@@ -196,18 +196,17 @@ export default {
           .then(response => response.json())
           .then(result => {
             if(result.code === 0 || result.code === "0"){
-              that.$message.success('success', '提交成功')
+              that.$message.success('Add book successfully')
               setTimeout(() => {
-                this.$route.push("/admin?tab=user");
+                that.$route.push("/admin?tab=user");
               }, 200)
             }else{
-              that.$message.error('error', result.error_msg);
+              that.$message.error(result.error_msg);
             }
           })
           .catch(error => {
-            this.$message.error("error", "接口调用错误")
+            that.$message.error("API call failed.")
           });
-        // 提交
       },
       filter(inputValue, path) {
         return path.some(
