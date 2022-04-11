@@ -1,167 +1,170 @@
 <template>
   <div id="book-search">
-    
-        <!-- from表单搜索部件 -->
-        <a-form class="search-form" :form="form" @submit="handleSearch">
-          <a-row>
-            <a-col :md="8" :sm="24">
-              <a-form-item
-                label="Book Name"
-                :labelCol="{ span: 5 }"
-                :wrapperCol="{ span: 18, offset: 1 }"
-              >
-                <a-input
-                  v-decorator="[
-                    'book_name',
-                    { rules: [{ required: false, message: '' }] },
-                  ]"
-                  placeholder="Please Input"
-                >
-                  <a-icon slot="suffix" type="book" />
-                </a-input>
-              </a-form-item>
-            </a-col>
-
-            <a-col :md="8" :sm="24">
-              <a-form-item
-                label="Author"
-                :labelCol="{ span: 5 }"
-                :wrapperCol="{ span: 18, offset: 1 }"
-              >
-                <a-input
-                  v-decorator="[
-                    'author',
-                    { rules: [{ required: false, message: '' }] },
-                  ]"
-                  placeholder="Please Input"
-                >
-                  <a-icon slot="suffix" type="user" />
-                </a-input>
-              </a-form-item>
-            </a-col>
-
-            <a-col :md="8" :sm="24">
-              <a-form-item
-                label="ISBN"
-                :labelCol="{ span: 5 }"
-                :wrapperCol="{ span: 18, offset: 1 }"
-              >
-                <a-input
-                  v-decorator="[
-                    'ISBN',
-                    { rules: [{ required: false, message: '' }] },
-                  ]"
-                  placeholder="Please Input"
-                >
-                  <a-icon slot="suffix" type="barcode" />
-                </a-input>
-              </a-form-item>
-            </a-col>
-          </a-row>
-
-          <a-row>
-            <a-col :md="8" :sm="24">
-              <a-form-item
-                label="Publisher"
-                :labelCol="{ span: 5 }"
-                :wrapperCol="{ span: 18, offset: 1 }"
-              >
-                <a-input
-                  v-decorator="[
-                    'publisher',
-                    { rules: [{ required: false, message: '' }] },
-                  ]"
-                  placeholder="Please Input"
-                >
-                  <a-icon slot="suffix" type="deployment-unit" />
-                </a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item
-                label="Category"
-                :labelCol="{ span: 5 }"
-                :wrapperCol="{ span: 18, offset: 1 }"
-              >
-                <a-cascader
-                  v-model="cascaderData"
-                  ref="text"
-                  :options="options"
-                  placeholder="Please Input"
-                  :show-search="{ filter }"
-                />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item
-                label="Date"
-                :labelCol="{ span: 5 }"
-                :wrapperCol="{ span: 18, offset: 1 }"
-              >
-                <a-month-picker
-                  placeholder="Please Input"
-                  style="width: 100%"
-                  @change="onChange"
-                />
-              </a-form-item>
-            </a-col>
-          </a-row>
-
-          <a-row>
-            <a-col :span="24" :style="{ textAlign: 'right' }">
-              <a-button type="primary" html-type="submit"> SEARCH </a-button>
-              <a-button :style="{ marginLeft: '8px' }" @click="handleReset"
-                >RESET</a-button
-              >
-            </a-col>
-          </a-row>
-        </a-form>
-
-        
-
-        <a-card title="SEARCH RESULT" :bordered="false">
-          <a-list
-            item-layout="vertical"
-            size="large"
-            :pagination="pagination"
-            :data-source="data"
-            
+    <!-- from表单搜索部件 -->
+    <a-form class="search-form" :form="form" @submit="handleSearch">
+      <a-row>
+        <a-col :md="8" :sm="24">
+          <a-form-item
+            label="Book Name"
+            :labelCol="{ span: 5 }"
+            :wrapperCol="{ span: 18, offset: 1 }"
           >
-            <a-list-item slot="renderItem" key="item.ISBN" slot-scope="item">
-              <a-list-item-meta>
-                <router-link :to="'/book/'+item.ISBN" slot="title"><h3>{{ item.book_name }}</h3> </router-link>
-              </a-list-item-meta>
+            <a-input
+              v-decorator="[
+                'book_name',
+                { rules: [{ required: false, message: '' }] },
+              ]"
+              placeholder="Please Input"
+            >
+              <a-icon slot="suffix" type="book" />
+            </a-input>
+          </a-form-item>
+        </a-col>
 
-              <a-row>
-                <a-col :span="4">
-                  <img height="220" alt="logo" :src="item.cover | imgChange" />
-                </a-col>
-                <a-col :span="8" type="flex">
-                  <p><b>Author</b>: {{ item.author }}</p>
-                  <p><b>Publisher</b>: {{ item.publisher }}</p>
-                  <p><b>Published Time</b>: {{ item.published_time }}</p>
-                  <p><b>Category</b>: {{ item.category }}</p>
-                  <p><b>ISBN</b>: {{ item.ISBN }}</p>
-                  <p><b>Available</b>: <a-tag color="green"> YES </a-tag></p>
-                </a-col>
-                <a-col :span="10" type="flex">
-                  <p id="intro"><b>Introduction</b>: {{ item.introduction }}</p>
-                </a-col>
-              </a-row>
-            </a-list-item>
-          </a-list>
-        </a-card>
-     
+        <a-col :md="8" :sm="24">
+          <a-form-item
+            label="Author"
+            :labelCol="{ span: 5 }"
+            :wrapperCol="{ span: 18, offset: 1 }"
+          >
+            <a-input
+              v-decorator="[
+                'author',
+                { rules: [{ required: false, message: '' }] },
+              ]"
+              placeholder="Please Input"
+            >
+              <a-icon slot="suffix" type="user" />
+            </a-input>
+          </a-form-item>
+        </a-col>
+
+        <a-col :md="8" :sm="24">
+          <a-form-item
+            label="ISBN"
+            :labelCol="{ span: 5 }"
+            :wrapperCol="{ span: 18, offset: 1 }"
+          >
+            <a-input
+              v-decorator="[
+                'ISBN',
+                { rules: [{ required: false, message: '' }] },
+              ]"
+              placeholder="Please Input"
+            >
+              <a-icon slot="suffix" type="barcode" />
+            </a-input>
+          </a-form-item>
+        </a-col>
+      </a-row>
+
+      <a-row>
+        <a-col :md="8" :sm="24">
+          <a-form-item
+            label="Publisher"
+            :labelCol="{ span: 5 }"
+            :wrapperCol="{ span: 18, offset: 1 }"
+          >
+            <a-input
+              v-decorator="[
+                'publisher',
+                { rules: [{ required: false, message: '' }] },
+              ]"
+              placeholder="Please Input"
+            >
+              <a-icon slot="suffix" type="deployment-unit" />
+            </a-input>
+          </a-form-item>
+        </a-col>
+        <a-col :md="8" :sm="24">
+          <a-form-item
+            label="Category"
+            :labelCol="{ span: 5 }"
+            :wrapperCol="{ span: 18, offset: 1 }"
+          >
+            <a-cascader
+              v-model="cascaderData"
+              ref="text"
+              :options="options"
+              placeholder="Please Input"
+              :show-search="{ filter }"
+            />
+          </a-form-item>
+        </a-col>
+        <a-col :md="8" :sm="24">
+          <a-form-item
+            label="Date"
+            :labelCol="{ span: 5 }"
+            :wrapperCol="{ span: 18, offset: 1 }"
+          >
+            <a-month-picker
+              v-model="DateValue"
+              placeholder="Please Input"
+              style="width: 100%"
+              @change="onChange"
+            />
+          </a-form-item>
+        </a-col>
+      </a-row>
+
+      <a-row>
+        <a-col :span="24" :style="{ textAlign: 'right' }">
+          <a-button type="primary" html-type="submit"> SEARCH </a-button>
+          <a-button :style="{ marginLeft: '8px' }" @click="handleReset"
+            >RESET</a-button
+          >
+        </a-col>
+      </a-row>
+    </a-form>
+
+    <a-card title="SEARCH RESULT" :bordered="false">
+      <a-list
+        item-layout="vertical"
+        size="large"
+        :pagination="pagination"
+        :data-source="data"
+      >
+        <a-list-item slot="renderItem" key="item.ISBN" slot-scope="item">
+          <a-list-item-meta>
+            <router-link :to="'/book/' + item.ISBN" slot="title"
+              ><h3>{{ item.book_name }}</h3>
+            </router-link>
+          </a-list-item-meta>
+
+          <a-row>
+            <a-col :span="6">
+              <img height="220" alt="logo" :src="item.cover" />
+            </a-col>
+            <a-col :span="8" type="flex">
+              <p><b>Author</b>: {{ item.author }}</p>
+              <p><b>Publisher</b>: {{ item.publisher }}</p>
+              <p><b>Published Time</b>: {{ item.published_time }}</p>
+              <p><b>Category</b>: {{ item.category }}</p>
+              <p><b>ISBN</b>: {{ item.ISBN }}</p>
+              <p><b>Available</b>: <a-tag color="green"> YES </a-tag></p>
+            </a-col>
+            <a-col :span="10" type="flex">
+              <p id="intro"><b>Introduction</b>: {{ item.introduction }}</p>
+            </a-col>
+          </a-row>
+        </a-list-item>
+      </a-list>
+    </a-card>
   </div>
 </template>
 
 <script>
+import { getAccessToken } from "@/services/user";
+import  BASE_URL  from "@/services/api";
+
+
 export default {
   name: "Search",
 
   data() {
     return {
       cascaderData: [],
+      DateValue: "",
 
       data: [],
       pagination: {
@@ -628,27 +631,49 @@ export default {
         // console.log("error", error);
         console.log("Received values of form: ", values);
 
-        values.category = this.cascaderData;
+        if (!values.book_name) values.book_name = "";
+        if (!values.author) values.author = "";
+        if (!values.ISBN) values.ISBN = "";
+        if (!values.publisher) values.publisher = "";
 
-        let base_url =
-          "https://www.fastmock.site/mock/891abb0e6bd9ffe5f4e30bde7ed7516e/spm";
+        if (this.cascaderData[this.cascaderData.length - 1])
+          values.category = this.cascaderData[this.cascaderData.length - 1];
+        else values.category = "";
+
+        if (this.DateValue) values.pub_year = this.DateValue.year();
+        else values.pub_year = "";
+
+        if (this.DateValue) values.pub_month = this.DateValue.month() + 1;
+        else values.pub_month = "";
+
+        // let BASE_URL ="https://www.fastmock.site/mock/891abb0e6bd9ffe5f4e30bde7ed7516e/spm";
+        let BASE_URL = "http://175.24.201.104:8085"
+        
         this.loading = true;
         let myHeaders = new Headers();
+        myHeaders.append("token", getAccessToken());
+        console.log;
         let requestoptions = {
-          method: "POST",
+          method: "GET",
           headers: myHeaders,
-          body: values,
+          // body: JSON.stringify(values),
         };
 
         let that = this;
-        fetch(`${base_url}/api/book/search`, requestoptions)
+        fetch(
+          `${BASE_URL}/api/book/search?book_name=${values.book_name}&author=${values.author}&publisher=${values.publisher}&ISBN=${values.ISBN}&category=${values.category}&pub_year=${values.pub_year}&pub_month=${values.pub_month}`,
+          requestoptions
+        )
           .then((response) => response.json())
+          //  .then(res => res.text())        
+          // .then(text => console.log(text)) 
+          
           .then((result) => {
             console.log(result);
-            if (result.error_code == 0 || result.error_code == "0") {
+            if (result.code == 0) {
               this.data.splice(0, this.data.length);
               setTimeout(() => {
-                for (let i of result.search_result) {
+                for (let i of result.data) {
                   that.data.push({
                     ISBN: i.ISBN,
                     cover: i.cover,
@@ -710,7 +735,7 @@ export default {
 
 #book-search {
   max-width: none;
-  padding: 10px 100px 15px 100px;;
+  padding: 10px 100px 15px 100px;
 }
 #book-search .search-result-list {
   margin-top: 16px;
