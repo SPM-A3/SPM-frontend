@@ -13,35 +13,24 @@
     <a-layout-content :style="{ padding: '0 24px', minHeight: '50vh' }">
       <div v-if="contentNumber==1">
         <template>
-          <div>
+          <div style="margin: 0 auto; text-align: center">
             <a-avatar :size="64" icon="user" />
           </div>
           <br />
-          <a-descriptions title="User Info" :column=3 layout="vertical">
-            <a-descriptions-item label="ID">
-              19030500001
-            </a-descriptions-item>
-            <a-descriptions-item label="Nickname">
-              Black
-            </a-descriptions-item>
-            <a-descriptions-item label="Sex">
-              Male
-            </a-descriptions-item>
-            <a-descriptions-item label="Vocation">
-              Undergraduate
-            </a-descriptions-item>
-            <a-descriptions-item label="Phone Number">
-              8315370661314
-            </a-descriptions-item>
-            <a-descriptions-item label="E-mail">
-              1234@qq.com
-            </a-descriptions-item>
+          <a-descriptions title="User Info" bordered style="margin-right:150px; margin-left:150px;">
+            <a-descriptions-item label="ID" :span="3">19030500001</a-descriptions-item>
+            <a-descriptions-item label="Nickname" :span="3">Black</a-descriptions-item>
+            <a-descriptions-item label="Gender" :span="3">Male</a-descriptions-item>
+            <a-descriptions-item label="Position" :span="3">Undergraduate</a-descriptions-item>
+            <a-descriptions-item label="Phone Number" :span="3">8315370661314</a-descriptions-item>
+            <a-descriptions-item label="E-mail" :span="3">1234@qq.com</a-descriptions-item>
           </a-descriptions>
+          <br />
+          <div style="margin: 0 auto; text-align: center">
+            <a-button type="primary" @click="changeContent(3)">编辑</a-button>
+            <a-button type="dashed"><router-link to="/login" >退出登录</router-link></a-button>
+          </div>
         </template>
-        <div>
-          <a-button type="primary" @click="changeContent(3)">编辑</a-button>
-          <a-button type="dashed"><router-link to="/login" >退出登录</router-link></a-button>
-        </div>
       </div>
       <div v-else-if="contentNumber==2">
         <template>
