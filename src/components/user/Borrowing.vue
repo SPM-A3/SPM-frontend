@@ -6,10 +6,10 @@
       :loading="loading"
     >
       <a-table-column title="book name" data-index="book_name" />
-      <a-table-column title="borrowing id" data-index="borrowing_id" />
       <a-table-column title="ISBN" data-index="ISBN" />
       <a-table-column title="borrow date" data-index="borrow_date" />
       <a-table-column title="due date" data-index="due_date"> </a-table-column>
+      <a-table-column title="days" data-index="days"> </a-table-column>
       <a-table-column title="Action">
         <template slot-scope="text, record">
           <a-button
@@ -78,6 +78,12 @@ export default {
         .catch((err) => console.log("Request Failed", err));
 
       for (let i = 0; i < tmpBorrowing.length; i++) {
+        // 修改时间格式并加上剩余多少天
+        tmpBorrowing[i].borrow_date = tmpBorrowing[i].borrow_date.substring(0,10);
+        tmpBorrowing[i].due_date = tmpBorrowing[i].due_date.substring(0,10);
+
+        tmpBorrowing[i].days = this.dataDiff(tmpBorrowing[i].borrow_date,tmpBorrowing[i].due_date)
+        
         // 获得图书详情
         var myHeaders2 = new Headers();
         myHeaders2.append("Content-Type", "application/json");
@@ -103,6 +109,14 @@ export default {
 
       this.borrowingList = tmpBorrowing;
       this.loading = false;
+    },
+    dataDiff(Date_end,Date_start){
+      let aDate = Date_end.split("-")
+      let oDate1 = new Date(aDate[0], aDate[1], aDate[2])
+      aDate = Date_start.split("-")
+      let oDate2 = new Date(aDate[0], aDate[1], aDate[2])
+      let iDays = parseInt(Math.abs(oDate1-oDate2)/ 1000 / 60 / 60 / 24);
+      return iDays;
     },
     routeToDetail(borrowing_id) {
       this.$router.push({

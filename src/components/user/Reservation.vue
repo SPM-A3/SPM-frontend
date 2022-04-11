@@ -7,13 +7,12 @@
         :loading="loading"
       >
         <a-table-column title="book name" data-index="book_name" />
-        <a-table-column title="reservation id" data-index="reservation_id" />
         <a-table-column title="ISBN" data-index="ISBN" />
         <a-table-column
           title="reservation time"
           data-index="reservation_time"
         />
-        <a-table-column title="status" data-index="status" />
+        <a-table-column title="status" data-index="status"/>
         <a-table-column title="Action">
           <template slot-scope="text, record">
             <a-tooltip
@@ -77,6 +76,18 @@ export default {
       // 获得每本书的详细信息，并赋值给book_name
 
       for (let i = 0; i < tmpReservation.length; i++) {
+        // 将status转换为文字
+        if (tmpReservation[i].status===0){
+          tmpReservation[i].status="cancelled"
+        }else if(tmpReservation.status===1){
+          tmpReservation[i].status="not cancelled"
+        }else{
+          tmpReservation[i].status="finished"
+        }
+
+        // 转换时间格式
+        tmpReservation[i].reservation_time = tmpReservation[i].reservation_time.substring(0,10);
+
         // 获得图书详情
         var myHeaders2 = new Headers();
         myHeaders2.append("Content-Type", "application/json");
@@ -96,6 +107,7 @@ export default {
       }
 
       that.reservationList = tmpReservation;
+      console.log("reservationList",this.reservationList)
       this.loading = false;
     },
     routeToDetail(reservation_id) {
