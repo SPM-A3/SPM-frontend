@@ -1,2 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d0e57cf"],{9563:function(e,n,t){"use strict";t.r(n);var i=function(){var e=this,n=e.$createElement,t=e._self._c||n;return t("div",[e._v(" 预约记录详情 使用$route.params.id可以获取reservation_id，使用这个id调用api ")])},r=[],a={},u=a,c=t("2877"),s=Object(c["a"])(u,i,r,!1,null,null,null);n["default"]=s.exports}}]);
-//# sourceMappingURL=chunk-2d0e57cf.5fb2c797.js.map
