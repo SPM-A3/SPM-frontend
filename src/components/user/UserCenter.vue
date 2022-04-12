@@ -6,35 +6,52 @@
         style="height: 100%"
         :default-selected-keys="['1']"
       >
-        <a-menu-item key="1" @click="changeContent(1)">个人信息</a-menu-item>
-        <a-menu-item key="2" @click="changeContent(2)">通知</a-menu-item>
+        <a-menu-item key="1" @click="changeContent(1)">UserInfo</a-menu-item>
+        <a-menu-item key="2" @click="changeContent(2)">Notifications</a-menu-item>
       </a-menu>
     </a-layout-sider>
     <a-layout-content :style="{ padding: '0 24px', minHeight: '50vh' }">
       <div v-if="contentNumber==1">
         <template>
           <div style="margin: 0 auto; text-align: center">
-            <a-avatar :size="64" icon="user" />
+            <a-avatar :size="64" src="https://joeschmoe.io/api/v1/random" />
           </div>
           <br />
           <a-descriptions title="User Info" bordered style="margin-right:150px; margin-left:150px;">
-            <a-descriptions-item label="ID" :span="3">19030500001</a-descriptions-item>
-            <a-descriptions-item label="Nickname" :span="3">Black</a-descriptions-item>
-            <a-descriptions-item label="Gender" :span="3">Male</a-descriptions-item>
-            <a-descriptions-item label="Position" :span="3">Undergraduate</a-descriptions-item>
-            <a-descriptions-item label="Phone Number" :span="3">8315370661314</a-descriptions-item>
-            <a-descriptions-item label="E-mail" :span="3">1234@qq.com</a-descriptions-item>
+            <a-descriptions-item label="ID" :span="3">{{userInfo.id}}</a-descriptions-item>
+            <a-descriptions-item label="Nickname" :span="3">{{userInfo.name}}</a-descriptions-item>
+            <a-descriptions-item label="Gender" :span="3">
+              <div v-if="userInfo.gender==0">
+                Male
+              </div>
+              <div v-else>
+                Female
+              </div>
+              </a-descriptions-item>
+            <a-descriptions-item label="Position" :span="3">
+              <div v-if="userInfo.position==0">
+                Undergraduate
+              </div>
+              <div v-else-if="userInfo.position==1">
+                Teacher
+              </div>
+              <div v-else>
+                Staff
+              </div>
+            </a-descriptions-item>
+            <a-descriptions-item label="Phone Number" :span="3">{{userInfo.phone_number}}</a-descriptions-item>
+            <a-descriptions-item label="E-mail" :span="3">{{userInfo.email}}</a-descriptions-item>
           </a-descriptions>
           <br />
           <div style="margin: 0 auto; text-align: center">
-            <a-button type="primary" @click="changeContent(3)">编辑</a-button>
-            <a-button type="dashed"><router-link to="/login" >退出登录</router-link></a-button>
+            <a-button type="primary" @click="changeContent(3)">Edit</a-button>
+            <a-button type="dashed" @click="handleLogout">Logout</a-button>
           </div>
         </template>
       </div>
       <div v-else-if="contentNumber==2">
         <template>
-          <a-list item-layout="horizontal" :data-source="data">
+          <a-list item-layout="horizontal" :data-source="notifications">
             <a-list-item slot="renderItem" slot-scope="item">
               <a-list-item-meta
                 description="Ant Design, a design language for background applications, is refined by Ant UED Team"
@@ -54,6 +71,7 @@
           <a-form :form="form" @submit="handleSubmit">
             <a-form-item v-bind="formItemLayout" label="E-mail">
               <a-input
+                :placeholder= "userInfo.email"
                 v-decorator="[
                   'email',
                   {
@@ -79,6 +97,7 @@
                 </a-tooltip>
               </span>
               <a-input
+                :placeholder= "userInfo.name"
                 v-decorator="[
                   'nickname',
                   {
@@ -87,31 +106,32 @@
                 ]"
               />
             </a-form-item>
-            <a-form-item v-bind="formItemLayout" label="Sex">
-              <a-select default-value="1">
-                <a-select-option value="1">
+            <a-form-item v-bind="formItemLayout" label="Gender">
+              <a-select v-decorator="['gender', {initialValue: '0'}]">
+                <a-select-option value="0">
                   Male
                 </a-select-option>
-                <a-select-option value="2">
+                <a-select-option value="1">
                   Female
                 </a-select-option>
               </a-select>
             </a-form-item>
-            <a-form-item v-bind="formItemLayout" label="Vocation">
-              <a-select default-value="1">
-                <a-select-option value="1">
+            <a-form-item v-bind="formItemLayout" label="Position">
+              <a-select v-decorator="['position', {initialValue: '0'}]">
+                <a-select-option value="0">
                   Undergraduate
                 </a-select-option>
-                <a-select-option value="2">
-                  Postgraduate
-                </a-select-option>
-                <a-select-option value="3">
+                <a-select-option value="1">
                   Teacher
+                </a-select-option>
+                <a-select-option value="2">
+                  Staff
                 </a-select-option>
               </a-select>
             </a-form-item>
             <a-form-item v-bind="formItemLayout" label="Phone Number">
               <a-input
+                :placeholder= "userInfo.phone_number"
                 v-decorator="[
                   'phone',
                   {
@@ -136,7 +156,7 @@
             </a-form-item>
             <a-form-item v-bind="tailFormItemLayout">
               <a-button type="primary" html-type="submit">
-                编辑
+                Edit
               </a-button>
             </a-form-item>
           </a-form>
@@ -147,23 +167,23 @@
 </template>
 
 <script>
-const data = [
-  {
-    title: '超时通知',
-  },
-  {
-    title: '预约图书可借通知',
-  },
-  {
-    title: '预约取消通知',
-  },
-];
+import {getAccessToken, logout} from '../../services/user'
 export default {
   name: "UserCenter",
   data() {
     return {
       contentNumber: 1,
-      data,
+      notifications: [],
+      userInfo: {
+        user_id: "",
+        id: "",
+        name: "",
+        gender: "",
+        position: "",
+        phone_number: "",
+        email: "",
+        avatar: "",
+      },
       confirmDirty: false,
       autoCompleteResult: [],
       formItemLayout: {
@@ -193,18 +213,126 @@ export default {
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: '编辑' });
   },
+  created() {
+    this.getUserInfo();
+    this.getNotifications();
+  },
   methods:{
     handleSubmit(e) {
+      let that = this;
+      this.loading = true
       e.preventDefault();
       this.form.validateFieldsAndScroll((err, values) => {
+        var new_userInfo = {
+          user_id: this.userInfo.user_id,
+          id: this.userInfo.id,
+          name: values.nickname,
+          gender: values.gender,
+          position: values.position,
+          phone_number: values.phone,
+          email: values.email,
+          avatar: this.userInfo.avatar,
+          password: "012234"
+        }
+        console.log(new_userInfo);
         if (!err) {
-          console.log('Received values of form: ', values);
-          this.contentNumber = 1;
+          // console.log('Received values of form: ', values);
+          let myHeaders = new Headers({"Content-Type" : "application/json"});
+          myHeaders.append("token", getAccessToken());
+          var requestOptions = {
+            headers: myHeaders,
+            method: 'POST',
+            body: JSON.stringify(new_userInfo),
+          };
+
+          fetch(`${that.$global.BASE_URL}/api/user/profile/edit`, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+              console.log(result);
+              if(result.code == 0 || result.code == '0'){
+                that.loading = false;
+                that.$message.success("success", "Edit successfully");
+                this.contentNumber = 1;
+              }else{
+                that.loading = false;
+                that.$message.error(result.msg);
+              }
+            })
+            .catch(error => {
+              console.log('error', error);
+              that.loading = false;
+              that.$messge.error("API call error.");
+            });
+        }else{
+          this.loading = false;
         }
       });
     },
     changeContent(number){
       this.contentNumber = number;
+    },
+    handleLogout(){
+      logout();
+      this.$global.IS_LOGIN = false;
+      this.userInfo = {};
+      this.$router.push('/login');
+    },
+    getUserInfo(){
+      let base_url = "http://175.24.201.104:8085";
+      this.loading = true;
+      let myHeaders = new Headers({"Content-Type" : "application/json"});
+      myHeaders.append("token", getAccessToken());
+      console.log;
+      let requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+      };
+
+      let that = this;
+      fetch(`${base_url}/api/user/profile/detail`, requestOptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+          that.userInfo.id = result.data.id;
+          that.userInfo.name = result.data.name;
+          that.userInfo.gender = result.data.gender;
+          that.userInfo.position = result.data.position;
+          that.userInfo.phone_number = result.data.phone_number;
+          that.userInfo.email = result.data.email;
+          that.userInfo.user_id = result.data.user_id;
+          that.userInfo.avatar = result.data.avatar;
+        })
+        .catch((error) => console.log("error", error));
+    },
+    getNotifications(){
+      let base_url = "http://175.24.201.104:8085";
+      this.loading = true;
+      let myHeaders = new Headers({"Content-Type" : "application/json"});
+      myHeaders.append("token", getAccessToken());
+      console.log;
+      let requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+      };
+
+      let that = this;
+      fetch(`${base_url}/api/user/notifications`, requestOptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+          if (result.error_code == 0 || result.error_code == "0") {
+            setTimeout(() => {
+              for(let i of result.notifications){
+                that.notifications.push({
+                  title: i.type,
+                  description: i.msg,
+                })
+              }
+              that.loading = false;
+            }, 200);
+          }
+        })
+        .catch((error) => console.log("error", error));
     }
   }
 }
