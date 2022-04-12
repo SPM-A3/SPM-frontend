@@ -13,9 +13,15 @@
     "axios": "^0.26.1",
     "core-js": "^3.6.5",
     "echarts": "^5.2.2",
+<<<<<<< HEAD
     "less-loader": "^6.0.0",
+=======
+    "js-cookie": "^3.0.1",
+    "less-loader": "6.0.0",
+>>>>>>> 8a380e3aa3a2d1e81c5721b3f716349fb2a1496c
     "vue": "^2.6.11",
     "vue-codemirror": "^4.0.6",
+    "vue-cookies": "^1.8.0",
     "vue-echarts": "^6.0.0",
     "vue-loader": "^15.9.8",
     "vue-router": "^3.5.3"

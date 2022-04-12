@@ -1,7 +1,18 @@
 <template>
   <div>
     <template>
+      <a-card hoverable style="width: 240px">
+        <template #cover>
+          <img :src="bookInfo.cover" />
+        </template>
+      </a-card>
+    </template>
+
+    <template>
       <a-descriptions title="Reservation Info" size="default" bordered>
+        <a-descriptions-item label="book name">{{
+          bookInfo.book_name
+        }}</a-descriptions-item>
         <a-descriptions-item label="reservation_id">{{
           reservationDetail.reservation_id
         }}</a-descriptions-item>
@@ -52,7 +63,8 @@ export default {
   data() {
     return {
       reservationDetail: [],
-      isRouterAlive:true
+      bookInfo: [],
+      isRouterAlive: true,
     };
   },
   created() {
@@ -60,6 +72,8 @@ export default {
   },
   methods: {
     getReservationDetail(reservation_id) {
+      // 获得预约详情
+      console.log(reservation_id);
       let that = this;
 
       var myHeaders = new Headers();
@@ -80,6 +94,21 @@ export default {
           that.reservationDetail = data;
         })
         .catch((err) => console.log("Request Failed", err));
+
+      // 获得图书详情
+
+      var myInit2 = { method: "GET" };
+      var myUrl2 =
+        "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/book/detail?ISBN=" +
+        this.reservationDetail.ISBN;
+      var myRequest2 = new Request(myUrl2, myInit2);
+
+      fetch(myRequest2)
+        .then((response) => response.json())
+        .then(function (data) {
+          console.log(data);
+          that.bookInfo = data.book_info;
+        });
     },
     // 取消预约
     cancelReservation() {
@@ -96,7 +125,7 @@ export default {
         myInit
       );
 
-      this.reload()
+      this.reload();
 
       fetch(myRequest)
         .then((response) => response.json())
@@ -120,7 +149,7 @@ export default {
         myInit
       );
 
-      this.reload()
+      this.reload();
 
       fetch(myRequest)
         .then((response) => response.json())
@@ -130,12 +159,12 @@ export default {
         .catch((err) => console.log("Request Failed", err));
     },
     // 刷新数据
-    reload(){
-      this.isRouterAlive =false
-      this.$nextTick(function(){
-        this.isRouterAlive=true
-      })
-    }
+    reload() {
+      this.isRouterAlive = false;
+      this.$nextTick(function () {
+        this.isRouterAlive = true;
+      });
+    },
   },
 };
 </script>

@@ -1,21 +1,13 @@
 import Vue from 'vue'
 import App from './App.vue'
-// import ECharts from 'vue-echarts'
 import router from './router'
 import './plugins/ant-design-vue.js'
-// import VueCodemirror from 'vue-codemirror'
-// import 'codemirror/lib/codemirror.css'
-// import "echarts";
-import axios from 'axios'
-axios.defaults.baseURL = 'http://ip'
-Vue.prototype.$http = axios
+import global from "@/global/global.js"
+import VueCookies from 'vue-cookies';
 
-
+Vue.use(VueCookies)
+Vue.prototype.$global = global
 Vue.config.productionTip = false
-// Vue.use(VueCodemirror)
-
-// Vue.component('v-chart', ECharts)
-
 
 new Vue({
   router,
