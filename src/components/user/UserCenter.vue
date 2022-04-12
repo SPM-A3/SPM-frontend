@@ -30,7 +30,7 @@
               </a-descriptions-item>
             <a-descriptions-item label="Position" :span="3">
               <div v-if="userInfo.position==0">
-                Undergraduate
+                Student
               </div>
               <div v-else-if="userInfo.position==1">
                 Teacher
@@ -41,11 +41,14 @@
             </a-descriptions-item>
             <a-descriptions-item label="Phone Number" :span="3">{{userInfo.phone_number}}</a-descriptions-item>
             <a-descriptions-item label="E-mail" :span="3">{{userInfo.email}}</a-descriptions-item>
+            <a-descriptions-item label="Borrowing" :span="3">{{userInfo.borrowings}}</a-descriptions-item>
           </a-descriptions>
           <br />
           <div style="margin: 0 auto; text-align: center">
-            <a-button type="primary" @click="changeContent(3)">Edit</a-button>
-            <a-button type="dashed" @click="handleLogout">Logout</a-button>
+            <a-space>
+               <a-button type="primary" @click="changeContent(3)">Edit</a-button>
+              <a-button type="dashed" @click="handleLogout">Logout</a-button>
+            </a-space>
           </div>
         </template>
       </div>
@@ -67,100 +70,7 @@
         </template>
       </div>
       <div v-else-if="contentNumber==3">
-        <template>
-          <a-form :form="form" @submit="handleSubmit">
-            <a-form-item v-bind="formItemLayout" label="E-mail">
-              <a-input
-                :placeholder= "userInfo.email"
-                v-decorator="[
-                  'email',
-                  {
-                    rules: [
-                      {
-                        type: 'email',
-                        message: 'The input is not valid E-mail!',
-                      },
-                      {
-                        required: true,
-                        message: 'Please input your E-mail!',
-                      },
-                    ],
-                  },
-                ]"
-              />
-            </a-form-item>
-            <a-form-item v-bind="formItemLayout">
-              <span slot="label">
-                Nickname&nbsp;
-                <a-tooltip title="What do you want others to call you?">
-                  <a-icon type="question-circle-o" />
-                </a-tooltip>
-              </span>
-              <a-input
-                :placeholder= "userInfo.name"
-                v-decorator="[
-                  'nickname',
-                  {
-                    rules: [{ required: true, message: 'Please input your nickname!', whitespace: true }],
-                  },
-                ]"
-              />
-            </a-form-item>
-            <a-form-item v-bind="formItemLayout" label="Gender">
-              <a-select v-decorator="['gender', {initialValue: '0'}]">
-                <a-select-option value="0">
-                  Male
-                </a-select-option>
-                <a-select-option value="1">
-                  Female
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-            <a-form-item v-bind="formItemLayout" label="Position">
-              <a-select v-decorator="['position', {initialValue: '0'}]">
-                <a-select-option value="0">
-                  Undergraduate
-                </a-select-option>
-                <a-select-option value="1">
-                  Teacher
-                </a-select-option>
-                <a-select-option value="2">
-                  Staff
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-            <a-form-item v-bind="formItemLayout" label="Phone Number">
-              <a-input
-                :placeholder= "userInfo.phone_number"
-                v-decorator="[
-                  'phone',
-                  {
-                    rules: [{ required: true, message: 'Please input your phone number!' }],
-                  },
-                ]"
-                style="width: 100%"
-              >
-                <a-select
-                  slot="addonBefore"
-                  v-decorator="['prefix', { initialValue: '86' }]"
-                  style="width: 70px"
-                >
-                  <a-select-option value="86">
-                    +86
-                  </a-select-option>
-                  <a-select-option value="87">
-                    +87
-                  </a-select-option>
-                </a-select>
-              </a-input>
-            </a-form-item>
-            <a-form-item v-bind="tailFormItemLayout">
-              <a-button type="primary" html-type="submit">
-                Edit
-              </a-button>
-            </a-form-item>
-          </a-form>
-        </template>
+        <EditProfile :userId="this.userInfo.user_id"/>
       </div>
     </a-layout-content>
   </a-layout>
@@ -168,8 +78,10 @@
 
 <script>
 import {getAccessToken, logout} from '../../services/user'
+import EditProfile from './EditProfile.vue'
 export default {
   name: "UserCenter",
+  components: {EditProfile},
   data() {
     return {
       contentNumber: 1,
@@ -232,7 +144,6 @@ export default {
           phone_number: values.phone,
           email: values.email,
           avatar: this.userInfo.avatar,
-          password: "012234"
         }
         console.log(new_userInfo);
         if (!err) {
@@ -278,7 +189,6 @@ export default {
       this.$router.push('/login');
     },
     getUserInfo(){
-      let base_url = "http://175.24.201.104:8085";
       this.loading = true;
       let myHeaders = new Headers({"Content-Type" : "application/json"});
       myHeaders.append("token", getAccessToken());
@@ -289,7 +199,7 @@ export default {
       };
 
       let that = this;
-      fetch(`${base_url}/api/user/profile/detail`, requestOptions)
+      fetch(`${this.$global.BASE_URL}/api/user/profile/detail`, requestOptions)
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
