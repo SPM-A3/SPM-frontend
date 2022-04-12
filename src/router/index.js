@@ -75,6 +75,10 @@ const routes = [
         component: () => import('../components/admin/BookAdd.vue')
     },
     {
+        path: '/admin/book/:id/addload',
+        component: () => import('../components/admin/AddLocation.vue')
+    },
+    {
         path: '/admin/book/:id/edit',
         component: () => import('../components/admin/BookEdit.vue')
     },

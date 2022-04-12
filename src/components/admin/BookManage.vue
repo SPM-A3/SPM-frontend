@@ -120,23 +120,23 @@
                 <router-link :to="`/admin/book/${record.key}/edit`">
                   <a-space>
                     <a-icon type="edit" />
-                    <span>编辑信息</span>
+                    <span>Edit</span>
                   </a-space>
                 </router-link>
               </a-menu-item>
               <a-menu-item key="1">
-                <router-link :to="`/book/${record.ISBN}`">
+                <router-link :to="`/book/${record.key}`">
                   <a-space>
                     <a-icon type="file-text" />
-                    <span>图书详情</span>
+                    <span>Detail</span>
                   </a-space>
                 </router-link>
               </a-menu-item>
               <a-menu-item key="2">
-                <router-link :to="`/book/${record.key}`">
+                <router-link :to="`/admin/book/${record.key}/addload`">
                   <a-space>
                     <a-icon type="plus" />
-                    <span>增加库存</span>
+                    <span>Add collection</span>
                   </a-space>
                 </router-link>
               </a-menu-item>
