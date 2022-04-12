@@ -87,6 +87,7 @@
       </a-form-item>
       <a-form-item style="margin-top: 24px" :wrapperCol="{span: 10, offset: 7}">
         <a-button @click="submit" type="primary">Add</a-button>
+        <a-button @click="$router.push('/admin')">CANCEL</a-button>
       </a-form-item>
     </a-form>
   </a-card>
@@ -178,7 +179,7 @@ export default {
         let newBookInfoSubmit = { ... this.newBookInfo };
         newBookInfoSubmit.category = this.newBookInfo.category[1];
         // 处理时间为2020-02
-        newBookInfoSubmit.published_time = newBookInfoSubmit.published_time.format("YYYY-MM-DD");
+        newBookInfoSubmit.published_time = newBookInfoSubmit.published_time.format("YYYY-MM")+"-01";
         console.log(newBookInfoSubmit);
         // 提交
         var myHeaders = new Headers();
@@ -198,7 +199,7 @@ export default {
             if(result.code === 0 || result.code === "0"){
               that.$message.success('Add book successfully')
               setTimeout(() => {
-                that.$route.push("/admin?tab=user");
+                that.$router.push("/admin?tab=user");
               }, 200)
             }else{
               that.$message.error(result.error_msg);

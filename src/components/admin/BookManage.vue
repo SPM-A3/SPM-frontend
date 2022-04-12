@@ -54,30 +54,6 @@
                 :labelCol="{ span: 8 }"
                 :wrapperCol="{ span: 15, offset: 1 }"
               >
-                <!-- <a-select placeholder="请选择图书分类">
-									<a-select-option value="01">马克思主义、列宁主义、毛泽东思想、邓小平理论</a-select-option>
-									<a-select-option value="02">哲学、宗教</a-select-option>
-									<a-select-option value="03">社会科学总论</a-select-option>
-									<a-select-option value="04">政治、法律</a-select-option>
-									<a-select-option value="05">军事</a-select-option>
-									<a-select-option value="06">经济</a-select-option>
-									<a-select-option value="07">文化、科学、教育、体育</a-select-option>
-									<a-select-option value="08">语言、文字</a-select-option>
-									<a-select-option value="09">文学</a-select-option>
-									<a-select-option value="10">艺术</a-select-option>
-									<a-select-option value="11">历史、地理</a-select-option>
-									<a-select-option value="12">自然科学总论</a-select-option>
-									<a-select-option value="13">数理科学和化学</a-select-option>
-									<a-select-option value="14">天文学、地球科学</a-select-option>
-									<a-select-option value="15">生物科学</a-select-option>
-									<a-select-option value="16">医药、卫生</a-select-option>
-									<a-select-option value="17">农业科学</a-select-option>
-									<a-select-option value="18">工业技术</a-select-option>
-									<a-select-option value="19">交通运输</a-select-option>
-									<a-select-option value="20">航空、航天</a-select-option>
-									<a-select-option value="21">环境科学、安全科学</a-select-option>
-									<a-select-option value="22">综合性图书</a-select-option>
-                </a-select> -->
                 <a-cascader
                   :options="options"
                   placeholder="Please search for or select a book category"
@@ -128,6 +104,9 @@
         @change="onChange"
         @selectedRowChange="onSelectChange"
       >
+        <div slot="barcode" slot-scope="{record}" style="width: 250px">
+          <vue-barcode :value="record.key" style="width: 100%"></vue-barcode>
+        </div>
         <div slot="description" slot-scope="{ text }" style="width: 100px; font-size: 50%">
           {{ text.slice(0, 50) }}...
         </div>
@@ -186,11 +165,6 @@ const columns = [
     scopedSlots: { customRender: "cover" },
   },
   {
-    title: "ISBN",
-    dataIndex: "key",
-    sorter: true,
-  },
-  {
     title: "title",
     dataIndex: "book_name",
   },
@@ -216,6 +190,12 @@ const columns = [
     title: "category",
     dataIndex: "category",
   },
+    {
+    title: "ISBN",
+    dataIndex: "key",
+    sorter: true,
+    scopedSlots: {customRender: "barcode"}
+  },
   {
     title: "actions",
     scopedSlots: { customRender: "action" },
@@ -235,9 +215,11 @@ const columns = [
 */
 import { getAccessToken } from '@/services/user'
 import options from './category'
+import VueBarcode from '@chenfengyuan/vue-barcode';
+
 export default {
   name: "BookManage",
-  components: { StandardTable },
+  components: { StandardTable, VueBarcode },
   data() {
     return {
       advanced: true,
@@ -268,11 +250,45 @@ export default {
       this.advanced = !this.advanced;
     },
     remove() {
-      this.dataSource = this.dataSource.filter(
-        (item) =>
-          this.selectedRows.findIndex((row) => row.key === item.key) === -1
-      );
-      this.selectedRows = [];
+      this.loading = true;
+      let ISBNs = []
+      for(let i of this.selectedRows){
+        ISBNs.push(i.key);
+      }
+      
+      var myHeaders = new Headers();
+      myHeaders.append("token", getAccessToken());
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify(ISBNs);
+
+      var requestOptions = {
+        method: 'DELETE',
+        headers: myHeaders,
+        body: raw,
+      };
+      let that = this;
+      fetch(`${this.$global.BASE_URL}/api/admin/book/delete`, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+          const {code, msg, data} = result;
+          if(code ==='0' || code === 0){
+            that.$message.success("Delete books successfully.");
+            that.dataSource = that.dataSource.filter(
+              (item) =>
+                that.selectedRows.findIndex((row) => row.key === item.key) === -1
+            );
+          }else if(result.status == 500){
+            that.$message.error("Fail to delete books. Please contact the manager.");
+          }
+          that.selectedRows = []
+          that.loading = false;
+        })
+        .catch(error => {
+          that.selectedRows = [];
+          that.$message.error("API call failed");
+          that.loading = false
+        });
     },
     onClear() {
       // this.$message.info("您清空了勾选的所有行");

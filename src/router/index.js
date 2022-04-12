@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import tokenLogin from '../services/user'
 Vue.use(VueRouter)
 
 /**

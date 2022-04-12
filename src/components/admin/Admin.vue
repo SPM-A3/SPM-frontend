@@ -48,6 +48,13 @@ export default {
         onBreakpoint(broken) {
             console.log(broken);
         }
+    },
+    created(){
+      const tab = this.$route.query.tab;
+      if(tab == 'user'){
+        this.defaultSelectedKeys = ['2'];
+        this.contentNumber = 2;
+      }
     }
 }
 </script>
