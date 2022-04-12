@@ -26,7 +26,12 @@
             >
               <!-- &nbsp;&nbsp;&nbsp; -->
               <!-- <a-button size="large" type="primary" @click="reserveBook">RESERVE</a-button> -->
-              <a-popover :visible="visible" title="Sure to reserve?" trigger="click" @click="clickpop">
+              <!-- <a-popover
+                :visible="visible"
+                title="Sure to reserve?"
+                trigger="click"
+                @click="clickpop"
+              >
                 <template #content>
                   <p>
                     <a-button type="primary" @click="reserveBook">YES</a-button
@@ -35,7 +40,15 @@
                   </p>
                 </template>
                 <a-button type="primary" size="large">RESERVE</a-button>
-              </a-popover>
+              </a-popover> -->
+              <a-radio-group :value="isReserved" button-style="solid">
+                <a-radio-button value="a" @click="reserveBook()"
+                  >Reserved</a-radio-button
+                >
+                <a-radio-button value="b" @click="cancelReserveBook()"
+                  >Not Reserved</a-radio-button
+                >
+              </a-radio-group>
 
               <br /><br />
               <p>
@@ -80,20 +93,27 @@
     </a-card>
 
     <a-card>
-      <a-table :columns="columns" :data-source="locationData">
+      <a-table :columns="columns" :data-source="locationData" rowKey="book_id">
         <template slot="status" slot-scope="status">
           <a-tag v-if="status == 0" color="green">Available</a-tag>
           <a-tag v-else-if="status == 1" color="red">Lent</a-tag>
         </template>
 
-        <!-- <template slot="operation" slot-scope="text, record">
+        <template slot="operation" slot-scope="text, record">
           <a-popconfirm
-            title="Sure to Reserve?"
-            @confirm="() => onBorrow(record.key)"
+            title="Sure to Borrow?"
+            @confirm="() => borrowBook(record.book_id)"
           >
-            <a href="javascript:;">RESERVE</a>
+            <a v-if="record.status == 0" href="javascript:;">BORROW</a>
+            <a
+              v-else-if="record.status == 1"
+              href="javascript:;"
+              disabled="true"
+              >BORROW</a
+            >
           </a-popconfirm>
-        </template> -->
+          
+        </template>
       </a-table>
     </a-card>
   </div>
@@ -104,6 +124,11 @@ import { getAccessToken } from "@/services/user";
 import BASE_URL from "@/services/api";
 
 const columns = [
+  {
+    title: "Book ID",
+    dataIndex: "book_id",
+    key: "book_id",
+  },
   {
     title: "Room Number",
     dataIndex: "room_number",
@@ -130,18 +155,21 @@ const columns = [
     key: "status",
     scopedSlots: { customRender: "status" },
   },
-  // {
-  //   title: "Operation",
-  //   key: "operation",
-  //   scopedSlots: { customRender: "operation" },
-  // },
+  {
+    title: "Operation",
+    key: "operation",
+    scopedSlots: { customRender: "operation" },
+  },
 ];
 
 export default {
   name: "Detail",
   data() {
     return {
-      visible: false,
+      isReserved: "b",
+      reservation_id: "",
+
+      // visible: false,
       book_number: "",
       avail_book_number: "",
 
@@ -161,10 +189,10 @@ export default {
     };
   },
   methods: {
-    clickpop(){
+    clickpop() {
       this.visible = true;
     },
-    cancleBtn(){
+    cancleBtn() {
       this.visible = false;
     },
 
@@ -178,32 +206,95 @@ export default {
       return this.$route.params.id;
     },
 
-    //预约接口
     reserveBook() {
+      this.isReserved = "a";
       let JSONISBN = {
-        ISBN: this.getBookISBN()
-      }
+        ISBN: this.getBookISBN(),
+      };
       let BASE_URL = "http://175.24.201.104:8085";
 
-      let myHeaders = new Headers({'Content-Type': 'application/json'});
+      let myHeaders = new Headers({ "Content-Type": "application/json" });
       myHeaders.append("token", getAccessToken());
       let requestoptions = {
         method: "POST",
         headers: myHeaders,
         body: JSON.stringify(JSONISBN),
       };
-      
+
       let that = this;
       fetch(`${BASE_URL}/api/user/reservation/add`, requestoptions)
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
         });
-      
-      this.$message.info("Book Reservation Success!");
+
+      this.$message.success("Book Reserve Successfully!");
       this.visible = false;
 
-        
+
+      // this.getReservation();
+    },
+
+    cancelReserveBook() {
+      this.isReserved = "b";
+      let BASE_URL = "http://175.24.201.104:8085";
+
+      let myHeaders = new Headers({ "Content-Type": "application/json" });
+      myHeaders.append("token", getAccessToken());
+      let requestoptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify({
+          reservation_id: this.reservation_id
+        }),
+      };
+      fetch(`${BASE_URL}/api/user/reservation/cancel`, requestoptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+        });
+
+      this.$message.warning("Cancel Reservation Successfully!");
+    },
+
+    borrowBook(book_id) {
+      // for (let i of this.locationData) {
+      //   if(i.book_id == book_id){
+
+      //   }
+      // }
+
+      // let JSONISBN = {
+      //   ISBN: this.getBookISBN()
+      // }
+      let BASE_URL = "http://175.24.201.104:8085";
+
+      let myHeaders = new Headers({ "Content-Type": "application/json" });
+      myHeaders.append("token", getAccessToken());
+      let requestoptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify({
+          ISBN: this.getBookISBN(),
+          book_id: book_id,
+        }),
+      };
+
+      // let that = this;
+      fetch(`${BASE_URL}/api/user/borrow`, requestoptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+        });
+
+      for (let i of this.locationData) {
+        if (i.book_id == book_id) {
+          i.status = 1;
+        }
+      }
+
+      this.$message.success("Book Borrow Successfully!");
+      this.visible = false;
     },
 
     getBookInfo() {
@@ -266,17 +357,15 @@ export default {
             }
             this.avail_book_number = num;
             setTimeout(() => {
-              var key = 0;
               for (let i of result.data) {
                 that.locationData.push({
-                  key: key,
+                  book_id: i.book_id,
                   status: i.status,
                   room_number: i.room_number,
                   book_shelf: i.book_shelf,
                   side: i.side,
                   layer: i.layer,
                 });
-                key++;
               }
               that.loading = false;
             }, 200);
@@ -284,6 +373,35 @@ export default {
         })
         .catch((error) => console.log("error", error));
     },
+
+    getReservation() {
+      let BASE_URL = "http://175.24.201.104:8085";
+
+      let myHeaders = new Headers({ "Content-Type": "application/json" });
+      myHeaders.append("token", getAccessToken());
+      let requestoptions = {
+        method: "GET",
+        headers: myHeaders,
+      };
+      fetch(`${BASE_URL}/api/reservation/`, requestoptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+
+          for (let i of result.data) {
+            if (i.ISBN == this.getBookISBN()) {
+              if(i.status == 0){
+                this.isReserved = 'a';
+                this.reservation_id = i.reservation_id;
+              }
+              else{
+                this.isReserved = 'b';
+                this.reservation_id = i.reservation_id;
+              } 
+            }
+          }
+        });
+    },  
   },
   created() {
     this.id = this.getBookISBN();
@@ -291,6 +409,8 @@ export default {
 
     this.getBookInfo();
     this.getBookLocations();
+
+    this.getReservation();
   },
 };
 </script>
