@@ -14,7 +14,7 @@
       <div v-if="contentNumber==1">
         <template>
           <div style="margin: 0 auto; text-align: center">
-            <a-avatar :size="64" src="https://joeschmoe.io/api/v1/random" />
+            <a-avatar :size="100" src="https://joeschmoe.io/api/v1/random" />
           </div>
           <br />
           <a-descriptions title="User Info" bordered style="margin-right:150px; margin-left:150px;">
@@ -41,7 +41,8 @@
             </a-descriptions-item>
             <a-descriptions-item label="Phone Number" :span="3">{{userInfo.phone_number}}</a-descriptions-item>
             <a-descriptions-item label="E-mail" :span="3">{{userInfo.email}}</a-descriptions-item>
-            <a-descriptions-item label="Borrowing" :span="3">{{userInfo.borrowings}}</a-descriptions-item>
+            <a-descriptions-item label="Borrowing" :span="3">{{userInfo.borrowing}}</a-descriptions-item>
+            <a-descriptions-item label="Borrowing limit" :span="3">{{userInfo.maxBorrowing}}</a-descriptions-item>
           </a-descriptions>
           <br />
           <div style="margin: 0 auto; text-align: center">
@@ -211,22 +212,22 @@ export default {
           that.userInfo.email = result.data.email;
           that.userInfo.user_id = result.data.user_id;
           that.userInfo.avatar = result.data.avatar;
+          that.userInfo.borrowing = result.data.borrowings;
+          that.userInfo.maxBorrowing = result.data.max_borrowing
         })
         .catch((error) => console.log("error", error));
     },
     getNotifications(){
-      let base_url = "http://175.24.201.104:8085";
       this.loading = true;
       let myHeaders = new Headers({"Content-Type" : "application/json"});
       myHeaders.append("token", getAccessToken());
       console.log;
       let requestOptions = {
         method: "GET",
-        headers: myHeaders,
       };
 
       let that = this;
-      fetch(`${base_url}/api/user/notifications`, requestOptions)
+      fetch(`${this.$global.BASE_URL}/api/user/notifications`, requestOptions)
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
