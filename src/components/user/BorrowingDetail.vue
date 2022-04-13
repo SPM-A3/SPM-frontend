@@ -61,6 +61,7 @@
 
 <script>
 import { getAccessToken } from "../../services/user";
+import moment from 'moment'
 export default {
   data() {
     return {
@@ -96,6 +97,8 @@ export default {
         .then(function (data) {
           console.log("borrowing_detail", data);
           that.borrowingDetail = data.data;
+          that.borrowingDetail.borrow_time = moment(that.borrowingDetail.borrow_time).format("dddd, MMMM Do YYYY")
+          that.borrowingDetail.due_time = moment(that.borrowingDetail.dues_time).format("dddd, MMMM Do YYYY")
         })
         .catch((err) => console.log("Request Failed", err));
       console.log(this.borrowingDetail);

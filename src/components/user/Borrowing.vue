@@ -9,7 +9,7 @@
       <a-table-column title="ISBN" data-index="ISBN" />
       <a-table-column title="borrow date" data-index="borrow_date" />
       <a-table-column title="due date" data-index="due_date"> </a-table-column>
-      <a-table-column title="days" data-index="days"> </a-table-column>
+      <a-table-column title="left days" data-index="days"> </a-table-column>
       <a-table-column title="fine" data-index="fine"> </a-table-column>
       <a-table-column title="Action">
         <template slot-scope="text, record">
@@ -43,6 +43,7 @@
 
 <script>
 import { getAccessToken } from "../../services/user";
+import moment from 'moment'
 export default {
   data() {
     return {
@@ -80,10 +81,11 @@ export default {
 
       for (let i = 0; i < tmpBorrowing.length; i++) {
         // 修改时间格式并加上剩余多少天
-        tmpBorrowing[i].borrow_date = tmpBorrowing[i].borrow_date.substring(0,10);
-        tmpBorrowing[i].due_date = tmpBorrowing[i].due_date.substring(0,10);
-        tmpBorrowing[i].days = this.dataDiff(tmpBorrowing[i].borrow_date,tmpBorrowing[i].due_date)
+        tmpBorrowing[i].days = moment(tmpBorrowing[i].due_date).diff(moment(tmpBorrowing[i].borrow_date), 'days') + ' days'
+        tmpBorrowing[i].borrow_date = moment(tmpBorrowing[i].borrow_date).format("dddd, MMMM Do YYYY")
+        tmpBorrowing[i].due_date = moment(tmpBorrowing[i].due_date).format("dddd, MMMM Do YYYY")
         tmpBorrowing[i].fine = typeof tmpBorrowing[i].fine === 'number' ? tmpBorrowing[i].fine : 0;
+        tmpBorrowing[i].fine = tmpBorrowing[i].fine.toString() + '$'
         // 获得图书详情
         var myHeaders2 = new Headers();
         myHeaders2.append("Content-Type", "application/json");
