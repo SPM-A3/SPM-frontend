@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import tokenLogin from '../services/user'
 Vue.use(VueRouter)
 
 /**
@@ -74,6 +73,14 @@ const routes = [
     {
         path: '/admin/book/add',
         component: () => import('../components/admin/BookAdd.vue')
+    },
+    {
+        path: '/admin/book/addbyapi',
+        component: () => import('../components/admin/AddByIsbn.vue')
+    },
+    {
+        path: '/admin/book/:id/addload',
+        component: () => import('../components/admin/AddLocation.vue')
     },
     {
         path: '/admin/book/:id/edit',

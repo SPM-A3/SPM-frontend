@@ -11,8 +11,8 @@
         style="height: 100%"
         :default-selected-keys="defaultSelectedKeys"
       >
-        <a-menu-item key="1" @click="changeContent(1)">图书管理</a-menu-item>
-        <a-menu-item key="2" @click="changeContent(2)">用户管理</a-menu-item>
+        <a-menu-item key="1" @click="changeContent(1)">Book management</a-menu-item>
+        <a-menu-item key="2" @click="changeContent(2)">User management</a-menu-item>
       </a-menu>
     </a-layout-sider>
     <a-layout-content :style="{ padding: '0 24px', minHeight: '50vh' }">
@@ -48,6 +48,13 @@ export default {
         onBreakpoint(broken) {
             console.log(broken);
         }
+    },
+    created(){
+      const tab = this.$route.query.tab;
+      if(tab == 'user'){
+        this.defaultSelectedKeys = ['2'];
+        this.contentNumber = 2;
+      }
     }
 }
 </script>

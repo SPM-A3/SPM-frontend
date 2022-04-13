@@ -20,7 +20,7 @@
         
           <div class="header-right">
             <span class="header-msg">
-              <a-dropdown class="avatar" v-if="$global.IS_LOGIN">
+              <a-dropdown class="avatar" v-if="$global.IS_LOGIN || isLogin">
                 <a-menu slot="overlay">
                   <a-menu-item @click="changeMenu('/user')"> user center </a-menu-item>
                   <a-menu-item @click="handleLogout" > logout </a-menu-item>
@@ -56,6 +56,7 @@ export default {
   name: "app",
   data() {
     return {
+      isLogin: false,
       collapsed: false,
       locale: enUS,
       userInfo: {}
@@ -75,6 +76,7 @@ export default {
     handleLogout(){
       logout();
       this.$global.IS_LOGIN = false;
+      this.isLogin = false;
       this.userInfo = {};
       this.$router.push('/login');
     }
@@ -83,6 +85,7 @@ export default {
     
   },
   created(){
+    console.log(111);
     let that = this;
     tokenLogin()
       .then(res => res.json())
@@ -92,11 +95,12 @@ export default {
         if(code == 0 || code == '0'){
           that.userInfo = data;
           that.$global.IS_LOGIN = true;
+          that.isLogin = true;
           setUserInfo(data);
           console.log(data);
         }else{
           clearUserInfo()
-          that.$router.push('/login')
+          that.$router.push('/login');
         }
       })
       .catch( err => {
