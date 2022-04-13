@@ -8,14 +8,49 @@
           <a-col :span="8">
             <a-card
               :title="bookInfo.book_name"
-              style="width: 500px; height: 250px"
+              style="width: 500px;"
               :bordered="false"
             >
-              <p>ISBN: {{ bookInfo.ISBN }}</p>
-              <p>Author: {{ bookInfo.author }}</p>
-              <p>Category: {{ bookInfo.category }}</p>
-              <p>Publisher: {{ bookInfo.publisher }}</p>
-              <p>Published Time: {{ bookInfo.published_time }}</p>
+            <div>
+              <a-card-grid style="width:50%;text-align:center;font-weight: bold">
+                ISBN:
+              </a-card-grid>
+              <a-card-grid style="width:50%;text-align:center">
+                {{ bookInfo.ISBN }}
+              </a-card-grid>
+            </div>
+            <div>
+              <a-card-grid style="width:50%;text-align:center;font-weight: bold">
+                Author:
+              </a-card-grid>
+              <a-card-grid style="width: 50%;text-align:center">
+                {{ bookInfo.author }}
+              </a-card-grid>
+            </div>
+            <div>
+              <a-card-grid style="width:50%;text-align:center;font-weight: bold">
+                Category:
+              </a-card-grid>
+              <a-card-grid style="width: 50%;text-align:center">
+                {{ bookInfo.category }}
+              </a-card-grid>
+            </div>
+            <div>
+              <a-card-grid style="width:50%;text-align:center;font-weight: bold">
+                Publisher:
+              </a-card-grid>
+              <a-card-grid style="width: 50%;text-align:center">
+                {{ bookInfo.publisher }}
+              </a-card-grid>
+            </div>
+            <div>
+              <a-card-grid style="width:50%;text-align:center;font-weight: bold">
+                Published Time:
+              </a-card-grid>
+              <a-card-grid style="width: 50%;text-align:center">
+                {{ bookInfo.published_time }}
+              </a-card-grid>
+            </div>
             </a-card>
           </a-col>
           <a-col :offset="16">
@@ -80,8 +115,8 @@
 
         <a-row>
           <a-col :span="8">
-            <a-card style="width: 750px; height: 200px" :bordered="false">
-              <p>Introduction: {{ bookInfo.introduction }}</p>
+            <a-card style="width: 750px; height: 200px; font-size:20px" :bordered="false">
+              {{ bookInfo.introduction }}
             </a-card>
           </a-col>
         </a-row>
@@ -293,7 +328,7 @@ export default {
         }
       }
 
-      this.$message.success("Book Borrow Successfully!");
+      this.$message.success("Book Borrow Successfully!", 1);
       this.visible = false;
     },
 
@@ -310,21 +345,22 @@ export default {
 
       let that = this;
       fetch(
-        `${BASE_URL}/api/book/detail?ISBN=${this.getBookISBN()}`,
+        `${BASE_URL}/api/admin/book/detail?ISBN=${this.getBookISBN()}`,
         requestoptions
       )
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
+          const bookInfo = result.data[0];
           if (result.code == 0) {
-            this.bookInfo.ISBN = result.data.ISBN;
-            this.bookInfo.cover = result.data.cover;
-            this.bookInfo.book_name = result.data.book_name;
-            this.bookInfo.introduction = result.data.introduction;
-            this.bookInfo.publisher = result.data.publisher;
-            this.bookInfo.published_time = result.data.published_time;
-            this.bookInfo.author = result.data.author;
-            this.bookInfo.category = result.data.category;
+            this.bookInfo.ISBN = bookInfo.iSBN;
+            this.bookInfo.cover = bookInfo.cover;
+            this.bookInfo.book_name = bookInfo.bookName;
+            this.bookInfo.introduction = bookInfo.briefIntroduction;
+            this.bookInfo.publisher = bookInfo.publisher;
+            this.bookInfo.published_time = bookInfo.publishedTime.slice(0,7);
+            this.bookInfo.author = bookInfo.author;
+            this.bookInfo.category = bookInfo.category;
           }
         })
         .catch((error) => console.log("error", error));

@@ -46,7 +46,7 @@
           <a-avatar :src="record.avatar"  style="width: 50px;height:50px"/>
         </div>
         <div slot="qrcode" slot-scope="{ record }" style="width: 100px">
-          <vue-qr :text="record.id" qid="testid" style="width: 100px"></vue-qr>
+          <vue-qr :text="record.id" qid="testid" style="width: 100px;height:100px"></vue-qr>
         </div>
         <div slot="action" slot-scope="{ record }" style="width: 60px">
           <a-dropdown :trigger="['click']">

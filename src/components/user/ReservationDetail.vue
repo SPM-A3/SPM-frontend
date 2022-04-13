@@ -119,7 +119,7 @@ export default {
         headers: myHeaders,
       };
 
-      var myRequest = new Request("/api/user/reservation/cancel", myInit);
+      var myRequest = new Request(`${this.$global.BASE_URL}/api/user/reservation/cancel`, myInit);
 
       fetch(myRequest)
         .then((response) => response.json())

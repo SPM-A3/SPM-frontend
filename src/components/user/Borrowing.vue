@@ -10,6 +10,7 @@
       <a-table-column title="borrow date" data-index="borrow_date" />
       <a-table-column title="due date" data-index="due_date"> </a-table-column>
       <a-table-column title="days" data-index="days"> </a-table-column>
+      <a-table-column title="fine" data-index="fine"> </a-table-column>
       <a-table-column title="Action">
         <template slot-scope="text, record">
           <a-button
@@ -81,9 +82,8 @@ export default {
         // 修改时间格式并加上剩余多少天
         tmpBorrowing[i].borrow_date = tmpBorrowing[i].borrow_date.substring(0,10);
         tmpBorrowing[i].due_date = tmpBorrowing[i].due_date.substring(0,10);
-
         tmpBorrowing[i].days = this.dataDiff(tmpBorrowing[i].borrow_date,tmpBorrowing[i].due_date)
-        
+        tmpBorrowing[i].fine = typeof tmpBorrowing[i].fine === 'number' ? tmpBorrowing[i].fine : 0;
         // 获得图书详情
         var myHeaders2 = new Headers();
         myHeaders2.append("Content-Type", "application/json");
@@ -153,6 +153,9 @@ export default {
           console.log("return", data);
           if (data.code === 0) {
             that.$message.success("return successfully!");
+            that.borrowingList = that.borrowingList.filter(row => {
+              return row.borrowing_id != borrowing_id
+            })
           } else {
             that.$message.error(data.msg);
           }

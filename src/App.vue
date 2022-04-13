@@ -10,11 +10,11 @@
                 mode="horizontal"
                 :style="{ lineHeight: '6vh' }"
               >
-                <a-menu-item key="1" @click="changeMenu('/helloworld')"> HelloWorld </a-menu-item>
-                <a-menu-item key="2" @click="changeMenu('/book/search')"> 图书查询 </a-menu-item>
-                <a-menu-item key="3" @click="changeMenu('/user/borrowing')"> 在借图书 </a-menu-item>
-                <a-menu-item key="4" @click="changeMenu('/user/borrowing/history')"> 借书历史 </a-menu-item>
-                <a-menu-item key="5" @click="changeMenu('/user/reservation')"> 预约记录 </a-menu-item>
+                <a-menu-item key="1" @click="changeMenu('/admin')"> ADMIN </a-menu-item>
+                <a-menu-item key="2" @click="changeMenu('/book/search')"> SEARCH </a-menu-item>
+                <a-menu-item key="3" @click="changeMenu('/user/borrowing')"> BORROWING </a-menu-item>
+                <a-menu-item key="4" @click="changeMenu('/user/borrowing/history')"> HISTORY </a-menu-item>
+                <a-menu-item key="5" @click="changeMenu('/user/reservation')"> RESERVATION </a-menu-item>
               </a-menu>
           </div>
         
@@ -27,7 +27,7 @@
                 </a-menu>
                   <a-space>
                     <a-avatar :src="userInfo.avatar" style="backgroundColor:#87d068" />
-                    <span style="color: white">{{userInfo.name}}</span><a-icon type="down" />
+                    <span style="color: white">{{userInfo.id}}</span><a-icon type="down" />
                   </a-space>
               </a-dropdown>
               <a-button type="link" v-else block>
@@ -76,6 +76,7 @@ export default {
     handleLogout(){
       logout();
       this.$global.IS_LOGIN = false;
+      clearUserInfo();
       this.isLogin = false;
       this.userInfo = {};
       this.$router.push('/login');
@@ -86,6 +87,11 @@ export default {
   },
   created(){
     console.log(111);
+    this.$message.config({
+      top: `10vh`,
+      duration: 1,
+      maxCount: 3,
+    });
     let that = this;
     tokenLogin()
       .then(res => res.json())

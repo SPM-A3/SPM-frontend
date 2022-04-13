@@ -198,7 +198,8 @@
 </template>
 
 <script>
-import { getAccessToken } from '../../services/user';
+import { getAccessToken, refreshUserInfo } from '../../services/user';
+
 function getBase64(img, callback) {
   const reader = new FileReader();
   reader.addEventListener("load", () => callback(reader.result));
@@ -338,7 +339,8 @@ export default {
               if (result.code == 0 || result.code == "0") {
                 that.loading = false;
                 that.$message.success("Update user successfully");
-                that.$router.push('/admin?tab=user')
+                refreshUserInfo()
+                that.$router.go('/user');
               } else {
                 that.loading = false;
                 that.$message.error("API call error, "+result.msg);

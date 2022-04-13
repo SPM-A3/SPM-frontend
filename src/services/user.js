@@ -44,11 +44,29 @@ export function setUserInfo(userInfo){
 }
 
 export function getUserInfo(){
-  return localStorage.getItem("userInfo");
+  return JSON.parse(localStorage.getItem("userInfo"));
 }
 
 export function clearUserInfo(){
   localStorage.removeItem('userInfo')
+}
+
+export function refreshUserInfo(){
+  localStorage.removeItem('userInfo');
+  tokenLogin()
+    .then(res => res.json())
+    .then( res => {
+      const {data, code, msg} = res;
+      console.log(res)
+      if(code == 0 || code == '0'){
+        setUserInfo(data);
+      }else{
+        clearUserInfo()
+      }
+    })
+    .catch( err => {
+      console.log(err);
+    })
 }
 
 /**
@@ -65,5 +83,6 @@ export default {
   getAccessToken,
   getUserInfo,
   setUserInfo,
+  refreshUserInfo,
   logout,
 }

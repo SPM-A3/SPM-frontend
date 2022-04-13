@@ -252,12 +252,23 @@ export default {
                 }
             })
           this.newBookInfo.book_name = bookInfo.title;
-          this.newBookInfo.publisher = bookInfo.publishers[0];
-          this.newBookInfo.cover = `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}.jpg`;
-          this.newBookInfo.brief_introduction = "";
-          this.newBookInfo.author = (bookInfo.authors[0]).name;
-          this.newBookInfo.published_time = moment(bookInfo.publish_date, "MMMM DD, YYYY");
-          this.newBookInfo.brief_introduction = bookInfo.first_sentence.value;
+          if(bookInfo.publishers) this.newBookInfo.publisher = bookInfo.publishers[0];
+          if(bookInfo.covers) this.newBookInfo.cover = `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}.jpg`;
+          if(bookInfo.authors){
+            this.newBookInfo.author = (bookInfo.authors[0]).name;
+          }else{
+            await fetch(`https://openlibrary.org/api/get?key=/authors/${(bookInfo.works[0].key.split('/'))[2].slice(0,-1)}A`)
+              .then(res => res.json())
+              .then(result => {
+                that.newBookInfo.author = result.result.name;
+              })
+          }
+          if(bookInfo.publish_date) this.newBookInfo.published_time = moment(bookInfo.publish_date, "MMMM DD, YYYY");
+          fetch(`https://openlibrary.org/api/get?key=${bookInfo.works[0].key}`)
+              .then(res => res.json())
+              .then(result => {
+                that.newBookInfo.brief_introduction = result.result.description.slice(0,200)+'...';
+              })
           this.$message.success("Got the book.");
           this.searching = false;
           this.getBook = true;

@@ -14,7 +14,7 @@
       <div v-if="contentNumber==1">
         <template>
           <div style="margin: 0 auto; text-align: center">
-            <a-avatar :size="100" src="https://joeschmoe.io/api/v1/random" />
+            <a-avatar :size="100" :src="userInfo.avatar" />
           </div>
           <br />
           <a-descriptions title="User Info" bordered style="margin-right:150px; margin-left:150px;">
@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import {getAccessToken, logout} from '../../services/user'
+import {getAccessToken, logout, getUserInfo} from '../../services/user'
 import EditProfile from './EditProfile.vue'
 export default {
   name: "UserCenter",
@@ -191,6 +191,7 @@ export default {
     },
     getUserInfo(){
       this.loading = true;
+      this.userInfo.avatar = getUserInfo().avatar;
       let myHeaders = new Headers({"Content-Type" : "application/json"});
       myHeaders.append("token", getAccessToken());
       console.log;
@@ -211,7 +212,6 @@ export default {
           that.userInfo.phone_number = result.data.phone_number;
           that.userInfo.email = result.data.email;
           that.userInfo.user_id = result.data.user_id;
-          that.userInfo.avatar = result.data.avatar;
           that.userInfo.borrowing = result.data.borrowings;
           that.userInfo.maxBorrowing = result.data.max_borrowing
         })
