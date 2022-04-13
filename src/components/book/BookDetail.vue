@@ -1,107 +1,136 @@
 <template>
   <div>
-    
-    
-    
-        <!-- 图书详情：{{ $route.params.id }}
+    <!-- 图书详情：{{ $route.params.id }}
     使用$route.params.id可以获取图书id，使用这个id调用图书api -->
-        <a-card :bordered="false">
-          <a-col :span="16">
-            <a-row>
-              <a-col :span="8">
-                <a-card
-                  :title="bookInfo.book_name"
-                  style="width: 500px; height: 250px"
-                  :bordered="false"
-                >
-                  <p>ISBN: {{ bookInfo.ISBN }}</p>
-                  <p>Author: {{ bookInfo.author }}</p>
-                  <p>Category: {{ bookInfo.category }}</p>
-                  <p>Publisher: {{ bookInfo.publisher }}</p>
-                  <p>Published Time: {{ bookInfo.published_time }}</p>
-                </a-card>
-              </a-col>
-              <a-col :offset="16">
-                <a-card
-                  style="height: 200px; width: 300px"
-                  :bordered="false"
-                  size="small"
-                >
-                  <br /><br />
-                  <p>
-                    <b>Available Number: {{ avail_book_number }}</b>&nbsp;
-                    <a-tag
-                      v-if="avail_book_number / book_number >= 0.5"
-                      color="green"
-                      >Adequate</a-tag
-                    >
-                    <a-tag
-                      v-if="avail_book_number / book_number < 0.5"
-                      color="red"
-                      >Nervous</a-tag
-                    >
-                  </p>
-
-                  <a-progress
-                    type="circle"
-                    :width="150"
-                    :percent="parseInt((avail_book_number / book_number) * 100)"
-                    size="small"
-                    status="active"
-                    style="color: green"
-                  />
-                  <br /><br />
-
-                  <!-- <a-button type="primary">预约</a-button> -->
-                  <br /><br />
-                  <!-- <a-button type="primary">借阅</a-button> -->
-                </a-card>
-              </a-col>
-            </a-row>
-
-            <a-row>
-              <a-col :span="8">
-                <a-card style="width: 750px; height: 200px" :bordered="false">
-                  <p>Introduction: {{ bookInfo.introduction }}</p>
-                </a-card>
-              </a-col>
-            </a-row>
-          </a-col>
-
+    <a-card :bordered="false">
+      <a-col :span="16">
+        <a-row>
           <a-col :span="8">
-            <img
-              src="https://img4.doubanio.com/view/subject/s/public/s34080469.jpg"
-              alt="img"
-              height="400"
-            />
+            <a-card
+              :title="bookInfo.book_name"
+              style="width: 500px; height: 250px"
+              :bordered="false"
+            >
+              <p>ISBN: {{ bookInfo.ISBN }}</p>
+              <p>Author: {{ bookInfo.author }}</p>
+              <p>Category: {{ bookInfo.category }}</p>
+              <p>Publisher: {{ bookInfo.publisher }}</p>
+              <p>Published Time: {{ bookInfo.published_time }}</p>
+            </a-card>
           </a-col>
-        </a-card>
-
-        <a-card>
-          <a-table :columns="columns" :data-source="locationData">
-            <template slot="status" slot-scope="status">
-              <a-tag v-if="status == 1" color="green">Available</a-tag>
-              <a-tag v-else-if="status == 0" color="red">Lent</a-tag>
-            </template>
-
-            <template slot="operation" slot-scope="text, record">
-              <a-popconfirm
-                title="Sure to Borrow?"
-                @confirm="() => onBorrow(record.key)"
+          <a-col :offset="16">
+            <a-card
+              style="height: 300px; width: 300px"
+              :bordered="false"
+              size="small"
+            >
+              <!-- &nbsp;&nbsp;&nbsp; -->
+              <!-- <a-button size="large" type="primary" @click="reserveBook">RESERVE</a-button> -->
+              <!-- <a-popover
+                :visible="visible"
+                title="Sure to reserve?"
+                trigger="click"
+                @click="clickpop"
               >
-                <a href="javascript:;">Borrow</a>
-              </a-popconfirm>
-            </template>
-          </a-table>
-        </a-card>
-     
+                <template #content>
+                  <p>
+                    <a-button type="primary" @click="reserveBook">YES</a-button
+                    >&nbsp;&nbsp;&nbsp;
+                    <a-button @click="cancleBtn">CANCLE</a-button>
+                  </p>
+                </template>
+                <a-button type="primary" size="large">RESERVE</a-button>
+              </a-popover> -->
+              <a-radio-group :value="isReserved" button-style="solid">
+                <a-radio-button value="a" @click="reserveBook()"
+                  >Reserved</a-radio-button
+                >
+                <a-radio-button value="b" @click="cancelReserveBook()"
+                  >Not Reserved</a-radio-button
+                >
+              </a-radio-group>
+
+              <br /><br />
+              <p>
+                <b>Available Number: {{ avail_book_number }}</b
+                >&nbsp;
+                <a-tag
+                  v-if="avail_book_number / book_number >= 0.5"
+                  color="green"
+                  >Adequate</a-tag
+                >
+                <a-tag v-if="avail_book_number / book_number < 0.5" color="red"
+                  >Nervous</a-tag
+                >
+              </p>
+
+              <a-progress
+                type="circle"
+                :width="150"
+                :percent="parseInt((avail_book_number / book_number) * 100)"
+                size="small"
+                status="active"
+                style="color: green"
+              />
+
+              <!-- <a-button type="primary">借阅</a-button> -->
+            </a-card>
+          </a-col>
+        </a-row>
+
+        <a-row>
+          <a-col :span="8">
+            <a-card style="width: 750px; height: 200px" :bordered="false">
+              <p>Introduction: {{ bookInfo.introduction }}</p>
+            </a-card>
+          </a-col>
+        </a-row>
+      </a-col>
+
+      <a-col :span="8">
+        <img :src="bookInfo.cover" alt="img" height="400" />
+      </a-col>
+    </a-card>
+
+    <a-card>
+      <a-table :columns="columns" :data-source="locationData" rowKey="book_id">
+        <template slot="status" slot-scope="status">
+          <a-tag v-if="status == 0" color="green">Available</a-tag>
+          <a-tag v-else-if="status == 1" color="red">Lent</a-tag>
+        </template>
+
+        <template slot="operation" slot-scope="text, record">
+          <a-popconfirm
+            title="Sure to Borrow?"
+            @confirm="() => borrowBook(record.book_id)"
+          >
+            <a v-if="record.status == 0" href="javascript:;">BORROW</a>
+            <a
+              v-else-if="record.status == 1"
+              href="javascript:;"
+              disabled="true"
+              >BORROW</a
+            >
+          </a-popconfirm>
+          
+        </template>
+      </a-table>
+    </a-card>
   </div>
 </template>
 
 <script>
+import { getAccessToken } from "@/services/user";
+import BASE_URL from "@/services/api";
+
 const columns = [
   {
-    title: "Room_number",
+    title: "Book ID",
+    dataIndex: "book_id",
+    key: "book_id",
+  },
+  {
+    title: "Room Number",
     dataIndex: "room_number",
     key: "room_number",
   },
@@ -137,6 +166,10 @@ export default {
   name: "Detail",
   data() {
     return {
+      isReserved: "b",
+      reservation_id: "",
+
+      // visible: false,
       book_number: "",
       avail_book_number: "",
 
@@ -156,8 +189,15 @@ export default {
     };
   },
   methods: {
+    clickpop() {
+      this.visible = true;
+    },
+    cancleBtn() {
+      this.visible = false;
+    },
+
     changeContent() {
-       this.$router.push("/book/search").catch((err) => {
+      this.$router.push("/book/search").catch((err) => {
         console.log("输出报错", err);
       });
     },
@@ -166,74 +206,166 @@ export default {
       return this.$route.params.id;
     },
 
-    //借阅接口
-    onBorrow(key) {},
+    reserveBook() {
+      this.isReserved = "a";
+      let JSONISBN = {
+        ISBN: this.getBookISBN(),
+      };
+      let BASE_URL = "http://175.24.201.104:8085";
 
-    getBookInfo() {
-      let base_url =
-        "https://www.fastmock.site/mock/891abb0e6bd9ffe5f4e30bde7ed7516e/spm";
-      this.loading = true;
-      let myHeaders = new Headers();
+      let myHeaders = new Headers({ "Content-Type": "application/json" });
+      myHeaders.append("token", getAccessToken());
       let requestoptions = {
         method: "POST",
         headers: myHeaders,
-        body: this.getBookISBN(),
+        body: JSON.stringify(JSONISBN),
       };
 
       let that = this;
-      fetch(`${base_url}/api/book/detail`, requestoptions)
+      fetch(`${BASE_URL}/api/user/reservation/add`, requestoptions)
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
-          if (result.error_code == 0) {
-            this.bookInfo.ISBN = result.book_info.ISBN;
-            this.bookInfo.cover = result.book_info.cover;
-            this.bookInfo.book_name = result.book_info.book_name;
-            this.bookInfo.introduction = result.book_info.introduction;
-            this.bookInfo.publisher = result.book_info.publisher;
-            this.bookInfo.published_time = result.book_info.published_time;
-            this.bookInfo.author = result.book_info.author;
-            this.bookInfo.category = result.book_info.category;
+        });
+
+      this.$message.success("Book Reserve Successfully!");
+      this.visible = false;
+
+
+      // this.getReservation();
+    },
+
+    cancelReserveBook() {
+      this.isReserved = "b";
+      let BASE_URL = "http://175.24.201.104:8085";
+
+      let myHeaders = new Headers({ "Content-Type": "application/json" });
+      myHeaders.append("token", getAccessToken());
+      let requestoptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify({
+          reservation_id: this.reservation_id
+        }),
+      };
+      fetch(`${BASE_URL}/api/user/reservation/cancel`, requestoptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+        });
+
+      this.$message.warning("Cancel Reservation Successfully!");
+    },
+
+    borrowBook(book_id) {
+      // for (let i of this.locationData) {
+      //   if(i.book_id == book_id){
+
+      //   }
+      // }
+
+      // let JSONISBN = {
+      //   ISBN: this.getBookISBN()
+      // }
+      let BASE_URL = "http://175.24.201.104:8085";
+
+      let myHeaders = new Headers({ "Content-Type": "application/json" });
+      myHeaders.append("token", getAccessToken());
+      let requestoptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify({
+          ISBN: this.getBookISBN(),
+          book_id: book_id,
+        }),
+      };
+
+      // let that = this;
+      fetch(`${BASE_URL}/api/user/borrow`, requestoptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+        });
+
+      for (let i of this.locationData) {
+        if (i.book_id == book_id) {
+          i.status = 1;
+        }
+      }
+
+      this.$message.success("Book Borrow Successfully!");
+      this.visible = false;
+    },
+
+    getBookInfo() {
+      let BASE_URL = "http://175.24.201.104:8085";
+      this.loading = true;
+      let myHeaders = new Headers();
+      myHeaders.append("token", getAccessToken());
+      let requestoptions = {
+        method: "GET",
+        headers: myHeaders,
+        // body: this.getBookISBN(),
+      };
+
+      let that = this;
+      fetch(
+        `${BASE_URL}/api/book/detail?ISBN=${this.getBookISBN()}`,
+        requestoptions
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+          if (result.code == 0) {
+            this.bookInfo.ISBN = result.data.ISBN;
+            this.bookInfo.cover = result.data.cover;
+            this.bookInfo.book_name = result.data.book_name;
+            this.bookInfo.introduction = result.data.introduction;
+            this.bookInfo.publisher = result.data.publisher;
+            this.bookInfo.published_time = result.data.published_time;
+            this.bookInfo.author = result.data.author;
+            this.bookInfo.category = result.data.category;
           }
         })
         .catch((error) => console.log("error", error));
     },
 
     getBookLocations() {
-      let base_url =
-        "https://www.fastmock.site/mock/891abb0e6bd9ffe5f4e30bde7ed7516e/spm";
+      let BASE_URL = "http://175.24.201.104:8085";
       this.loading = true;
       let myHeaders = new Headers();
+      myHeaders.append("token", getAccessToken());
       let requestoptions = {
-        method: "POST",
+        method: "GET",
         headers: myHeaders,
-        body: this.getBookISBN(),
+        // body: this.getBookISBN(),
       };
 
       let that = this;
-      fetch(`${base_url}/api/book/locations`, requestoptions)
+      fetch(
+        `${BASE_URL}/api/book/locations?ISBN=${this.getBookISBN()}`,
+        requestoptions
+      )
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
-          if (result.error_code == 0) {
-            this.book_number = result.locations.length;
+          if (result.code == 0) {
+            this.book_number = result.data.length;
             let num = 0;
-            for (let i of result.locations) {
-              if (i.status == 1) num++;
+            for (let i of result.data) {
+              if (i.status == 0) num++;
             }
             this.avail_book_number = num;
             setTimeout(() => {
-              var key = 0;
-              for (let i of result.locations) {
+              for (let i of result.data) {
                 that.locationData.push({
-                  key: key,
+                  book_id: i.book_id,
                   status: i.status,
                   room_number: i.room_number,
                   book_shelf: i.book_shelf,
                   side: i.side,
                   layer: i.layer,
                 });
-                key++;
               }
               that.loading = false;
             }, 200);
@@ -241,6 +373,35 @@ export default {
         })
         .catch((error) => console.log("error", error));
     },
+
+    getReservation() {
+      let BASE_URL = "http://175.24.201.104:8085";
+
+      let myHeaders = new Headers({ "Content-Type": "application/json" });
+      myHeaders.append("token", getAccessToken());
+      let requestoptions = {
+        method: "GET",
+        headers: myHeaders,
+      };
+      fetch(`${BASE_URL}/api/reservation/`, requestoptions)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+
+          for (let i of result.data) {
+            if (i.ISBN == this.getBookISBN()) {
+              if(i.status == 0){
+                this.isReserved = 'a';
+                this.reservation_id = i.reservation_id;
+              }
+              else{
+                this.isReserved = 'b';
+                this.reservation_id = i.reservation_id;
+              } 
+            }
+          }
+        });
+    },  
   },
   created() {
     this.id = this.getBookISBN();
@@ -248,6 +409,8 @@ export default {
 
     this.getBookInfo();
     this.getBookLocations();
+
+    this.getReservation();
   },
 };
 </script>
