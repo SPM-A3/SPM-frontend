@@ -5,29 +5,28 @@
       <a-form layout="horizontal">
         <div :class="advanced">
           <a-form-item
-            label="学号（工号）"
+            label="ID"
             :labelCol="{span: 7}"
             :wrapperCol="{span: 10}"
-            v-model="id"
           >
-            <a-input placeholder="请输入学号（工号）" />
+            <a-input placeholder="Please input id" v-model="id"  />
           </a-form-item>
         </div>
         <span style="float: right; margin-top: 3px">
-          <a-button type="primary">查询</a-button>
+          <a-button type="primary" @click="searchById">search</a-button>
         </span>
       </a-form>
     </div>
     <div>
       <!-- 新建和删除按钮 -->
       <a-space class="operator">
-        <a-button @click="addNewUser" type="primary">新建</a-button>
+        <a-button @click="addNewUser" type="primary">new</a-button>
         <a-dropdown>
           <a-menu @click="handleMenuClick" slot="overlay">
-            <a-menu-item key="delete">删除</a-menu-item>
-            <a-menu-item key="audit">审批</a-menu-item>
+            <a-menu-item key="delete">delete</a-menu-item>
+            <a-menu-item key="audit">disable</a-menu-item>
           </a-menu>
-          <a-button> 更多操作 <a-icon type="down" /> </a-button>
+          <a-button> actions <a-icon type="down" /> </a-button>
         </a-dropdown>
       </a-space>
       <!-- 图书列表 -->
@@ -43,26 +42,29 @@
         <div slot="description" slot-scope="{ text }">
           {{ text.slice(0, 100) }}...
         </div>
-        <div slot="action" slot-scope="{ record }" style="width: 50px">
+        <div slot="avatar" slot-scope="{ record }" style="width: 50px">
+          <a-avatar :src="record.avatar"  style="width: 50px;height:50px"/>
+        </div>
+        <div slot="qrcode" slot-scope="{ record }" style="width: 100px">
+          <vue-qr :text="record.id" qid="testid" style="width: 100px"></vue-qr>
+        </div>
+        <div slot="action" slot-scope="{ record }" style="width: 60px">
           <a-dropdown :trigger="['click']">
             <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
-              操作 <a-icon type="down" />
+              actions <a-icon type="down" />
             </a>
             <a-menu slot="overlay">
               <a-menu-item key="0">
                 <router-link :to="`/admin/user/${record.key}/edit`">
                   <a-space>
                     <a-icon type="edit" />
-                    <span>编辑信息</span>
+                    <span>Edit</span>
                   </a-space>
                 </router-link>
               </a-menu-item>
             </a-menu>
           </a-dropdown>
           <a-space direction="vertical"> </a-space>
-        </div>
-        <div slot="cover" slot-scope="{ record }">
-          <img slot="avatar" size="large" shape="square" :src="record.cover" />
         </div>
         <template slot="statusTitle">
           <a-icon @click.native="onStatusTitleClick" type="info-circle" />
@@ -74,6 +76,8 @@
 
 <script>
 import StandardTable from "@/components/table/StandardTable";
+import VueQr from 'vue-qr'
+import { getAccessToken } from '../../services/user';
 const columns = [
   {
     title: "user_id",
@@ -81,38 +85,44 @@ const columns = [
     needTotal: true,
   },
   {
-    title: "学工号",
+    title: "avatar",
+    dataIndex: "avatar",
+    scopedSlots: {customRender: 'avatar'}
+  },
+  {
+    title: "id",
     dataIndex: "id",
   },
   {
-    title: "姓名",
+    title: "name",
     dataIndex: "name",
   },{
-    title: "性别",
+    title: "gender",
     dataIndex: "gender",
   },{
-    title: "职位",
+    title: "position",
     dataIndex: "position",
   },{
-    title: "邮箱",
+    title: "email",
     dataIndex: "email",
   },{
-    title: "手机号",
+    title: "phone",
     dataIndex: "phone_number",
   },{
-    title: "借书数量",
-    dataIndex: "borrowings",
-  },{
-    title: "最大借书量",
+    title: "borrow limit",
     dataIndex: "max_borrowing",
   },
   {
-    title: "操作",
+    title: "QRcode",
+    scopedSlots: {customRender: 'qrcode'}
+  },
+  {
+    title: "actions",
     scopedSlots: { customRender: "action" },
   },
 ];
-const GENDERS = ["男", "女"];
-const POSITIONS = ["学生", "教师", "职工"]
+const GENDERS = ["MALE", "FEMALE"];
+const POSITIONS = ["Student", "Teacher", "Staff"]
 /**
 {
     ISBN: "978-7-111-64577-1",
@@ -127,7 +137,7 @@ const POSITIONS = ["学生", "教师", "职工"]
 
 export default {
   name: "UserManage",
-  components: { StandardTable },
+  components: { StandardTable,VueQr },
   data() {
     return {
       advanced: true,
@@ -135,6 +145,7 @@ export default {
       dataSource: [],
       selectedRows: [],
       loading: true,
+      id: ""
     };
   },
   authorize: {
@@ -149,25 +160,59 @@ export default {
       this.advanced = !this.advanced;
     },
     remove() {
-      this.dataSource = this.dataSource.filter(
-        (item) =>
-          this.selectedRows.findIndex((row) => row.key === item.key) === -1
-      );
-      this.selectedRows = [];
+      this.loading = true;
+      let ids = []
+      for(let i of this.selectedRows){
+        ids.push(i.key);
+      }
+      
+      var myHeaders = new Headers();
+      myHeaders.append("token", getAccessToken());
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify(ids);
+
+      var requestOptions = {
+        method: 'DELETE',
+        headers: myHeaders,
+        body: raw,
+      };
+      let that = this;
+      fetch(`${this.$global.BASE_URL}/api/admin/user/delete`, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+          const {code, msg, data} = result;
+          if(code ==='0' || code === 0){
+            that.$message.success("Delete user successfully.");
+            that.dataSource = that.dataSource.filter(
+              (item) =>
+                that.selectedRows.findIndex((row) => row.key === item.key) === -1
+            );
+          }else if(result.status == 500){
+            that.$message.error("Fail to delete users. Please contact the manager.");
+          }
+          that.selectedRows = []
+          that.loading = false;
+        })
+        .catch(error => {
+          that.selectedRows = [];
+          that.$message.error("API call failed");
+          that.loading = false
+        });
     },
     onClear() {
-      this.$message.info("您清空了勾选的所有行");
+      // this.$message.info("您清空了勾选的所有行");
     },
     onStatusTitleClick() {
-      this.$message.info("你点击了状态栏表头");
+      // this.$message.info("你点击了状态栏表头");
     },
     onChange() {
-      this.$message.info("表格状态改变了");
+      // this.$message.info("表格状态改变了");
     },
     onSelectChange() {
-      this.$message.info("选中行改变了");
+      // this.$message.info("选中行改变了");
     },
-    addNewBook() {
+    addNewUser() {
       this.$router.push("/admin/user/add").catch((err) => {
         console.log("跳转useradd报错", err);
       });
@@ -177,51 +222,52 @@ export default {
         this.remove();
       }
     },
-    filter(inputValue, path) {
-      return path.some(
-        (option) =>
-          option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
+    searchById(){
+      const id = this.id.toString();
+      console.log(id)
+      this.dataSource = this.dataSource.filter(
+        (item) => item.id === id
       );
-    },
-    onChangeGategory(value, selectedOptions) {
-      console.log(value, selectedOptions);
-    },
+    }
   },
   created() {
-    let base_url =
-      "https://www.fastmock.site/mock/0aee7559464fadc986c2e38e63492a86/spm";
     this.loading = true;
     let myHeaders = new Headers();
-    myHeaders.append("access_token", "test");
+    myHeaders.append("token", getAccessToken());
 
     let requestoptions = {
       method: "GET",
       headers: myHeaders,
     };
     let that = this;
-    fetch(`${base_url}/api/admin/user/getall`, requestoptions)
+    fetch(`${this.$global.BASE_URL}/api/admin/user/getAll?page_size=100&current_page=1`, requestoptions)
       .then((response) => response.json())
       .then((result) => {
-        if (result.error_code == 0 || result.error_code == "0") {
-          setTimeout(() => {
-            for(let i of result.user_list){
-              that.dataSource.push({
-                key: i.user_id,
-                id: i.id,
-                name: i.name,
-                gender: GENDERS[i.gender],
-                position: POSITIONS[i.position],
-                email: i.email,
-                phone_number: i.phone_number,
-                borrowings: i.borrowings,
-                max_borrowing: i.max_borrowing
-              })
-            }
-            that.loading = false;
-          }, 200);
+        console.log(result);
+        if (result.code == 0 || result.code == "0") {
+          for(let i of result.data.slice(1)){
+            that.dataSource.push({
+              key: i.userId,
+              avatar: i.avatar,
+              id: i.id,
+              name: i.name,
+              gender: GENDERS[i.gender],
+              position: POSITIONS[i.position],
+              email: i.email,
+              phone_number: i.phoneNumber,
+              max_borrowing: 20
+            })
+          }
+          that.loading = false;
+        }else{
+          that.$message.error("API call failed.");
+          that.loading = false;
         }
       })
-      .catch((error) => console.log("error", error));
+      .catch((error) => {
+        that.loading = false;
+        that.$message.error("API call failed.");
+      });
   },
 };
 </script>
