@@ -47,7 +47,7 @@
         <span slot="label"> Book shelf </span>
         <a-input
           v-decorator="[
-            'book shelf',
+            'book_shelf',
             {
               rules: [
                 {
@@ -79,12 +79,12 @@
         <span slot="label"> Layer </span>
         <a-input
           v-decorator="[
-            'book shelf',
+            'layer',
             {
               rules: [
                 {
                   required: true,
-                  message: 'Please input book shelf',
+                  message: 'Please input layer',
                 },
               ],
             },
@@ -95,10 +95,12 @@
         style="margin-top: 24px"
         :wrapperCol="{ span: 10, offset: 7 }"
       >
-        <a-button :loading="loading" type="primary" html-type="submit"
-          >Add</a-button
-        >
-        <a-button @click="$router.push('/admin?tab=user')">CANCEL</a-button>
+        <a-space>
+          <a-button :loading="loading" type="primary" html-type="submit"
+            >Add</a-button
+          >
+          <a-button @click="$router.push('/admin')">CANCEL</a-button>
+        </a-space>
       </a-form-item>
     </a-form>
   </a-card>
@@ -123,10 +125,10 @@ export default {
     console.log(this.$route.params.id);
     let that = this;
     this.$nextTick(() => {
-        this.form.setFieldsValue({
-            ISBN: that.$route.params.id,
-        })
-    })
+      this.form.setFieldsValue({
+        ISBN: that.$route.params.id,
+      });
+    });
   },
   methods: {
     handleSubmit(e) {
@@ -136,8 +138,6 @@ export default {
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
           let valuesSubmit = { ...values };
-          valuesSubmit.avatar = that.imageUrl;
-          console.log(1);
           var myHeaders = new Headers();
           myHeaders.append("token", getAccessToken());
           myHeaders.append("Content-Type", "application/json");
@@ -147,15 +147,17 @@ export default {
             headers: myHeaders,
             body: JSON.stringify(valuesSubmit),
           };
-          console.log(222);
-          fetch(`${that.$global.BASE_URL}/api/admin/user/add`, requestOptions)
+          fetch(
+            `${that.$global.BASE_URL}/api/admin/bookbook/add`,
+            requestOptions
+          )
             .then((response) => response.json())
             .then((result) => {
               console.log(result);
               if (result.code == 0 || result.code == "0") {
                 that.loading = false;
-                that.$message.success("Add user successfully");
-                that.$router.push("/admin?tab=user");
+                that.$message.success("Add location successfully");
+                that.$router.push("/admin");
               } else {
                 that.loading = false;
                 that.$message.error("API call error, " + result.msg);

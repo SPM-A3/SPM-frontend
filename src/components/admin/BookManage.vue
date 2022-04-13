@@ -85,14 +85,31 @@
     <div>
       <!-- 新建和删除按钮 -->
       <a-space class="operator">
-        <a-button @click="addNewBook" type="primary">new</a-button>
-        <a-dropdown>
-          <a-menu @click="handleMenuClick" slot="overlay">
-            <a-menu-item key="delete">delete</a-menu-item>
+        <a-dropdown-button :loading="loading2" @click="addNewBook" type="primary">
+          Add
+          <a-menu slot="overlay">
+            <a-menu-item key="1" @click="()=>{this.$router.push('/admin/book/addbyapi')}">Add book using openlibrary</a-menu-item>
+          </a-menu>
+          <a-icon type="down" slot="icon"/>
+        </a-dropdown-button>
+        <!-- <a-dropdown>
+          <a-menu slot="overlay">
+            <a-menu-item key="delete"> -->
+              <a-popconfirm
+                title="Are you sure delete the selected books?"
+                ok-text="Yes"
+                cancel-text="No"
+                @confirm="remove"
+              >
+                <a-button>
+                  delete
+                </a-button>
+              </a-popconfirm>
+            <!-- </a-menu-item>
             <a-menu-item key="audit">take down</a-menu-item>
           </a-menu>
           <a-button> actions <a-icon type="down" /> </a-button>
-        </a-dropdown>
+        </a-dropdown> -->
       </a-space>
       <!-- 图书列表 -->
       <standard-table
@@ -145,7 +162,7 @@
           <a-space direction="vertical"> </a-space>
         </div>
         <div slot="cover" slot-scope="{ record }">
-          <img slot="avatar" size="large" shape="square" :src="record.cover" />
+          <img slot="avatar" size="large" shape="square" style="width:150px" :src="record.cover" />
         </div>
         <template slot="statusTitle">
           <a-icon @click.native="onStatusTitleClick" type="info-circle" />
@@ -222,6 +239,7 @@ export default {
   components: { StandardTable, VueBarcode },
   data() {
     return {
+      loading2: false,
       advanced: true,
       columns: columns,
       dataSource: [],
@@ -250,6 +268,10 @@ export default {
       this.advanced = !this.advanced;
     },
     remove() {
+      if(this.selectedRows.length == 0){
+        this.$message.error("No selected books.");
+        return;
+      }
       this.loading = true;
       let ISBNs = []
       for(let i of this.selectedRows){
@@ -303,8 +325,11 @@ export default {
       // this.$message.info("选中行改变了");
     },
     addNewBook() {
-      this.$router.push("/admin/book/add").catch((err) => {
-        console.log("输出报错", err);
+      this.loading2 = true;
+      let that = this;
+      this.$router.push("/admin/book/add")
+        .then(() => {
+          that.loading2 = false;
       });
     },
     handleMenuClick(e) {
