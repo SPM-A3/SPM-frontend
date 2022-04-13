@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d22ca66"],{f3ad:function(n,e,t){"use strict";t.r(e);var a=function(){var n=this,e=n.$createElement,t=n._self._c||e;return t("div",[n._v(" No admin permission. ")])},c=[],i={},s=i,u=t("2877"),l=Object(u["a"])(s,a,c,!1,null,null,null);e["default"]=l.exports}}]);
+//# sourceMappingURL=chunk-2d22ca66.cdfd5a6f.js.map
