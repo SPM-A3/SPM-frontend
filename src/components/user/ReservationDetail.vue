@@ -30,13 +30,37 @@
         }}</a-descriptions-item>
       </a-descriptions>
     </template>
-
-    <a-popconfirm title="Title" @confirm="cancelReservation()" @cancel="cancel">
-      <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit"> cancel </a-button>
-    </a-popconfirm>
-    <a-popconfirm title="Title" @confirm="reReservation()" @cancel="cancel">
-      <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit"> reserve </a-button>
-    </a-popconfirm>
+    <a-tooltip
+      class="item"
+      effect="dark"
+      size="small"
+      content="详情"
+      placement="top"
+      v-if="reservationDetail.status === 1"
+    >
+      <a-popconfirm
+        title="Title"
+        @confirm="cancelReservation()"
+        @cancel="cancel"
+      >
+        <a-button
+          type="primary"
+          :style="{ top: '8px', marginLeft: '8px' }"
+          icon="el-icon-edit"
+        >
+          cancel
+        </a-button>
+      </a-popconfirm>
+      <a-popconfirm title="Title" @confirm="reReservation()" @cancel="cancel">
+        <a-button
+          type="primary"
+          :style="{ top: '8px', marginLeft: '8px' }"
+          icon="el-icon-edit"
+        >
+          reserve
+        </a-button>
+      </a-popconfirm>
+    </a-tooltip>
   </div>
 </template>
 
@@ -105,7 +129,7 @@ export default {
     },
     // 取消预约
     cancelReservation() {
-      let that=this
+      let that = this;
       let reservation_id = this.reservationDetail.reservation_id;
       console.log(reservation_id);
 
@@ -119,12 +143,15 @@ export default {
         headers: myHeaders,
       };
 
-      var myRequest = new Request(`${this.$global.BASE_URL}/api/user/reservation/cancel`, myInit);
+      var myRequest = new Request(
+        `${this.$global.BASE_URL}/api/user/reservation/cancel`,
+        myInit
+      );
 
       fetch(myRequest)
         .then((response) => response.json())
         .then(function (data) {
-          console.log("cancel",data);
+          console.log("cancel", data);
           if (data.code === 0) {
             that.$message.success("cancel successfully!");
           } else {
