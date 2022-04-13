@@ -10,7 +10,6 @@
                 mode="horizontal"
                 :style="{ lineHeight: '6vh' }"
               >
-                <a-menu-item key="1" @click="changeMenu('/admin')"> ADMIN </a-menu-item>
                 <a-menu-item key="2" @click="changeMenu('/book/search')"> SEARCH </a-menu-item>
                 <a-menu-item key="3" @click="changeMenu('/user/borrowing')"> BORROWING </a-menu-item>
                 <a-menu-item key="4" @click="changeMenu('/user/borrowing/history')"> HISTORY </a-menu-item>
