@@ -36,7 +36,7 @@
       size="small"
       content="详情"
       placement="top"
-      v-if="reservationDetail.status === 1"
+      v-if="reservationDetail.status === 0"
     >
       <a-popconfirm
         title="Title"
@@ -51,15 +51,16 @@
           cancel
         </a-button>
       </a-popconfirm>
-      <a-popconfirm title="Title" @confirm="reReservation()" @cancel="cancel">
+      <!-- <a-popconfirm title="Title" @confirm="borrow()" @cancel="cancel"> -->
         <a-button
+          @click="borrow"
           type="primary"
           :style="{ top: '8px', marginLeft: '8px' }"
           icon="el-icon-edit"
         >
-          reserve
+          borrow
         </a-button>
-      </a-popconfirm>
+      <!-- </a-popconfirm> -->
     </a-tooltip>
   </div>
 </template>
@@ -163,39 +164,42 @@ export default {
     cancel() {
       this.$message.error("Click on No");
     },
-    // 重新预约
-    reReservation() {
-      let that = this;
-      let ISBN = this.reservationDetail.ISBN;
-      console.log(ISBN);
-
-      var myHeaders = new Headers();
-      myHeaders.append("token", getAccessToken());
-      myHeaders.append("Content-Type", "application/json");
-
-      var myInit = {
-        method: "POST",
-        body: JSON.stringify({ ISBN }),
-        headers: myHeaders,
-      };
-
-      var myRequest = new Request(
-        this.$global.BASE_URL + "/api/user/reservation/add",
-        myInit
-      );
-
-      fetch(myRequest)
-        .then((response) => response.json())
-        .then(function (data) {
-          console.log(data);
-          if (data.code === 0) {
-            that.$message.success("reserve successfully!");
-          } else {
-            that.$message.error(data.msg);
-          }
-        })
-        .catch((err) => console.log("Request Failed", err));
+    borrow() {
+      this.$router.push(`/book/${this.reservationDetail.ISBN}`)
     },
+    // 重新预约
+    // reReservation() {
+    //   let that = this;
+    //   let ISBN = this.reservationDetail.ISBN;
+    //   console.log(ISBN);
+
+    //   var myHeaders = new Headers();
+    //   myHeaders.append("token", getAccessToken());
+    //   myHeaders.append("Content-Type", "application/json");
+
+    //   var myInit = {
+    //     method: "POST",
+    //     body: JSON.stringify({ ISBN }),
+    //     headers: myHeaders,
+    //   };
+
+    //   var myRequest = new Request(
+    //     this.$global.BASE_URL + "/api/user/reservation/add",
+    //     myInit
+    //   );
+
+    //   fetch(myRequest)
+    //     .then((response) => response.json())
+    //     .then(function (data) {
+    //       console.log(data);
+    //       if (data.code === 0) {
+    //         that.$message.success("reserve successfully!");
+    //       } else {
+    //         that.$message.error(data.msg);
+    //       }
+    //     })
+    //     .catch((err) => console.log("Request Failed", err));
+    // },
     // 刷新数据
     reload() {
       this.isRouterAlive = false;

@@ -1,5 +1,6 @@
 import {LOGIN, CHECK} from '@/services/api'
 import Cookies from 'js-cookie'
+import store from '../store/store'
 /**
  * 登录服务
  * @param account 账户名
@@ -40,6 +41,7 @@ export function getAccessToken(){
 }
 
 export function setUserInfo(userInfo){
+  store.commit('setUserId', userInfo.user_id);
   localStorage.setItem("userInfo", JSON.stringify(userInfo));
 }
 

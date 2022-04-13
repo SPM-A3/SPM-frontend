@@ -12,7 +12,12 @@
           title="reservation time"
           data-index="reservation_time"
         />
-        <a-table-column title="status" data-index="status"/>
+        <a-table-column title="status" data-index="status">
+          <template slot-scope="text, record">
+            <a-tag v-if="record.status == 0" color="green">ON GOING</a-tag>
+            <a-tag v-else-if="record.status == 1" color="red">CANCELLED</a-tag>
+          </template>
+        </a-table-column>
         <a-table-column title="Action">
           <template slot-scope="text, record">
             <a-tooltip
@@ -76,14 +81,14 @@ export default {
       // 获得每本书的详细信息，并赋值给book_name
 
       for (let i = 0; i < tmpReservation.length; i++) {
-        // 将status转换为文字
-        if (tmpReservation[i].status===0){
-          tmpReservation[i].status="cancelled"
-        }else if(tmpReservation.status===1){
-          tmpReservation[i].status="not cancelled"
-        }else{
-          tmpReservation[i].status="finished"
-        }
+        // // 将status转换为文字
+        // if (tmpReservation[i].status===1){
+        //   tmpReservation[i].status="Cancelled"
+        // }else if(tmpReservation[i].status===0){
+        //   tmpReservation[i].status="In progress"
+        // }else{
+        //   tmpReservation[i].status="Finished"
+        // }
 
         // 转换时间格式
         tmpReservation[i].reservation_time = tmpReservation[i].reservation_time.substring(0,10);

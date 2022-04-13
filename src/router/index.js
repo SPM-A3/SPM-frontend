@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '../store/store'
 Vue.use(VueRouter)
 
 /**
@@ -68,31 +69,56 @@ const routes = [
     },
     {
         path: '/admin',
-        component: () => import('../components/admin/Admin.vue')
+        component: () => import('../components/admin/Admin.vue'),
+        meta: {
+            requireAdmin: true
+        }
     },
     {
         path: '/admin/book/add',
-        component: () => import('../components/admin/BookAdd.vue')
+        component: () => import('../components/admin/BookAdd.vue'),
+        meta: {
+            requireAdmin: true,
+        }
     },
     {
         path: '/admin/book/addbyapi',
-        component: () => import('../components/admin/AddByIsbn.vue')
+        component: () => import('../components/admin/AddByIsbn.vue'),
+        meta: {
+            requireAdmin: true,
+        }
     },
     {
         path: '/admin/book/:id/addload',
-        component: () => import('../components/admin/AddLocation.vue')
+        component: () => import('../components/admin/AddLocation.vue'),
+        meta: {
+            requireAdmin: true,
+        }
     },
     {
         path: '/admin/book/:id/edit',
-        component: () => import('../components/admin/BookEdit.vue')
+        component: () => import('../components/admin/BookEdit.vue'),
+        meta: {
+            requireAdmin: true,
+        }
     },
     {
         path: '/admin/user/add',
-        component: () => import('../components/admin/UserAdd.vue')
+        component: () => import('../components/admin/UserAdd.vue'),
+        meta: {
+            requireAdmin: true,
+        }
     },
     {
         path: '/admin/user/:id/edit',
-        component: () => import('../components/admin/UserEdit.vue')
+        component: () => import('../components/admin/UserEdit.vue'),
+        meta: {
+            requireAdmin: true,
+        }
+    },
+    {
+        path: '/unpermitted',
+        component: () => import('../components/admin/NoPermission.vue')
     }
 ]
 
@@ -100,8 +126,21 @@ const router = new VueRouter({
     mode: 'hash',
     routes,
 })
-// router.beforeEach((to, from, next) => {
-    
-// })
+
+router.beforeEach((to, from, next) => {
+    // console.log(getUserInfo())
+    if(to.meta.requireAdmin){
+        let userId= store.state.userId;
+        // const userId = getUserInfo().user_id;
+        if(userId === 4){
+            next();
+        }else{
+            next({path: '/unpermitted'})
+        }
+    }else{
+        next()
+    }
+  })
+  
 
 export default router;

@@ -201,7 +201,8 @@ export default {
       };
 
       let that = this;
-      fetch(`${this.$global.BASE_URL}/api/user/profile/detail`, requestOptions)
+      // fetch(`${this.$global.BASE_URL}/api/user/profile/detail`, requestOptions)
+      fetch(`http://101.43.38.236:8085/api/user/profile/detail`, requestOptions)
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
