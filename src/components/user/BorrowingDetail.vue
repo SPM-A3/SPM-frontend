@@ -11,7 +11,7 @@
     <template>
       <a-descriptions title="Borrowing Info" size="default" bordered>
         <a-descriptions-item label="book name ">{{
-          bookInfo.book_name
+          this.bookInfo.bookName
         }}</a-descriptions-item>
         <a-descriptions-item label="borrowing id">{{
           borrowingDetail.borrowing_id
@@ -49,21 +49,24 @@
       placement="top"
       v-if="borrowingDetail.status === 0"
     >
-      <a-button type="primary" icon="el-icon-edit" @click="returnBook()">
-        归还
-      </a-button>
-      <a-button type="primary" icon="el-icon-edit" @click="renewBook()"
-        >续借</a-button
-      >
+      <a-popconfirm title="Title" @confirm="returnBook()" @cancel="cancel">
+        <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit">return</a-button>
+      </a-popconfirm>
+      <a-popconfirm title="Title" @confirm="renewBook()" @cancel="cancel">
+        <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit">renew</a-button>
+      </a-popconfirm>
     </a-tooltip>
   </div>
 </template>
 
 <script>
+import { getAccessToken } from "../../services/user";
 export default {
   data() {
     return {
       borrowingDetail: [],
+      book_cover: "null",
+      book_name: "null",
       bookInfo: [],
     };
   },
@@ -71,78 +74,113 @@ export default {
     this.getBorrowingDetail(this.$route.params.id);
   },
   methods: {
-    getBorrowingDetail(borrowing_id) {
+    async getBorrowingDetail(borrowing_id) {
       // 获得借书详情
       let that = this;
 
       var myHeaders = new Headers();
-      myHeaders.append("access_token", this.access_token);
+      myHeaders.append("token", getAccessToken());
+      myHeaders.append("Content-Type", "application/json");
 
       var myInit = { method: "GET", headers: myHeaders };
 
       var myUrl =
-        "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/user/borrowing/detail?borrowing_id=" +
+        this.$global.BASE_URL +
+        "/api/user/borrowing/detail?borrowing_id=" +
         borrowing_id;
+
+      var myRequest = new Request(myUrl, myInit);
+
+      await fetch(myRequest)
+        .then((response) => response.json())
+        .then(function (data) {
+          console.log("borrowing_detail", data);
+          that.borrowingDetail = data.data;
+        })
+        .catch((err) => console.log("Request Failed", err));
+      console.log(this.borrowingDetail);
+
+      // 获得图书详情
+      var myHeaders2 = new Headers();
+      myHeaders2.append("Content-Type", "application/json");
+      myHeaders2.append("token", getAccessToken());
+
+      var myInit2 = { method: "GET", headers: myHeaders2 };
+      var myUrl2 =
+        this.$global.BASE_URL +
+        "/api/admin/book/detail?ISBN=" +
+        this.borrowingDetail.ISBN;
+      var myRequest2 = new Request(myUrl2, myInit2);
+
+      await fetch(myRequest2)
+        .then((response) => response.json())
+        .then(function (data) {
+          console.log("book_detail", data);
+          that.book_name = data.data[0].bookName;
+          that.book_cover = data.data[0].cover;
+          that.bookInfo = data.data[0];
+          console.log(that.bookInfo);
+        });
+    },
+    // 归还图书
+    returnBook(borrowing_id) {
+      let that = this;
+      console.log(borrowing_id);
+
+      var myHeaders = new Headers();
+      myHeaders.append("token", getAccessToken());
+      myHeaders.append("Content-Type", "application/json");
+
+      var myBody = {
+        borrowing_id: borrowing_id,
+      };
+
+      var myInit = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify({ borrowing_id }),
+      };
+
+      var myUrl = this.$global.BASE_URL + "/api/borrowing/return";
 
       var myRequest = new Request(myUrl, myInit);
 
       fetch(myRequest)
         .then((response) => response.json())
         .then(function (data) {
-          that.borrowingDetail = data;
+          console.log("return", data);
+          if (data.code === 0) {
+            that.$message.success("return successfully!");
+          } else {
+            that.$message.error(data.msg);
+          }
         })
         .catch((err) => console.log("Request Failed", err));
-      console.log(this.borrowingDetail);
-
-      // 获得图书详情
-
-      var myInit2 = { method: "GET" };
-      var myUrl2 =
-        "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/book/detail?ISBN=" +
-        this.borrowingDetail.ISBN;
-      var myRequest2 = new Request(myUrl2, myInit2);
-
-      fetch(myRequest2)
-        .then((response) => response.json())
-        .then(function (data) {
-          console.log(data);
-          that.bookInfo = data.book_info;
-        });
     },
-    // 归还图书
-    returnBook() {
-      let borrowing_id = this.borrowingDetail.borrowing_id;
-      console.log(borrowing_id);
-
-      var myHeaders = new Headers();
-      myHeaders.append("access_token", this.access_token);
-
-      var myInit = { method: "POST", body: borrowing_id, headers: myHeaders };
-
-      var myRequest = new Request(
-        "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/borrowing/return",
-        myInit
-      );
-
-      fetch(myRequest)
-        .then((response) => response.json())
-        .then(function (data) {
-          console.log(data);
-        })
-        .catch((err) => console.log("Request Failed", err));
+    cancel() {
+      this.$message.error("Click on No");
     },
     // 续借图书
-    renewBook() {
-      let borrowing_id = this.borrowingDetail.borrowing_id;
+    renewBook(borrowing_id) {
+      let that = this;
       console.log(borrowing_id);
 
       var myHeaders = new Headers();
-      myHeaders.append("access_token", this.access_token);
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("token", getAccessToken());
 
-      var myInit = { method: "POST", body: borrowing_id, headers: myHeaders };
+      var myBody = {
+        borrowing_id: borrowing_id,
+      };
+
+      var myInit = {
+        method: "POST",
+        body: JSON.stringify(myBody),
+        headers: myHeaders,
+      };
 
       var myRequest = new Request(
-        "https://www.fastmock.site/mock/54449dce8948f02a106d0f454713f04b/spm/api/borrowing/renew",
+        this.$global.BASE_URL + "/api/borrowing/renew",
         myInit
       );
 
@@ -150,6 +188,11 @@ export default {
         .then((response) => response.json())
         .then(function (data) {
           console.log(data);
+          if (data.code === 0) {
+            that.$message.success("renew successfully!");
+          } else {
+            that.$message.error(data.msg);
+          }
         })
         .catch((err) => console.log("Request Failed", err));
     },

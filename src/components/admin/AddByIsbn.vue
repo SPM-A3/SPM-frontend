@@ -1,6 +1,6 @@
 <template>
   <a-card :body-style="{padding: '24px 32px'}" :bordered="false" title="Add book">
-    <a-form>
+    <a-form v-if="getBook">
         <a-form-item
           label="cover"
           :labelCol="{span: 7}"
@@ -90,22 +90,43 @@
         <a-button @click="$router.push('/admin')">CANCEL</a-button>
       </a-form-item>
     </a-form>
+    <a-form v-else>
+        <a-form-item
+            :label="ISBN"
+            :labelCol="{span: 7}"
+            :wrapperCol="{span: 10}"
+        >
+        <a-input :placeholder="ISBNInput" v-model="newBookInfo.ISBN"/>
+      </a-form-item>
+      <a-form-item 
+          :wrapperCol="{span: 10, offset: 7}"
+      >
+          <a-button @click="search" type="primary" :loading="searching">
+              <a-tooltip placement="topLeft" title="Call api of https://openlibrary.org/." arrow-point-at-center>
+                GET BOOK INFO
+              </a-tooltip>
+          </a-button>
+      </a-form-item>
+    </a-form>
   </a-card>
 </template>
 
 <script>
 import { getAccessToken } from '../../services/user';
 import options from './category'
+import moment from 'moment'
+
 function getBase64(img, callback) {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
 }
 export default {
-    name: "BookAdd",
+    name: "AddByIsbn",
     data() {
         return {
-            baseUrl: "https://www.fastmock.site/mock/0aee7559464fadc986c2e38e63492a86/spm",
+            getBook: false,
+            searching: false,
             loading: false,
             bookName: "Book name",
             bookNameInput: "Please input book name",
@@ -177,8 +198,8 @@ export default {
       },
       submit(){
         let newBookInfoSubmit = { ... this.newBookInfo };
-        newBookInfoSubmit.category = this.newBookInfo.category[1];
         // 处理时间为2020-02
+        newBookInfoSubmit.category  = 
         newBookInfoSubmit.published_time = newBookInfoSubmit.published_time.format("YYYY-MM")+"-01";
         console.log(newBookInfoSubmit);
         // 提交
@@ -199,10 +220,10 @@ export default {
             if(result.code === 0 || result.code === "0"){
               that.$message.success('Add book successfully')
               setTimeout(() => {
-                that.$router.push("/admin?tab=user");
+                that.$router.push("/admin");
               }, 200)
             }else{
-              that.$message.error(result.error_msg);
+              that.$message.error("Failed to add the book.");
             }
           })
           .catch(error => {
@@ -215,6 +236,32 @@ export default {
             option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
         );
       },
+      async search(){
+          this.searching = true;
+          const isbn = this.newBookInfo.ISBN;
+          let bookInfo = {};
+          let that = this;
+          await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=details&format=json`)
+            .then((response) => response.json())
+            .then(result => {
+                if(JSON.stringify(result) === '{}' ){
+                    that.$message.error("ISBN not found, please enter another.");
+                    that.searching = false;
+                }else{
+                    bookInfo = result[`ISBN:${isbn}`].details
+                }
+            })
+          this.newBookInfo.book_name = bookInfo.title;
+          this.newBookInfo.publisher = bookInfo.publishers[0];
+          this.newBookInfo.cover = `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}.jpg`;
+          this.newBookInfo.brief_introduction = "";
+          this.newBookInfo.author = (bookInfo.authors[0]).name;
+          this.newBookInfo.published_time = moment(bookInfo.publish_date, "MMMM DD, YYYY");
+          this.newBookInfo.brief_introduction = bookInfo.first_sentence.value;
+          this.$message.success("Got the book.");
+          this.searching = false;
+          this.getBook = true;
+      }
     },
 }
 </script>
