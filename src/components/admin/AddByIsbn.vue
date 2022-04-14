@@ -267,8 +267,10 @@ export default {
           fetch(`https://openlibrary.org/api/get?key=${bookInfo.works[0].key}`)
               .then(res => res.json())
               .then(result => {
-                that.newBookInfo.brief_introduction = result.result.description.slice(0,200)+'...';
+                if(result.result.description)that.newBookInfo.brief_introduction = result.result.description.slice(0,200)+'...';
+                else that.newBookInfo.brief_introduction = that.newBookInfo.book_name;
               })
+          that.newBookInfo.category = ["I", "I1"]
           this.$message.success("Got the book.");
           this.searching = false;
           this.getBook = true;

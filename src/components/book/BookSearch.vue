@@ -143,9 +143,9 @@
               <p><b>ISBN</b>: {{ item.ISBN }}</p>
               <p><b>Available</b>: <a-tag color="green"> YES </a-tag></p>
             </a-col>
-            <a-col :span="10" type="flex">
+            <!-- <a-col :span="10" type="flex">
               <p id="intro"><b>Introduction</b>: {{ item.introduction }}</p>
-            </a-col>
+            </a-col> -->
           </a-row>
         </a-list-item>
       </a-list>
