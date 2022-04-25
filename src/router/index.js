@@ -68,6 +68,10 @@ const routes = [
         component: () => import('../components/user/ReservationDetail.vue')
     },
     {
+        path: '/user/fine/history',
+        component: () => import('../components/user/FineHistory.vue')
+    },
+    {
         path: '/admin',
         component: () => import('../components/admin/Admin.vue'),
         meta: {
@@ -119,6 +123,10 @@ const routes = [
     {
         path: '/unpermitted',
         component: () => import('../components/admin/NoPermission.vue')
+    },
+    {
+        path: '/payresult',
+        component: () => import('../components/user/PayResult.vue')
     }
 ]
 

@@ -13,7 +13,8 @@
                 <a-menu-item key="2" @click="changeMenu('/book/search')"> SEARCH </a-menu-item>
                 <a-menu-item key="3" @click="changeMenu('/user/borrowing')"> BORROWING </a-menu-item>
                 <a-menu-item key="4" @click="changeMenu('/user/borrowing/history')"> HISTORY </a-menu-item>
-                <a-menu-item key="5" @click="changeMenu('/user/reservation')"> RESERVATION </a-menu-item>
+                <a-menu-item key="5" @click="changeMenu('/user/fine/history')"> FINE HISTORY </a-menu-item>
+                <a-menu-item key="6" @click="changeMenu('/user/reservation')"> RESERVATION </a-menu-item>
               </a-menu>
           </div>
         

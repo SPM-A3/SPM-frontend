@@ -1,5 +1,5 @@
 <template>
-  <div id="body">
+  <div>
     <template>
       <a-card hoverable style="width: 240px">
         <template #cover>
@@ -208,16 +208,25 @@ export default {
       let payName = getUserInfo().user_id;
       let count = 1;
       let price = this.borrowingDetail.fine;
-      let cose = price;
+      let cost = price;
       let that = this;
       await fetch(this.orderUrl, {
-        method: "POST", 
-        body:`payName=test&goodsName=%E5%A4%A7%E5%8D%AB%E9%BE%99&price=2&count=1&cost=2.00`
+        method: "POST",
+        "headers": {
+          "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        },
+        body: `payName=${payName}&goodsName=${goodsName}&price=${price}&count=${count}&cost=${cost}`
       })
         .then(response => response.text())
         .then(res => {
-          that.$root.$el.innerHTML = res;
-          console.log(that.$root.$el.innerHTML)
+          document.querySelector('body').innerHTML = res;//这里的JSON.parse(res.data.data).responsePage是为了拿到上面所说的Form表单数据，因为我请求的接口是被封装过一层的，所以大家使用的时候将这里替换成实际拿到的Form表单数据就可以了
+          const div = document.createElement('div') // 创建div
+          div.innerHTML = res;//这里同上面所说的使用时将JSON.parse(res.data.data).responsePage替换为自己获取的Form表单数据
+            // 将返回的form 放入div
+          document.body.appendChild(div)
+          console.log(11111, document.forms[0])
+          document.forms[0].submit()
+          // console.log(that.$root.$el.innerHTML)
         }) 
     }
   },
