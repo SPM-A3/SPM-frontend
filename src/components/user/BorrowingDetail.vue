@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="body">
     <template>
       <a-card hoverable style="width: 240px">
         <template #cover>
@@ -35,9 +35,9 @@
         <a-descriptions-item label="return time">{{
           borrowingDetail.return_time
         }}</a-descriptions-item>
-        <a-descriptions-item label="fine">{{
-          borrowingDetail.fine
-        }}</a-descriptions-item>
+        <a-descriptions-item label="fine">
+          {{borrowingDetail.fine}}
+        </a-descriptions-item>
       </a-descriptions>
     </template>
 
@@ -49,10 +49,13 @@
       placement="top"
       v-if="borrowingDetail.status === 0"
     >
-      <a-popconfirm title="Title" @confirm="returnBook()" @cancel="cancel">
+      <!-- <a-popconfirm title="Sure to return?" @confirm="returnBook()" @cancel="cancel">
         <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit">return</a-button>
+      </a-popconfirm> -->
+      <a-popconfirm title="Are you sure to pay the fine?" @confirm="payFine()" @cancel="cancel">
+        <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit">pay</a-button>
       </a-popconfirm>
-      <a-popconfirm title="Title" @confirm="renewBook()" @cancel="cancel">
+      <a-popconfirm title="Are you sure to renew the book" @confirm="renewBook()" @cancel="cancel">
         <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit">renew</a-button>
       </a-popconfirm>
     </a-tooltip>
@@ -60,7 +63,7 @@
 </template>
 
 <script>
-import { getAccessToken } from "../../services/user";
+import { getAccessToken, getUserInfo } from "../../services/user";
 import moment from 'moment'
 export default {
   data() {
@@ -69,6 +72,7 @@ export default {
       book_cover: "null",
       book_name: "null",
       bookInfo: [],
+      orderUrl: "https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/web-framework/express-app/createOrder"
     };
   },
   created() {
@@ -161,7 +165,7 @@ export default {
         .catch((err) => console.log("Request Failed", err));
     },
     cancel() {
-      this.$message.error("Click on No");
+      // this.$message.error("Click on No");
     },
     // 续借图书
     renewBook(borrowing_id) {
@@ -199,6 +203,23 @@ export default {
         })
         .catch((err) => console.log("Request Failed", err));
     },
+    async payFine() {
+      let goodsName = `fine${this.borrowing_id}`
+      let payName = getUserInfo().user_id;
+      let count = 1;
+      let price = this.borrowingDetail.fine;
+      let cose = price;
+      let that = this;
+      await fetch(this.orderUrl, {
+        method: "POST", 
+        body:`payName=test&goodsName=%E5%A4%A7%E5%8D%AB%E9%BE%99&price=2&count=1&cost=2.00`
+      })
+        .then(response => response.text())
+        .then(res => {
+          that.$root.$el.innerHTML = res;
+          console.log(that.$root.$el.innerHTML)
+        }) 
+    }
   },
 };
 </script>

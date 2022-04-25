@@ -157,7 +157,6 @@
 import { getAccessToken } from "@/services/user";
 import  BASE_URL  from "@/services/api";
 
-
 export default {
   name: "Search",
 

@@ -1,6 +1,6 @@
 <template>
   <a-config-provider :locale="locale">
-    <div id="app">
+    <div id="app" ref="root">
       <a-layout id="components-layout-demo-custom-trigger">
         <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%', height: '6vh' }" class="header">
           <div class="logo" />
@@ -55,6 +55,7 @@ export default {
   name: "app",
   data() {
     return {
+      root: null,
       isLogin: false,
       collapsed: false,
       locale: enUS,
