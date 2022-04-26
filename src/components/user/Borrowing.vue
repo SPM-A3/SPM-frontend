@@ -11,6 +11,11 @@
       <a-table-column title="due date" data-index="due_date"> </a-table-column>
       <a-table-column title="left days" data-index="days"> </a-table-column>
       <a-table-column title="fine" data-index="fine"> </a-table-column>
+      <a-table-column title="Barcode">
+          <template slot-scope="record">
+            <vue-barcode :value="record.ISBN+'/'+record.book_id" style="width: 200px"></vue-barcode>
+          </template>
+        </a-table-column>
       <a-table-column title="Action">
         <template slot-scope="text, record">
           <a-button
@@ -20,13 +25,13 @@
           >detail</a-button>
 
           <!-- 归还按钮 -->
-          <a-popconfirm
+          <!-- <a-popconfirm
             title="Title"
             @confirm="returnBook(record.borrowing_id)"
             @cancel="cancel"
           >
             <a-button type="primary" :style="{ marginLeft: '8px' }" icon="el-icon-edit">return</a-button>
-          </a-popconfirm>
+          </a-popconfirm> -->
 
           <a-popconfirm
             title="Title"
@@ -44,6 +49,8 @@
 <script>
 import { getAccessToken } from "../../services/user";
 import moment from 'moment'
+import VueBarcode from '@chenfengyuan/vue-barcode';
+
 export default {
   data() {
     return {
@@ -52,6 +59,7 @@ export default {
       loading: true,
     };
   },
+  components: {VueBarcode},
   created() {
     this.getBorrowing();
   },

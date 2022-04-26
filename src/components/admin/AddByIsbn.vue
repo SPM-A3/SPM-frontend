@@ -92,19 +92,31 @@
     </a-form>
     <a-form v-else>
         <a-form-item
-            :label="ISBN"
+          label="language"
+          :labelCol="{span: 7}"
+          :wrapperCol="{span: 10}"
+        >
+          <a-select default-value="zh" @change="handleChangeLanguage">
+            <a-select-option value="en">
+              English
+            </a-select-option>
+            <a-select-option value="zh">
+              中文
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+            label="ISBN"
             :labelCol="{span: 7}"
             :wrapperCol="{span: 10}"
         >
-        <a-input :placeholder="ISBNInput" v-model="newBookInfo.ISBN"/>
+        <a-input :placeholder="ISBNInput" v-model="newBookInfo.ISBN" @keyup.enter="search"/>
       </a-form-item>
       <a-form-item 
           :wrapperCol="{span: 10, offset: 7}"
       >
           <a-button @click="search" type="primary" :loading="searching">
-              <a-tooltip placement="topLeft" title="Call api of https://openlibrary.org/." arrow-point-at-center>
-                GET BOOK INFO
-              </a-tooltip>
+            GET BOOK INFO
           </a-button>
       </a-form-item>
     </a-form>
@@ -152,7 +164,8 @@ export default {
                 cover: undefined,
                 brief_introduction: undefined,
             },
-            options: options.options,     
+            options: options.options,
+            language: "zh",
         }
     },
     created(){
@@ -199,7 +212,7 @@ export default {
       submit(){
         let newBookInfoSubmit = { ... this.newBookInfo };
         // 处理时间为2020-02
-        newBookInfoSubmit.category  = 
+        newBookInfoSubmit.category  = this.newBookInfo.category[1];
         newBookInfoSubmit.published_time = newBookInfoSubmit.published_time.format("YYYY-MM")+"-01";
         console.log(newBookInfoSubmit);
         // 提交
@@ -237,6 +250,11 @@ export default {
         );
       },
       async search(){
+          if(this.language === "zh"){
+            console.log(this.language);
+            this.cnSearch();
+            return;
+          }
           this.searching = true;
           const isbn = this.newBookInfo.ISBN;
           let bookInfo = {};
@@ -260,7 +278,14 @@ export default {
             await fetch(`https://openlibrary.org/api/get?key=/authors/${(bookInfo.works[0].key.split('/'))[2].slice(0,-1)}A`)
               .then(res => res.json())
               .then(result => {
-                that.newBookInfo.author = result.result.name;
+                if(result.status == "fail"){
+                  console.log("fail")
+                }else{
+                  that.newBookInfo.author = result.result.name;
+                }
+              })
+              .catch(err => {
+                
               })
           }
           if(bookInfo.publish_date) this.newBookInfo.published_time = moment(bookInfo.publish_date, "MMMM DD, YYYY");
@@ -274,6 +299,34 @@ export default {
           this.$message.success("Got the book.");
           this.searching = false;
           this.getBook = true;
+      },
+      cnSearch(){
+        this.searching = true;
+        const isbn = this.newBookInfo.ISBN;
+        let that = this;
+        fetch(`https://api.jike.xyz/situ/book/isbn/${isbn}?apikey=12524.6833bc5d3ba860a9242c196b4feaae26.8da93d6d3ac6f6bc9f2ab633b26cc791`)
+          .then(res => res.json())
+          .then(result => {
+            const {data, ret, msg} = result;
+            that.loading = false;
+            if(ret === 1){
+              that.$message.error("ISBN not found!");
+            }else{
+              that.$message.success("Got the book.")
+              that.newBookInfo.cover = data.photoUrl;
+              that.newBookInfo.book_name = data.name;
+              that.newBookInfo.author = data.author;
+              that.newBookInfo.publisher = data.publishing;
+              // that.newBookInfo.ISBN = data.code;
+              // that.newBookInfo.category
+              that.newBookInfo.published_time = moment(data.published);
+              that.newBookInfo.brief_introduction = data.description.slice(0,200);
+              this.getBook = true;
+            }
+          })
+      },
+      handleChangeLanguage(value){
+        this.language = value;
       }
     },
 }

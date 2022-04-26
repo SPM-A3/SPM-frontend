@@ -11,7 +11,12 @@
         <a-table-column title="borrow time" data-index="borrow_time" />
         <a-table-column title="due time" data-index="due_time">
         </a-table-column>
-        <a-table-column title="days" data-index="days"> </a-table-column>
+        <a-table-column title="left days" data-index="days"> </a-table-column>
+        <a-table-column title="Barcode">
+          <template slot-scope="record">
+            <vue-barcode :value="record.ISBN+'/'+record.book_id" style="width: 200px"></vue-barcode>
+          </template>
+        </a-table-column>
         <a-table-column title="Action">
           <template slot-scope="text, record">
             <!-- 详情按钮 -->
@@ -38,7 +43,9 @@
 
 <script>
 import { getAccessToken } from "../../services/user";
+import VueBarcode from '@chenfengyuan/vue-barcode';
 export default {
+  components: {VueBarcode},
   data() {
     return {
       access_token: "",

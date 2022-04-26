@@ -134,6 +134,9 @@
           <a-tag v-else-if="status == 1" color="red">Lent</a-tag>
         </template>
 
+        <template slot="barcode" slot-scope="record" >
+          <vue-barcode :value="bookInfo.ISBN+'/'+record.book_id"></vue-barcode>
+        </template>
         <template slot="operation" slot-scope="text, record">
           <a-popconfirm
             title="Sure to Borrow?"
@@ -156,6 +159,7 @@
 
 <script>
 import { getAccessToken } from "@/services/user";
+import VueBarcode from '@chenfengyuan/vue-barcode';
 import BASE_URL from "@/services/api";
 
 const columns = [
@@ -191,6 +195,11 @@ const columns = [
     scopedSlots: { customRender: "status" },
   },
   {
+    title: "Barcode",
+    key: "barcode",
+    scopedSlots: { customRender: "barcode" },
+  },
+  {
     title: "Operation",
     key: "operation",
     scopedSlots: { customRender: "operation" },
@@ -199,6 +208,7 @@ const columns = [
 
 export default {
   name: "Detail",
+  components: {VueBarcode},
   data() {
     return {
       isReserved: "b",

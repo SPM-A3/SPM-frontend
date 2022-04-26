@@ -204,7 +204,9 @@ export default {
         .catch((err) => console.log("Request Failed", err));
     },
     async payFine() {
-      let goodsName = `fine${this.borrowing_id}`
+      let goodsName = `fine${this.borrowingDetail.borrowing_id}`
+      let ISBN = this.borrowingDetail.ISBN;
+      let book_id = this.borrowingDetail.book_id;
       let payName = getUserInfo().user_id;
       let count = 1;
       let price = this.borrowingDetail.fine;
@@ -215,7 +217,7 @@ export default {
         "headers": {
           "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
         },
-        body: `payName=${payName}&goodsName=${goodsName}&price=${price}&count=${count}&cost=${cost}`
+        body: `payName=${payName}&goodsName=${goodsName}&price=${price}&count=${count}&cost=${cost}&ISBN=${ISBN}&book_id=${book_id}`
       })
         .then(response => response.text())
         .then(res => {
