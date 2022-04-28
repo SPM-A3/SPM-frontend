@@ -270,6 +270,7 @@ export default {
       fetch(`${BASE_URL}/api/user/reservation/add`, requestoptions)
         .then((response) => response.json())
         .then((result) => {
+          
           console.log(result);
         });
 
@@ -312,6 +313,7 @@ export default {
       // let JSONISBN = {
       //   ISBN: this.getBookISBN()
       // }
+      let that = this;
       let BASE_URL = "http://175.24.201.104:8085";
 
       let myHeaders = new Headers({ "Content-Type": "application/json" });
@@ -324,11 +326,34 @@ export default {
           book_id: book_id,
         }),
       };
-
       // let that = this;
       fetch(`${BASE_URL}/api/user/borrow`, requestoptions)
         .then((response) => response.json())
         .then((result) => {
+          const borrowing_number = result.data;
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+          var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: JSON.stringify({borrowing_number}),
+          };
+          fetch(
+            "https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/web-framework/extra-function/sendborrowingmsg",
+            requestOptions
+          )
+          .then((response) => response.text())
+          .then((result) => {
+            if(result === "success"){
+              console.log("成功发送借书通知")
+            }else{
+              that.$message.error("Failed to send notification.");
+            }
+          })
+          .catch((error) => {
+            that.$message.error("Failed to send notification. API call failed.");
+            console.log(error);
+          });
           console.log(result);
         });
 

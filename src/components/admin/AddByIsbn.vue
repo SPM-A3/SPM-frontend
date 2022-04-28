@@ -169,6 +169,7 @@ export default {
         }
     },
     created(){
+      console.log(moment().format())
     },
     methods: {
       handleUpdate(info) {
@@ -265,6 +266,7 @@ export default {
                 if(JSON.stringify(result) === '{}' ){
                     that.$message.error("ISBN not found, please enter another.");
                     that.searching = false;
+                    that.newBookInfo.ISBN = undefined;
                 }else{
                     bookInfo = result[`ISBN:${isbn}`].details
                 }

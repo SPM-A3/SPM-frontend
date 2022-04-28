@@ -13,95 +13,115 @@
               placeholder="Please scan book's barcode"
               :disabled="loading2"
               v-model="barcode"
-              @keyup.enter="returnBook"
+              @keyup.enter="addBorrowing"
             />
-            <a-button type="primary" :loading="loading2" @click="returnBook"
-              >return</a-button>
+            <!-- <a-button type="primary" :loading="loading2" @click="returnBook"
+              >return</a-button> -->
           </a-form-item>
         </div>
-        <span style="float: right; margin-top: 3px">
-          <!-- <a-button type="primary" :loading="loading2" @click="returnBook"
-            >return</a-button
-          > -->
-        </span>
       </a-form>
     </div>
+    <a-space class="operator">
+      <a-popconfirm
+        title="Are you sure return the selected books?"
+        ok-text="Yes"
+        cancel-text="No"
+        @confirm="returnBooks"
+      >
+        <a-button type="danger">
+          RETURN BOOKS
+        </a-button>
+      </a-popconfirm>
+    </a-space>
+    <standard-table
+      :loading="loadingTable"
+      :columns="columns"
+      :dataSource="dataSource"
+      :selectedRows.sync="selectedRows"
+      @clear="onClear"
+      @change="onChange"
+      @selectedRowChange="onSelectChange"
+    >
+      <div slot="barcode" slot-scope="{ record }" style="width: 250px">
+        <vue-barcode :value="record.ISBN+'/'+record.book_id" style="width: 100%"></vue-barcode>
+      </div>
+      <div slot="cover" slot-scope="{ record }">
+        <img
+          slot="avatar"
+          size="large"
+          shape="square"
+          style="width: 150px"
+          :src="record.cover"
+        />
+      </div>
+    </standard-table>
   </a-card>
 </template>
 
 <script>
-// import StandardTable from "@/components/table/StandardTable";
-// const columns = [
-//   {
-//     title: "cover",
-//     dataIndex: "cover",
-//     needTotal: true,
-//     scopedSlots: { customRender: "cover" },
-//   },
-//   {
-//     title: "title",
-//     dataIndex: "book_name",
-//   },
-//   {
-//     title: "introduction",
-//     dataIndex: "brief_introduction",
-//     scopedSlots: { customRender: "description" },
-//   },
-//   {
-//     title: "publisher",
-//     dataIndex: "publisher",
-//   },
-//   {
-//     title: "publish date",
-//     sorter: true,
-//     dataIndex: "published_time",
-//   },
-//   {
-//     title: "author",
-//     dataIndex: "author",
-//   },
-//   {
-//     title: "category",
-//     dataIndex: "category",
-//   },
-//   {
-//     title: "ISBN",
-//     dataIndex: "key",
-//     sorter: true,
-//     scopedSlots: { customRender: "barcode" },
-//   },
-//   {
-//     title: "actions",
-//     scopedSlots: { customRender: "action" },
-//   },
-// ];
+import StandardTable from "@/components/table/StandardTable";
+const columns = [
+  {
+    title: "cover",
+    dataIndex: "cover",
+    needTotal: true,
+    scopedSlots: { customRender: "cover" },
+  },
+  {
+    title: "Title",
+    dataIndex: "book_name",
+  },
+  {
+    title: "User id",
+    dataIndex: "user_id",
+  },
+  {
+    title: "Borrowing id",
+    dataIndex: "borrowing_number"
+  },
+  {
+    title: "Start time",
+    dataIndex: "borrow_start_time"
+  },
+  {
+    title: "Due time",
+    dataIndex: "due_time"
+  },
+
+  {
+    title: "Barcode",
+    scopedSlots: {customRender: "barcode"}
+  }
+];
 
 /**
 {
-    ISBN: "978-7-111-64577-1",
-    book_name: "",
-    bref_introduction: "",
-    publisher: "",
-    published_time: "",
-    author: "",
-    category: ""
+    "ISBN": 9787111461340,
+    "book_name": "云计算",
+    "borrowing_number": 830127168,
+    "book_id": 1,
+    "borrow_start_time": "2022-04-26T16:00:00.000Z",
+    "due_time": "2022-05-06T16:00:00.000Z",
+    "status": 0,
+    "user_id": 4
 }
 */
 import { getAccessToken } from "@/services/user";
 import options from "./category";
-// import VueBarcode from "@chenfengyuan/vue-barcode";
+import VueBarcode from "@chenfengyuan/vue-barcode";
 
 export default {
   name: "BookManage",
-  // components: { StandardTable, VueBarcode },
+  components: { StandardTable, VueBarcode },
   data() {
     return {
       loading2: false,
       advanced: true,
-      // columns: columns,
+      columns: columns,
+      currentIndex: 0,
       dataSource: [],
       selectedRows: [],
-      loading: true,
+      loadingTable: false,
       options: options.options,
       barcode: undefined,
       searchQuery: {},
@@ -118,7 +138,6 @@ export default {
     toggleAdvanced() {
       this.advanced = !this.advanced;
     },
-
     onClear() {
       // this.$message.info("您清空了勾选的所有行");
     },
@@ -136,24 +155,67 @@ export default {
         this.remove();
       }
     },
-    returnBook() {
+    addBorrowing() {
+      this.loadingTable = true;
+      let that = this;
+      const barcode = this.barcode;
+
+      const existItem = this.dataSource.filter((item) => {
+        const itemBarcode = `${item.ISBN}/${item.book_id}`;
+        return (itemBarcode === barcode);
+      });
+      if(existItem.length > 0) {
+        this.loadingTable = false;
+        this.barcode = undefined;
+        this.$message.error("This barcode has been added.");
+        return;
+      }
+
+      const baseUrl = "https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/web-framework/extra-function"
+      // const baseUrl = "http://localhost:3000"
+      fetch(`${baseUrl}/borrowing?barcode=${barcode}`)
+        .then(res => res.json())
+        .then(result => {
+          that.loadingTable = false;
+          console.log(111)
+          const {code, msg, record} = result;
+          console.log(record)
+          if(code < 0){
+            that.$message.error("Barcode not found or this book is not borrowed.");
+          }else{
+            record.key = record.ISBN;
+            that.dataSource.push(record);
+          }
+          that.barcode = undefined; 
+        })
+        .catch(res => {
+          that.loadingTable = false;
+          that.$message.error("API call failed.");
+          that.barcode = undefined;
+        })
+    },
+    returnBooks() {
       this.loading2 = true;
-      const ISBN = this.barcode.split("/")[0];
-      const book_id = this.barcode.split("/")[1];
+      if(this.selectedRows.length == 0){
+        this.$message.error("No selected books.");
+        return;
+      }
+      let barcodes = [];
+      for(let i of this.selectedRows){
+        barcodes.push(`${i.ISBN}/${i.book_id}`);
+      }
+
       var myHeaders = new Headers();
-      myHeaders.append("access_token", "test");
       myHeaders.append("Content-Type", "application/json");
 
       var raw = JSON.stringify({
-        ISBN,
-        book_id,
+        barcodes
       });
 
       var requestOptions = {
         method: "POST",
         headers: myHeaders,
         body: raw,
-        redirect: "follow",
       };
       let that = this;
       fetch(
@@ -165,7 +227,12 @@ export default {
           that.loading2 = false;
           if (result === "success") {
             that.$message.success("Successfully return.");
-            that.barcode = undefined
+            that.barcode = undefined;
+            that.dataSource = that.dataSource.filter(
+              (item) =>
+                that.selectedRows.findIndex((row) => row.key === item.key) === -1
+            );
+            that.selectedRows = []
           } else {
             that.$message.error("Failed to return.");
           }
@@ -173,9 +240,7 @@ export default {
         .catch((error) => console.log("error", error));
     },
   },
-  created() {
-    
-  },
+  created() {},
 };
 </script>
 

@@ -72,6 +72,11 @@ const routes = [
         component: () => import('../components/user/FineHistory.vue')
     },
     {
+        path: '/admin/login',
+        name: '管理员登录页',
+        component: () => import('../components/AdminLogin.vue'),
+    },
+    {
         path: '/admin',
         component: () => import('../components/admin/Admin.vue'),
         meta: {
@@ -127,6 +132,10 @@ const routes = [
     {
         path: '/payresult',
         component: () => import('../components/user/PayResult.vue')
+    },
+    {
+        path: '*',
+        component: () => import('../components/404.vue')
     }
 ]
 
@@ -136,11 +145,12 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+    console.log(localStorage.getItem("role"));
     // console.log(getUserInfo())
     if(to.meta.requireAdmin){
-        let userId= store.state.userId;
+        const role = localStorage.getItem("role");
         // const userId = getUserInfo().user_id;
-        if(userId === 4){
+        if(role === "admin"){
             next();
         }else{
             next({path: '/unpermitted'})

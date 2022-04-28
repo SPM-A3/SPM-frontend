@@ -51,7 +51,7 @@
 
 <script>
 import enUS from 'ant-design-vue/lib/locale-provider/en_US';
-import {tokenLogin, setUserInfo, logout, clearUserInfo} from './services/user'
+import {tokenLogin, setUserInfo, isAdmin, logout, clearUserInfo} from './services/user'
 export default {
   name: "app",
   data() {
@@ -87,7 +87,6 @@ export default {
     
   },
   created(){
-    console.log(111);
     this.$message.config({
       top: `10vh`,
       duration: 1,

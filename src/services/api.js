@@ -4,7 +4,9 @@
 const BASE_URL =  "http://101.43.38.236:8085"
 // const BASE_URL =  "http://175.24.201.104:8085";
 module.exports = {
+  ADMIN_LOGIN: `${BASE_URL}/api/admin/login`,
   LOGIN: `${BASE_URL}/api/user/login`,
   REGISTER: `${BASE_URL}/api/user/register`,
-  CHECK: `${BASE_URL}/api/user/login/check`
+  CHECK: `${BASE_URL}/api/user/login/check`,
+  ADMIN_CHECK: `${BASE_URL}/api/admin/login/check`,
 }

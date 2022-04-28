@@ -3,17 +3,18 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 const state={
-    userId: 4
+    role: ""
 }
 
 const mutations={
-    setUserId(state, userId){//aaNumber名称随意起
-        state.userId = userId
+    setRole(state, role){//aaNumber名称随意起
+        console.log("setRole",role);
+        state.role = role
     },
 }
 const getters={
-    getUserId(state){
-        return state.userId
+    getRole: (state) => {
+        return state.role
     }
 }
 const store=new Vuex.Store({

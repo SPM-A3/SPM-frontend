@@ -52,11 +52,11 @@
       <!-- <a-popconfirm title="Sure to return?" @confirm="returnBook()" @cancel="cancel">
         <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit">return</a-button>
       </a-popconfirm> -->
-      <a-popconfirm title="Are you sure to pay the fine?" @confirm="payFine()" @cancel="cancel">
-        <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit">pay</a-button>
+      <a-popconfirm title="Are you sure to pay the fine?" @confirm="payFine()" @cancel="cancel" v-if="borrowingDetail.fine > 0">
+        <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit">Pay</a-button>
       </a-popconfirm>
       <a-popconfirm title="Are you sure to renew the book" @confirm="renewBook()" @cancel="cancel">
-        <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit">renew</a-button>
+        <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit">Renew</a-button>
       </a-popconfirm>
     </a-tooltip>
   </div>
