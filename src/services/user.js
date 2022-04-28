@@ -74,6 +74,7 @@ export function getRole(){
 
 export function clearUserInfo(){
   localStorage.removeItem('userInfo')
+  clearRole();
 }
 
 export function clearRole(){

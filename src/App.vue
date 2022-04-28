@@ -10,6 +10,7 @@
                 mode="horizontal"
                 :style="{ lineHeight: '6vh' }"
               >
+                <a-menu-item key="1" @click="changeMenu('/admin')" v-if="isAdmin"> ADMIN </a-menu-item>
                 <a-menu-item key="2" @click="changeMenu('/book/search')"> SEARCH </a-menu-item>
                 <a-menu-item key="3" @click="changeMenu('/user/borrowing')"> BORROWING </a-menu-item>
                 <a-menu-item key="4" @click="changeMenu('/user/borrowing/history')"> HISTORY </a-menu-item>
@@ -58,6 +59,7 @@ export default {
     return {
       root: null,
       isLogin: false,
+      isAdmin: false,
       collapsed: false,
       locale: enUS,
       userInfo: {}
@@ -78,6 +80,7 @@ export default {
       logout();
       this.$global.IS_LOGIN = false;
       clearUserInfo();
+      this.isAdmin = false;
       this.isLogin = false;
       this.userInfo = {};
       this.$router.push('/login');
@@ -87,6 +90,10 @@ export default {
     
   },
   created(){
+    if(isAdmin()){
+      this.isAdmin = true;
+    }
+
     this.$message.config({
       top: `10vh`,
       duration: 1,
