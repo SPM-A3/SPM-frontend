@@ -58,14 +58,11 @@
           <a-list item-layout="horizontal" :data-source="notifications">
             <a-list-item slot="renderItem" slot-scope="item">
               <a-list-item-meta
-                description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                :description="item.content+ '  ' +item.time"
               >
-                <a slot="title" href="https://www.antdv.com/">{{ item.title }}</a>
-                <a-avatar
-                  slot="avatar"
-                  src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                />
+                <a slot="title" :href="'/#'+item.url">{{item.title}}</a>
               </a-list-item-meta>
+              <a-button type="primary" @click="goto(item.url)">Detail</a-button>
             </a-list-item>
           </a-list>
         </template>
@@ -80,6 +77,7 @@
 <script>
 import {getAccessToken, logout, getUserInfo} from '../../services/user'
 import EditProfile from './EditProfile.vue'
+import moment from 'moment'
 export default {
   name: "UserCenter",
   components: {EditProfile},
@@ -187,7 +185,7 @@ export default {
       logout();
       this.$global.IS_LOGIN = false;
       this.userInfo = {};
-      this.$router.push('/login');
+      this.$router.to('/login');
     },
     getUserInfo(){
       this.loading = true;
@@ -218,6 +216,12 @@ export default {
         })
         .catch((error) => console.log("error", error));
     },
+    type2url(type, id){
+      if(type === 1 || type === 3 || type === 5) return `/user/borrowing/${id}/detail`
+    },
+    goto(url){
+      this.$router.push(url);
+    },
     getNotifications(){
       this.loading = true;
       let myHeaders = new Headers({"Content-Type" : "application/json"});
@@ -228,16 +232,20 @@ export default {
       };
 
       let that = this;
-      fetch(`${this.$global.BASE_URL}/api/user/notifications`, requestOptions)
+      fetch(`https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/web-framework/extra-function/getnotifications?user_id=${getUserInfo().user_id}`, requestOptions)
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
-          if (result.error_code == 0 || result.error_code == "0") {
+          if (result.code == 200 ) {
             setTimeout(() => {
-              for(let i of result.notifications){
+              for(let i of result.list){
+                const {type, id} = i;
+                const url = that.type2url(type, id);
                 that.notifications.push({
-                  title: i.type,
-                  description: i.msg,
+                  title: i.title,
+                  content: i.content,
+                  url,
+                  time: moment(i.time.slice(0,-1)).fromNow()
                 })
               }
               that.loading = false;

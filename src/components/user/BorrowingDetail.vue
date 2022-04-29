@@ -1,15 +1,18 @@
 <template>
-  <div>
-    <template>
-      <a-card hoverable style="width: 240px">
+  <a-card title="Borrowing Info" :bordered="false">
+    <!-- <a-space direction="vertical"> -->
+      <template>
+      <a-card hoverable style="width: 300px;margin-top:50px" :bordered="false">
         <template #cover>
-          <img :src="bookInfo.cover" />
+          <img :src="bookInfo.cover"/>
         </template>
       </a-card>
     </template>
 
     <template>
-      <a-descriptions title="Borrowing Info" size="default" bordered>
+      <a-descriptions size="default" bordered 
+      style="margin-top:50px"
+      >
         <a-descriptions-item label="book name ">{{
           this.bookInfo.bookName
         }}</a-descriptions-item>
@@ -59,7 +62,8 @@
         <a-button type="primary" :style="{ top:'8px',marginLeft: '8px' }" icon="el-icon-edit">Renew</a-button>
       </a-popconfirm>
     </a-tooltip>
-  </div>
+    <!-- </a-space> -->
+  </a-card>
 </template>
 
 <script>
