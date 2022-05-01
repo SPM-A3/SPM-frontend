@@ -87,7 +87,7 @@
       </a-form-item>
       <a-form-item style="margin-top: 24px" :wrapperCol="{span: 10, offset: 7}">
         <a-button @click="submit" type="primary">Add</a-button>
-        <a-button @click="$router.push('/admin')">CANCEL</a-button>
+        <a-button @click="$router.push('/admin/book/addByApi')">CANCEL</a-button>
       </a-form-item>
     </a-form>
     <a-form v-else>
@@ -233,9 +233,7 @@ export default {
           .then(result => {
             if(result.code === 0 || result.code === "0"){
               that.$message.success('Add book successfully')
-              setTimeout(() => {
-                that.$router.push("/admin");
-              }, 200)
+              that.refresh();
             }else{
               that.$message.error("Failed to add the book.");
             }
@@ -310,7 +308,7 @@ export default {
           .then(res => res.json())
           .then(result => {
             const {data, ret, msg} = result;
-            that.loading = false;
+            that.searching = false;
             if(ret === 1){
               that.$message.error("ISBN not found!");
             }else{
@@ -329,6 +327,20 @@ export default {
       },
       handleChangeLanguage(value){
         this.language = value;
+      },
+      refresh(){
+        this.getBook = false;
+        this.newBookInfo = {
+          book_name: undefined,
+          author: undefined,
+          publisher: undefined,
+          ISBN: undefined,
+          category: undefined,
+          published_time: undefined,
+          cover: undefined,
+          brief_introduction: undefined,
+        }
+        this.searching = false;
       }
     },
 }
