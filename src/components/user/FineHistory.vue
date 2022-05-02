@@ -9,7 +9,7 @@
         <a-table-column title="book name" data-index="book_name" />
         <a-table-column title="ISBN" data-index="ISBN" />
         <a-table-column title="status" data-index="status" />
-        <a-table-column title="amount" data-index="amount">
+        <a-table-column title="amount" data-index="total_amount">
         </a-table-column>
         <a-table-column title="payment time" data-index="payment_time"> </a-table-column>
       </a-table>

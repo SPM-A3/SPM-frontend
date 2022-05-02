@@ -330,40 +330,44 @@ export default {
       fetch(`${BASE_URL}/api/user/borrow`, requestoptions)
         .then((response) => response.json())
         .then((result) => {
-          const borrowing_number = result.data;
-          var myHeaders = new Headers();
-          myHeaders.append("Content-Type", "application/json");
-          var requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: JSON.stringify({borrowing_number}),
-          };
-          fetch(
-            "https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/web-framework/extra-function/sendborrowingmsg",
-            requestOptions
-          )
-          .then((response) => response.text())
-          .then((result) => {
-            if(result === "success"){
-              console.log("成功发送借书通知")
-            }else{
-              that.$message.error("Failed to send notification.");
+          const {data, code, msg} = result;
+          if(code === 0){
+            that.$message.success("Book Borrow Successfully!", 1);
+            for (let i of this.locationData) {
+              if (i.book_id == book_id) {
+                i.status = 1;
+              }
             }
-          })
-          .catch((error) => {
-            that.$message.error("Failed to send notification. API call failed.");
-            console.log(error);
-          });
-          console.log(result);
+            const borrowing_number = result.data;
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            var requestOptions = {
+              method: "POST",
+              headers: myHeaders,
+              body: JSON.stringify({borrowing_number}),
+            };
+            fetch(
+              "https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/web-framework/extra-function/sendborrowingmsg",
+              requestOptions
+            )
+            .then((response) => response.text())
+            .then((result) => {
+              if(result === "success"){
+                console.log("成功发送借书通知")
+              }else{
+                that.$message.error("Failed to send notification. Please contact the admin.");
+              }
+            })
+            .catch((error) => {
+              that.$message.error("Failed to send notification. API call failed.");
+              console.log(error);
+            });
+            console.log(result);
+          }else{
+            that.$message.error(msg);
+          }
         });
 
-      for (let i of this.locationData) {
-        if (i.book_id == book_id) {
-          i.status = 1;
-        }
-      }
-
-      this.$message.success("Book Borrow Successfully!", 1);
       this.visible = false;
     },
 
