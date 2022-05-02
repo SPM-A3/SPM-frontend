@@ -16,7 +16,8 @@
 <script>
 export default {
   methods:{
-    backHome(path){
+    goTo(path){
+      console.log(this.$root.$children[0].handleLogout())
       this.$router.push(path)
     }
   }

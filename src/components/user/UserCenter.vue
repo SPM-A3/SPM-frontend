@@ -18,6 +18,9 @@
           </div>
           <br />
           <a-descriptions title="User Info" bordered style="margin-right:150px; margin-left:150px;">
+            <a-descriptions-item label="Barcode" :span="3">
+              <vue-qr :text="userInfo.user_id" qid="testid" style="width: 100px;height:100px"></vue-qr>
+            </a-descriptions-item>
             <a-descriptions-item label="ID" :span="3">{{userInfo.id}}</a-descriptions-item>
             <a-descriptions-item label="Nickname" :span="3">{{userInfo.name}}</a-descriptions-item>
             <a-descriptions-item label="Gender" :span="3">
@@ -77,10 +80,11 @@
 <script>
 import {getAccessToken, logout, getUserInfo} from '../../services/user'
 import EditProfile from './EditProfile.vue'
+import VueQr from 'vue-qr'
 import moment from 'moment'
 export default {
   name: "UserCenter",
-  components: {EditProfile},
+  components: {EditProfile, VueQr},
   data() {
     return {
       contentNumber: 1,

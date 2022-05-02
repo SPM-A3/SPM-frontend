@@ -2,13 +2,14 @@
   <a-config-provider :locale="locale">
     <div id="app" ref="root">
       <a-layout id="components-layout-demo-custom-trigger">
-        <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%', height: '6vh' }" class="header">
-          <div class="logo" />
+        <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%', height: '7.5vh' }" class="header">
+          <!-- <div class="logo" > -->
+          <img src="./assets/spm-logo1.png" style="height: 85%" alt="" @click="$router.push('/')">
           <div class="header-left">
             <a-menu
                 theme="dark"
                 mode="horizontal"
-                :style="{ lineHeight: '6vh' }"
+                :style="{ lineHeight: '7.5vh',fontSize: '15px' }"
               >
                 <a-menu-item key="1" @click="changeMenu('/admin')" v-if="isAdmin"> ADMIN </a-menu-item>
                 <a-menu-item key="2" @click="changeMenu('/book/search')"> SEARCH </a-menu-item>
@@ -27,12 +28,12 @@
                   <a-menu-item @click="handleLogout" > logout </a-menu-item>
                 </a-menu>
                   <a-space>
-                    <a-avatar :src="userInfo.avatar" style="backgroundColor:#87d068" />
-                    <span style="color: white">{{userInfo.id}}</span><a-icon type="down" />
+                    <a-avatar :src="userInfo.avatar" style="background-color: white; height: 40px ; width: 40px " />
+                    <span style="color: white; font-size: 17px;">{{userInfo.id}}</span><a-icon type="down" />
                   </a-space>
               </a-dropdown>
               <a-button type="link" v-else block>
-                <router-link to="/login">Login</router-link>
+                <router-link to="/login">LOGIN</router-link>
               </a-button>
             </span>
           </div>
@@ -129,7 +130,7 @@ export default {
 .logo {
   width: 120px;
   height: 31px;
-  background: rgba(255, 255, 255, 0.2);
+  /* background: rgba(255, 255, 255, 0.2); */
   margin: 16px 24px 16px 0;
   float: left;
 }
