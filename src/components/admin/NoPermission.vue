@@ -8,6 +8,9 @@
       <a-button type="primary" @click="goTo('/admin/login')">
         Admin Login
       </a-button>
+      <a-button type="primary" @click="goTo('/login')">
+        Member Login
+      </a-button>
       </a-space>
     </template>
   </a-result>

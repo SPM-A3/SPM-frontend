@@ -33,6 +33,7 @@
         <a-form-item>
           <a-button :loading="logging" style="width: 100%;margin-top: 24px" size="large" htmlType="submit" type="primary">login</a-button>
         </a-form-item>
+        <router-link style="float: left" to="/login" >BACK</router-link>
       </a-form>
     </div>
   </div>

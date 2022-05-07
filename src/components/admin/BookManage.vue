@@ -101,7 +101,7 @@
                 cancel-text="No"
                 @confirm="remove"
               >
-                <a-button>
+                <a-button type="danger">
                   delete
                 </a-button>
               </a-popconfirm>

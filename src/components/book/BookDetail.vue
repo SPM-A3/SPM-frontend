@@ -347,7 +347,7 @@ export default {
               body: JSON.stringify({borrowing_number}),
             };
             fetch(
-              "https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/web-framework/extra-function/sendborrowingmsg",
+              `${this.$global.EXTRA_FUNCTION}/sendborrowingmsg`,
               requestOptions
             )
             .then((response) => response.text())
@@ -355,7 +355,7 @@ export default {
               if(result === "success"){
                 console.log("成功发送借书通知")
               }else{
-                that.$message.error("Failed to send notification. Please contact the admin.");
+                // that.$message.error("Failed to send notification. Please contact the admin.");
               }
             })
             .catch((error) => {

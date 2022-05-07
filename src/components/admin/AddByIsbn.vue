@@ -87,7 +87,7 @@
       </a-form-item>
       <a-form-item style="margin-top: 24px" :wrapperCol="{span: 10, offset: 7}">
         <a-button @click="submit" type="primary">Add</a-button>
-        <a-button @click="$router.push('/admin/book/addByApi')">CANCEL</a-button>
+        <a-button @click="cancel">CANCEL</a-button>
       </a-form-item>
     </a-form>
     <a-form v-else>
@@ -341,7 +341,10 @@ export default {
           brief_introduction: undefined,
         }
         this.searching = false;
-      }
+      },
+      cancel(){
+      this.refresh()
+    }
     },
 }
 </script>

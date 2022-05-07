@@ -6,8 +6,8 @@
     <div class="title">Successful payment</div>
 		<div>
 			<a-descriptions title="Payment Information" :column="1" style="margin-top: 50px; width: 400px">
-				<a-descriptions-item label="ISBN">{{$route.query.ISBN}}</a-descriptions-item>
-				<a-descriptions-item label="book_id">{{$route.query.book_id}}</a-descriptions-item>
+				<!-- <a-descriptions-item label="ISBN">{{$route.query.ISBN}}</a-descriptions-item>
+				<a-descriptions-item label="book_id">{{$route.query.book_id}}</a-descriptions-item> -->
 				<a-descriptions-item label="Out trade number">{{$route.query.out_trade_no}}</a-descriptions-item>
 				<a-descriptions-item label="Trade number">{{$route.query.trade_no}}</a-descriptions-item>
 				<a-descriptions-item label="Total amount">{{$route.query.total_amount}}$</a-descriptions-item>

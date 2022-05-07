@@ -34,7 +34,7 @@
           <a-button :loading="logging" style="width: 100%;margin-top: 24px" size="large" htmlType="submit" type="primary">LOGIN</a-button>
         </a-form-item>
         <div>
-          <router-link style="float: right" to="/register" >REGISTER</router-link>
+          <!-- <router-link style="float: right" to="/register" >REGISTER</router-link> -->
           <router-link style="float: left" to="/admin/login" >ADMIN LOGIN</router-link>
         </div>
       </a-form>

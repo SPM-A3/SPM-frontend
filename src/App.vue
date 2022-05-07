@@ -90,7 +90,13 @@ export default {
   components: {
     
   },
+  watch: {
+    $route(){
+      document.title = `Bookery | ${this.$route.name}`
+    }
+  },
   created(){
+    console.log(this.$route)
     if(isAdmin()){
       this.isAdmin = true;
     }
@@ -119,6 +125,7 @@ export default {
       })
       .catch( err => {
         console.log(err);
+        clearUserInfo();
         that.$router.push('/login');
         // that.showAlert("error", err.msg)
       })

@@ -27,17 +27,22 @@
         ok-text="Yes"
         cancel-text="No"
         @confirm="returnBooks"
+        :disabled="!dataSource.length"
       >
-        <a-button type="danger">
+        <a-button type="danger" :disabled="!dataSource.length">
           RETURN BOOKS
         </a-button>
       </a-popconfirm>
+      <a-button type="primary" @click="showAll">
+        SHOW ALL
+      </a-button>
     </a-space>
     <standard-table
       :loading="loadingTable"
       :columns="columns"
       :dataSource="dataSource"
       :selectedRows.sync="selectedRows"
+      :getCheckboxProps="getCheckboxProps"
       @clear="onClear"
       @change="onChange"
       @selectedRowChange="onSelectChange"
@@ -53,6 +58,12 @@
           style="width: 150px"
           :src="record.cover"
         />
+      </div>
+      <div slot="fine" slot-scope="{ record }">
+        <a-tag v-if="record.fine == 0" color="green">{{record.fine}}$</a-tag>
+        <a-tooltip v-else-if="record.fine > 0" title="Must first return." :color="'red'">
+          <a-tag  color="red">{{record.fine}}$</a-tag>
+        </a-tooltip>
       </div>
     </standard-table>
   </a-card>
@@ -86,8 +97,11 @@ const columns = [
   {
     title: "Due time",
     dataIndex: "due_time"
+  },{
+    title: "Left fine",
+    dataIndex: 'fine',
+    scopedSlots: {customRender: "fine"}
   },
-
   {
     title: "Barcode",
     scopedSlots: {customRender: "barcode"}
@@ -171,9 +185,9 @@ export default {
         return;
       }
 
-      const baseUrl = "https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/web-framework/extra-function"
+      // const baseUrl = "https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/web-framework/extra-function"
       // const baseUrl = "http://localhost:3000"
-      fetch(`${baseUrl}/borrowing?barcode=${barcode}`)
+      fetch(`${this.$global.EXTRA_FUNCTION}/borrowing?barcode=${barcode}`)
         .then(res => res.json())
         .then(result => {
           that.loadingTable = false;
@@ -219,7 +233,7 @@ export default {
       };
       let that = this;
       fetch(
-        "https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/web-framework/extra-function/return",
+        `${this.$global.EXTRA_FUNCTION}/return`,
         requestOptions
       )
         .then((response) => response.text())
@@ -239,6 +253,45 @@ export default {
         })
         .catch((error) => console.log("error", error));
     },
+    getCheckboxProps: record => ({
+      props: {
+        disabled: record.fine > 0, // Column configuration not to be checked
+        // name: record.fine,
+      },
+    }),
+    showAll() {
+      this.loadingTable = true;
+      this.dataSource = []
+      let that = this;
+      // const baseUrl = "https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/web-framework/extra-function"
+      // const baseUrl = "http://localhost:3000"
+      fetch(`${this.$global.EXTRA_FUNCTION}/getallborrowings`)
+        .then(res => res.json())
+        .then(result => {
+          that.loadingTable = false;
+          const {code, msg, data} = result;
+          if(code < 0){
+            that.$message.error("No borrowed books!");
+          }else{
+            if(data.length == 0){
+              that.$message.error("No borrowed books!")
+              
+            }else{
+              for(let i of data){
+                i.key = i.ISBN;
+                that.dataSource.push(i)
+              }
+            }
+
+          }
+          that.barcode = undefined; 
+        })
+        .catch(res => {
+          that.loadingTable = false;
+          that.$message.error("API call failed.");
+          that.barcode = undefined;
+        })
+    }
   },
   created() {},
 };

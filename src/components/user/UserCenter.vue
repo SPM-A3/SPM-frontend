@@ -236,7 +236,7 @@ export default {
       };
 
       let that = this;
-      fetch(`https://1893791694056142.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/web-framework/extra-function/getnotifications?user_id=${getUserInfo().user_id}`, requestOptions)
+      fetch(`${this.$global.EXTRA_FUNCTION}/getnotifications?user_id=${getUserInfo().user_id}`, requestOptions)
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
@@ -249,7 +249,7 @@ export default {
                   title: i.title,
                   content: i.content,
                   url,
-                  time: moment(i.time.slice(0,-1)).fromNow()
+                  time: moment(i.time).fromNow()
                 })
               }
               that.loading = false;
