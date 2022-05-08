@@ -106,9 +106,6 @@ const routes = [
     {
         path: '/admin/login',
         name: '管理员登录页',
-        meta: {
-            requireLogin: true
-        },
         component: () => import('../components/AdminLogin.vue'),
     },
     {
