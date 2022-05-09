@@ -1,11 +1,12 @@
-import {LOGIN, CHECK} from '@/services/api'
+import {LOGIN, CHECK, ADMIN_LOGIN, ADMIN_CHECK} from '@/services/api'
 import Cookies from 'js-cookie'
-/**
- * 登录服务
- * @param account 账户名
- * @param password 账户密码
- * @returns 
- */
+// import store from '../store/store'
+
+
+export function isAdmin(){
+  return getRole() === "admin";
+}
+
 export async function login(account, password) {
   let myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
@@ -19,6 +20,19 @@ export async function login(account, password) {
   return fetch(LOGIN, requestOptions)
 }
 
+export async function adminLogin(account, password) {
+  let myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  let requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: JSON.stringify({account,password}),
+  };
+
+  return fetch(ADMIN_LOGIN, requestOptions)
+}
+
 export async function tokenLogin(){
   var myHeaders = new Headers();
   myHeaders.append("token", getAccessToken());
@@ -27,9 +41,12 @@ export async function tokenLogin(){
     method: 'POST',
     headers: myHeaders,
   };
-
-  return fetch(CHECK, requestOptions)
+  if(isAdmin()){
+    return fetch(ADMIN_CHECK, requestOptions);
+  }
+  return fetch(CHECK, requestOptions);
 }
+
 
 export function setAccessToken(token){
   Cookies.set("access_token", token)
@@ -44,11 +61,42 @@ export function setUserInfo(userInfo){
 }
 
 export function getUserInfo(){
-  return localStorage.getItem("userInfo");
+  return JSON.parse(localStorage.getItem("userInfo"));
+}
+
+export function setRole(role){
+  localStorage.setItem("role", role);
+}
+
+export function getRole(){
+  return localStorage.getItem("role");
 }
 
 export function clearUserInfo(){
   localStorage.removeItem('userInfo')
+  clearRole();
+}
+
+export function clearRole(){
+  localStorage.removeItem('role');
+}
+
+export function refreshUserInfo(){
+  localStorage.removeItem('userInfo');
+  tokenLogin()
+    .then(res => res.json())
+    .then( res => {
+      const {data, code, msg} = res;
+      console.log(res)
+      if(code == 0 || code == '0'){
+        setUserInfo(data);
+      }else{
+        clearUserInfo()
+      }
+    })
+    .catch( err => {
+      console.log(err);
+    })
 }
 
 /**
@@ -65,5 +113,6 @@ export default {
   getAccessToken,
   getUserInfo,
   setUserInfo,
+  refreshUserInfo,
   logout,
 }

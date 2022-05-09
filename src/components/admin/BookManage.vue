@@ -88,7 +88,7 @@
         <a-dropdown-button :loading="loading2" @click="addNewBook" type="primary">
           Add
           <a-menu slot="overlay">
-            <a-menu-item key="1" @click="()=>{this.$router.push('/admin/book/addbyapi')}">Add book using openlibrary</a-menu-item>
+            <a-menu-item key="1" @click="()=>{this.$router.push('/admin/book/add')}">Add book manually</a-menu-item>
           </a-menu>
           <a-icon type="down" slot="icon"/>
         </a-dropdown-button>
@@ -101,7 +101,7 @@
                 cancel-text="No"
                 @confirm="remove"
               >
-                <a-button>
+                <a-button type="danger">
                   delete
                 </a-button>
               </a-popconfirm>
@@ -327,7 +327,7 @@ export default {
     addNewBook() {
       this.loading2 = true;
       let that = this;
-      this.$router.push("/admin/book/add")
+      this.$router.push("/admin/book/addByApi")
         .then(() => {
           that.loading2 = false;
       });

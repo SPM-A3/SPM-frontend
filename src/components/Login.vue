@@ -31,10 +31,11 @@
           <a-checkbox :checked="true" >自动登录</a-checkbox>
         </div> -->
         <a-form-item>
-          <a-button :loading="logging" style="width: 100%;margin-top: 24px" size="large" htmlType="submit" type="primary">login</a-button>
+          <a-button :loading="logging" style="width: 100%;margin-top: 24px" size="large" htmlType="submit" type="primary">LOGIN</a-button>
         </a-form-item>
         <div>
-          <router-link style="float: right" to="/register" >register</router-link>
+          <!-- <router-link style="float: right" to="/register" >REGISTER</router-link> -->
+          <router-link style="float: left" to="/admin/login" >ADMIN LOGIN</router-link>
         </div>
       </a-form>
     </div>
@@ -43,7 +44,7 @@
 
 <script>
 
-import {login, setAccessToken, getAccessToken, setUserInfo, tokenLogin} from '../services/user'
+import {login, setAccessToken, getAccessToken, setUserInfo, tokenLogin, setRole} from '../services/user'
 
 export default {
   name: 'Login',
@@ -75,10 +76,12 @@ export default {
     },
     afterLogin(res) {
       this.logging = false
+      this.$store.commit('setRole', "user");
       const loginRes = res
       const {data, code, msg} = loginRes;
       if (code == 0) {
         setAccessToken(data);
+        setRole("user");
         this.$message.success("Login successfully, redirecting...", 1);
         console.log("token", getAccessToken());
         this.$global.IS_LOGIN = true;

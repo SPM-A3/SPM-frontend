@@ -9,7 +9,13 @@
       <a-table-column title="ISBN" data-index="ISBN" />
       <a-table-column title="borrow date" data-index="borrow_date" />
       <a-table-column title="due date" data-index="due_date"> </a-table-column>
-      <a-table-column title="days" data-index="days"> </a-table-column>
+      <a-table-column title="left days" data-index="days"> </a-table-column>
+      <a-table-column title="fine" data-index="fine"> </a-table-column>
+      <a-table-column title="Barcode">
+          <template slot-scope="record">
+            <vue-barcode :value="record.ISBN+'/'+record.book_id" style="width: 200px"></vue-barcode>
+          </template>
+        </a-table-column>
       <a-table-column title="Action">
         <template slot-scope="text, record">
           <a-button
@@ -19,13 +25,13 @@
           >detail</a-button>
 
           <!-- 归还按钮 -->
-          <a-popconfirm
+          <!-- <a-popconfirm
             title="Title"
             @confirm="returnBook(record.borrowing_id)"
             @cancel="cancel"
           >
             <a-button type="primary" :style="{ marginLeft: '8px' }" icon="el-icon-edit">return</a-button>
-          </a-popconfirm>
+          </a-popconfirm> -->
 
           <a-popconfirm
             title="Title"
@@ -42,6 +48,9 @@
 
 <script>
 import { getAccessToken } from "../../services/user";
+import moment from 'moment'
+import VueBarcode from '@chenfengyuan/vue-barcode';
+
 export default {
   data() {
     return {
@@ -50,6 +59,7 @@ export default {
       loading: true,
     };
   },
+  components: {VueBarcode},
   created() {
     this.getBorrowing();
   },
@@ -79,11 +89,11 @@ export default {
 
       for (let i = 0; i < tmpBorrowing.length; i++) {
         // 修改时间格式并加上剩余多少天
-        tmpBorrowing[i].borrow_date = tmpBorrowing[i].borrow_date.substring(0,10);
-        tmpBorrowing[i].due_date = tmpBorrowing[i].due_date.substring(0,10);
-
-        tmpBorrowing[i].days = this.dataDiff(tmpBorrowing[i].borrow_date,tmpBorrowing[i].due_date)
-        
+        tmpBorrowing[i].days = moment(tmpBorrowing[i].due_date).diff(moment(tmpBorrowing[i].borrow_date), 'days') + ' days'
+        tmpBorrowing[i].borrow_date = moment(tmpBorrowing[i].borrow_date).format("dddd, MMMM Do YYYY")
+        tmpBorrowing[i].due_date = moment(tmpBorrowing[i].due_date).format("dddd, MMMM Do YYYY")
+        tmpBorrowing[i].fine = typeof tmpBorrowing[i].fine === 'number' ? tmpBorrowing[i].fine : 0;
+        tmpBorrowing[i].fine = tmpBorrowing[i].fine.toString() + '$'
         // 获得图书详情
         var myHeaders2 = new Headers();
         myHeaders2.append("Content-Type", "application/json");
@@ -153,6 +163,9 @@ export default {
           console.log("return", data);
           if (data.code === 0) {
             that.$message.success("return successfully!");
+            that.borrowingList = that.borrowingList.filter(row => {
+              return row.borrowing_id != borrowing_id
+            })
           } else {
             that.$message.error(data.msg);
           }

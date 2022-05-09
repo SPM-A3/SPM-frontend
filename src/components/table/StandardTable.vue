@@ -23,7 +23,7 @@
       :expandedRowKeys="expandedRowKeys"
       :expandedRowRender="expandedRowRender"
       @change="onChange"
-      :rowSelection="selectedRows ? {selectedRowKeys: selectedRowKeys, onChange: updateSelect} : undefined"
+      :rowSelection="selectedRows ? {selectedRowKeys: selectedRowKeys, onChange: updateSelect, getCheckboxProps: getCheckboxProps} : undefined"
     >
       <template slot-scope="text, record, index" :slot="slot" v-for="slot in Object.keys($scopedSlots).filter(key => key !== 'expandedRowRender') ">
         <slot :name="slot" v-bind="{text, record, index}"></slot>
@@ -56,7 +56,8 @@ export default {
     },
     selectedRows: Array,
     expandedRowKeys: Array,
-    expandedRowRender: Function
+    expandedRowRender: Function,
+    // getCheckboxProps: Function
   },
   data () {
     return {
@@ -84,7 +85,13 @@ export default {
     },
     onChange(pagination, filters, sorter, {currentDataSource}) {
       this.$emit('change', pagination, filters, sorter, {currentDataSource})
-    }
+    },
+    getCheckboxProps: record => ({
+      props: {
+        disabled: record.fine > 0, // Column configuration not to be checked
+        // name: record.fine,
+      },
+    }),
   },
   created () {
     this.needTotalList = this.initTotalList(this.columns)

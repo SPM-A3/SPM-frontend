@@ -87,24 +87,36 @@
       </a-form-item>
       <a-form-item style="margin-top: 24px" :wrapperCol="{span: 10, offset: 7}">
         <a-button @click="submit" type="primary">Add</a-button>
-        <a-button @click="$router.push('/admin')">CANCEL</a-button>
+        <a-button @click="cancel">CANCEL</a-button>
       </a-form-item>
     </a-form>
     <a-form v-else>
         <a-form-item
-            :label="ISBN"
+          label="language"
+          :labelCol="{span: 7}"
+          :wrapperCol="{span: 10}"
+        >
+          <a-select default-value="zh" @change="handleChangeLanguage">
+            <a-select-option value="en">
+              English
+            </a-select-option>
+            <a-select-option value="zh">
+              中文
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+            label="ISBN"
             :labelCol="{span: 7}"
             :wrapperCol="{span: 10}"
         >
-        <a-input :placeholder="ISBNInput" v-model="newBookInfo.ISBN"/>
+        <a-input :placeholder="ISBNInput" v-model="newBookInfo.ISBN" @keyup.enter="search"/>
       </a-form-item>
       <a-form-item 
           :wrapperCol="{span: 10, offset: 7}"
       >
           <a-button @click="search" type="primary" :loading="searching">
-              <a-tooltip placement="topLeft" title="Call api of https://openlibrary.org/." arrow-point-at-center>
-                GET BOOK INFO
-              </a-tooltip>
+            GET BOOK INFO
           </a-button>
       </a-form-item>
     </a-form>
@@ -152,10 +164,12 @@ export default {
                 cover: undefined,
                 brief_introduction: undefined,
             },
-            options: options.options,     
+            options: options.options,
+            language: "zh",
         }
     },
     created(){
+      console.log(moment().format())
     },
     methods: {
       handleUpdate(info) {
@@ -199,7 +213,7 @@ export default {
       submit(){
         let newBookInfoSubmit = { ... this.newBookInfo };
         // 处理时间为2020-02
-        newBookInfoSubmit.category  = 
+        newBookInfoSubmit.category  = this.newBookInfo.category[1];
         newBookInfoSubmit.published_time = newBookInfoSubmit.published_time.format("YYYY-MM")+"-01";
         console.log(newBookInfoSubmit);
         // 提交
@@ -219,9 +233,7 @@ export default {
           .then(result => {
             if(result.code === 0 || result.code === "0"){
               that.$message.success('Add book successfully')
-              setTimeout(() => {
-                that.$router.push("/admin");
-              }, 200)
+              that.refresh();
             }else{
               that.$message.error("Failed to add the book.");
             }
@@ -237,6 +249,11 @@ export default {
         );
       },
       async search(){
+          if(this.language === "zh"){
+            console.log(this.language);
+            this.cnSearch();
+            return;
+          }
           this.searching = true;
           const isbn = this.newBookInfo.ISBN;
           let bookInfo = {};
@@ -247,21 +264,87 @@ export default {
                 if(JSON.stringify(result) === '{}' ){
                     that.$message.error("ISBN not found, please enter another.");
                     that.searching = false;
+                    that.newBookInfo.ISBN = undefined;
                 }else{
                     bookInfo = result[`ISBN:${isbn}`].details
                 }
             })
           this.newBookInfo.book_name = bookInfo.title;
-          this.newBookInfo.publisher = bookInfo.publishers[0];
-          this.newBookInfo.cover = `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}.jpg`;
-          this.newBookInfo.brief_introduction = "";
-          this.newBookInfo.author = (bookInfo.authors[0]).name;
-          this.newBookInfo.published_time = moment(bookInfo.publish_date, "MMMM DD, YYYY");
-          this.newBookInfo.brief_introduction = bookInfo.first_sentence.value;
+          if(bookInfo.publishers) this.newBookInfo.publisher = bookInfo.publishers[0];
+          if(bookInfo.covers) this.newBookInfo.cover = `https://covers.openlibrary.org/b/id/${bookInfo.covers[0]}.jpg`;
+          if(bookInfo.authors){
+            this.newBookInfo.author = (bookInfo.authors[0]).name;
+          }else{
+            await fetch(`https://openlibrary.org/api/get?key=/authors/${(bookInfo.works[0].key.split('/'))[2].slice(0,-1)}A`)
+              .then(res => res.json())
+              .then(result => {
+                if(result.status == "fail"){
+                  console.log("fail")
+                }else{
+                  that.newBookInfo.author = result.result.name;
+                }
+              })
+              .catch(err => {
+                
+              })
+          }
+          if(bookInfo.publish_date) this.newBookInfo.published_time = moment(bookInfo.publish_date, "MMMM DD, YYYY");
+          fetch(`https://openlibrary.org/api/get?key=${bookInfo.works[0].key}`)
+              .then(res => res.json())
+              .then(result => {
+                if(result.result.description)that.newBookInfo.brief_introduction = result.result.description.slice(0,200)+'...';
+                else that.newBookInfo.brief_introduction = that.newBookInfo.book_name;
+              })
+          that.newBookInfo.category = ["I", "I1"]
           this.$message.success("Got the book.");
           this.searching = false;
           this.getBook = true;
-      }
+      },
+      cnSearch(){
+        this.searching = true;
+        const isbn = this.newBookInfo.ISBN;
+        let that = this;
+        fetch(`https://api.jike.xyz/situ/book/isbn/${isbn}?apikey=12524.6833bc5d3ba860a9242c196b4feaae26.8da93d6d3ac6f6bc9f2ab633b26cc791`)
+          .then(res => res.json())
+          .then(result => {
+            const {data, ret, msg} = result;
+            that.searching = false;
+            if(ret === 1){
+              that.$message.error("ISBN not found!");
+            }else{
+              that.$message.success("Got the book.")
+              that.newBookInfo.cover = data.photoUrl;
+              that.newBookInfo.book_name = data.name;
+              that.newBookInfo.author = data.author;
+              that.newBookInfo.publisher = data.publishing;
+              // that.newBookInfo.ISBN = data.code;
+              // that.newBookInfo.category
+              that.newBookInfo.published_time = moment(data.published);
+              that.newBookInfo.brief_introduction = data.description.slice(0,200);
+              this.getBook = true;
+            }
+          })
+      },
+      handleChangeLanguage(value){
+        this.language = value;
+      },
+      refresh(){
+        this.getBook = false;
+        this.newBookInfo = {
+          book_name: undefined,
+          author: undefined,
+          publisher: undefined,
+          ISBN: undefined,
+          category: undefined,
+          published_time: undefined,
+          cover: undefined,
+          brief_introduction: undefined,
+        }
+        this.searching = false;
+      },
+      cancel(){
+      this.refresh()
+    }
     },
 }
 </script>

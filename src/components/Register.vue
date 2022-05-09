@@ -198,12 +198,17 @@ export default {
         if (!err) {
           // console.log('Received values of form: ', values);
           console.log(values)
+          let submitValues = {...values}
+          delete submitValues.confirm;
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
           var requestOptions = {
             method: 'POST',
-            body: JSON.stringify(values),
+            headers: myHeaders,
+            body: JSON.stringify(submitValues),
           };
-
-          fetch(`${that.$global.BASE_URL}/api/user/register`, requestOptions)
+          
+          fetch(`${this.$global.BASE_URL}/api/user/register`, requestOptions)
             .then(response => response.json())
             .then(result => {
               console.log(result);

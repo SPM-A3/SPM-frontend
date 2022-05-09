@@ -160,7 +160,7 @@ export default {
             that.bookInfo.category = that.format(data[0].category);
             that.bookInfo.published_time = moment(data[0].publishedTime);
             that.bookInfo.cover = data[0].cover;
-            that.bookInfo.brief_introduction =  data[0].brief_introduction;
+            that.bookInfo.brief_introduction =  data[0].briefIntroduction;
             that.canSubmit = true;
           }else{
             that.canSubmit = false;
