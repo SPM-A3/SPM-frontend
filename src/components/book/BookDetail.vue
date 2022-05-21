@@ -374,7 +374,7 @@ export default {
     },
 
     getBookInfo() {
-      let BASE_URL = "http://175.24.201.104:8085";
+      let BASE_URL = this.$global.BASE_URL;
       this.loading = true;
       let myHeaders = new Headers();
       myHeaders.append("token", getAccessToken());
