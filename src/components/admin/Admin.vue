@@ -1,6 +1,6 @@
 <template>
   <a-layout style="background: #fff; height:100%">
-    <a-layout-sider width="200" style="background: #fff" 
+    <a-layout-sider width="200" style="background: #fff"
       breakpoint="lg"
       collapsed-width="0"
       theme="light"
@@ -14,7 +14,8 @@
         <a-menu-item key="1" @click="changeContent(1)">Book management</a-menu-item>
         <a-menu-item key="2" @click="changeContent(2)">User management</a-menu-item>
         <a-menu-item key="3" @click="changeContent(3)">Borrow management</a-menu-item>
-        <a-menu-item key="4" @click="changeContent(4)">Reservation management</a-menu-item>
+        <a-menu-item key="4" @click="changeContent(4)">Fine management</a-menu-item>
+        <a-menu-item key="5" @click="changeContent(5)">Reservation management</a-menu-item>
       </a-menu>
     </a-layout-sider>
     <a-layout-content :style="{ padding: '0 24px', minHeight: '50vh' }">
@@ -28,6 +29,9 @@
         <borrow-manage/>
       </div>
       <div v-else-if="contentNumber==4">
+        <fine-manage/>
+      </div>
+      <div v-else-if="contentNumber==5">
         <reservation-manage/>
       </div>
     </a-layout-content>
@@ -38,6 +42,7 @@
 import BookManage from './BookManage.vue'
 import UserManage from './UserManage.vue'
 import BorrowManage from './BorrowManage.vue'
+import FineManage from './FineManage.vue'
 import ReservationManage from './ReservationManage.vue'
 export default {
     name: 'Admin',
@@ -47,7 +52,7 @@ export default {
             defaultSelectedKeys: ['1']
         }
     },
-    components: {BookManage, UserManage, BorrowManage, ReservationManage},
+    components: {BookManage, UserManage, BorrowManage,FineManage, ReservationManage},
     methods: {
         changeContent(i){
             this.contentNumber = i;

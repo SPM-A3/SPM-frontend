@@ -9,8 +9,8 @@
     "deploy": "sh ./deploy.sh"
   },
   "dependencies": {
-    "@chenfengyuan/vue-barcode": "1",
-    "@chenfengyuan/vue-qrcode": "1",
+    "@chenfengyuan/vue-barcode": "^1.0.1",
+    "@chenfengyuan/vue-qrcode": "^1.0.2",
     "ant-design-vue": "^1.7.8",
     "axios": "^0.26.1",
     "core-js": "^3.6.5",
@@ -23,9 +23,9 @@
     "vue-cookies": "^1.8.0",
     "vue-echarts": "^6.0.0",
     "vue-loader": "^15.9.8",
-    "vue-qr": "^4.0.2",
+    "vue-qr": "^4.0.6",
     "vue-router": "^3.5.3",
-    "vuex": "3.6.2"
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

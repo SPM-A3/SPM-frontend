@@ -200,7 +200,7 @@ export default {
             record.key = record.ISBN;
             that.dataSource.push(record);
           }
-          that.barcode = undefined; 
+          that.barcode = undefined;
         })
         .catch(res => {
           that.loadingTable = false;
@@ -275,7 +275,7 @@ export default {
           }else{
             if(data.length == 0){
               that.$message.error("No borrowed books!")
-              
+
             }else{
               for(let i of data){
                 i.key = i.ISBN;
@@ -284,7 +284,7 @@ export default {
             }
 
           }
-          that.barcode = undefined; 
+          that.barcode = undefined;
         })
         .catch(res => {
           that.loadingTable = false;
