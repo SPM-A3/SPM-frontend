@@ -84,6 +84,8 @@
                   >Not Reserved</a-radio-button
                 >
               </a-radio-group>
+              <br>
+              <!-- <a-switch  @click="reserveBook()" checked-children="Reserved" un-checked-children="Unreserved" /> -->
 
               <br /><br />
               <p>
@@ -211,6 +213,7 @@ export default {
   components: {VueBarcode},
   data() {
     return {
+      checked1: true,
       isReserved: "b",
       reservation_id: "",
 
@@ -233,6 +236,7 @@ export default {
       },
     };
   },
+
   methods: {
     clickpop() {
       this.visible = true;
@@ -256,7 +260,6 @@ export default {
       let JSONISBN = {
         ISBN: this.getBookISBN(),
       };
-      let BASE_URL = "http://175.24.201.104:8085";
 
       let myHeaders = new Headers({ "Content-Type": "application/json" });
       myHeaders.append("token", getAccessToken());
@@ -267,7 +270,7 @@ export default {
       };
 
       let that = this;
-      fetch(`${BASE_URL}/api/user/reservation/add`, requestoptions)
+      fetch(`${this.$global.BASE_URL}/api/user/reservation/add`, requestoptions)
         .then((response) => response.json())
         .then((result) => {
           
@@ -283,7 +286,6 @@ export default {
 
     cancelReserveBook() {
       this.isReserved = "b";
-      let BASE_URL = "http://175.24.201.104:8085";
 
       let myHeaders = new Headers({ "Content-Type": "application/json" });
       myHeaders.append("token", getAccessToken());
@@ -294,7 +296,7 @@ export default {
           reservation_id: this.reservation_id
         }),
       };
-      fetch(`${BASE_URL}/api/user/reservation/cancel`, requestoptions)
+      fetch(`${this.$global.BASE_URL}/api/user/reservation/cancel`, requestoptions)
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
@@ -314,7 +316,6 @@ export default {
       //   ISBN: this.getBookISBN()
       // }
       let that = this;
-      let BASE_URL = "http://175.24.201.104:8085";
 
       let myHeaders = new Headers({ "Content-Type": "application/json" });
       myHeaders.append("token", getAccessToken());
@@ -327,7 +328,7 @@ export default {
         }),
       };
       // let that = this;
-      fetch(`${BASE_URL}/api/user/borrow`, requestoptions)
+      fetch(`${this.$global.BASE_URL}/api/user/borrow`, requestoptions)
         .then((response) => response.json())
         .then((result) => {
           const {data, code, msg} = result;
@@ -338,6 +339,7 @@ export default {
                 i.status = 1;
               }
             }
+            this.avail_book_number--;
             const borrowing_number = result.data;
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
@@ -384,7 +386,7 @@ export default {
 
       let that = this;
       fetch(
-        `${BASE_URL}/api/admin/book/detail?ISBN=${this.getBookISBN()}`,
+        `${this.$global.BASE_URL}/api/admin/book/detail?ISBN=${this.getBookISBN()}`,
         requestoptions
       )
         .then((response) => response.json())
@@ -406,7 +408,6 @@ export default {
     },
 
     getBookLocations() {
-      let BASE_URL = "http://175.24.201.104:8085";
       this.loading = true;
       let myHeaders = new Headers();
       myHeaders.append("token", getAccessToken());
@@ -418,7 +419,7 @@ export default {
 
       let that = this;
       fetch(
-        `${BASE_URL}/api/book/locations?ISBN=${this.getBookISBN()}`,
+        `${this.$global.BASE_URL}/api/book/locations?ISBN=${this.getBookISBN()}`,
         requestoptions
       )
         .then((response) => response.json())
@@ -450,7 +451,6 @@ export default {
     },
 
     getReservation() {
-      let BASE_URL = "http://175.24.201.104:8085";
 
       let myHeaders = new Headers({ "Content-Type": "application/json" });
       myHeaders.append("token", getAccessToken());
@@ -458,7 +458,7 @@ export default {
         method: "GET",
         headers: myHeaders,
       };
-      fetch(`${BASE_URL}/api/reservation/`, requestoptions)
+      fetch(`${this.$global.BASE_URL}/api/reservation/`, requestoptions)
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
