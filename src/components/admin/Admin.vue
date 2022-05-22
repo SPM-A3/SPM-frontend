@@ -11,6 +11,7 @@
         style="height: 100%"
         :default-selected-keys="defaultSelectedKeys"
       >
+        <a-menu-item key="0" @click="changeContent(0)">Dashboard</a-menu-item>
         <a-menu-item key="1" @click="changeContent(1)">Book management</a-menu-item>
         <a-menu-item key="2" @click="changeContent(2)">User management</a-menu-item>
         <a-menu-item key="3" @click="changeContent(3)">Borrow management</a-menu-item>
@@ -19,7 +20,10 @@
       </a-menu>
     </a-layout-sider>
     <a-layout-content :style="{ padding: '0 24px', minHeight: '50vh' }">
-      <div v-if="contentNumber==1">
+      <div v-if="contentNumber==0">
+        <dashboard/>
+      </div>
+      <div v-else-if="contentNumber==1">
         <book-manage/>
       </div>
       <div v-else-if="contentNumber==2">
@@ -39,6 +43,7 @@
 </template>
 
 <script>
+import Dashboard from './Dashboard.vue'
 import BookManage from './BookManage.vue'
 import UserManage from './UserManage.vue'
 import BorrowManage from './BorrowManage.vue'
@@ -52,7 +57,7 @@ export default {
             defaultSelectedKeys: ['1']
         }
     },
-    components: {BookManage, UserManage, BorrowManage,FineManage, ReservationManage},
+    components: {BookManage, UserManage, BorrowManage,FineManage, ReservationManage, Dashboard},
     methods: {
         changeContent(i){
             this.contentNumber = i;

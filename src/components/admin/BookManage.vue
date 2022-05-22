@@ -142,7 +142,7 @@
                 </router-link>
               </a-menu-item>
               <a-menu-item key="1">
-                <router-link :to="`/book/${record.key}`">
+                <router-link :to="`/admin/book/${record.key}`">
                   <a-space>
                     <a-icon type="file-text" />
                     <span>Detail</span>

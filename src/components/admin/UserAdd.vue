@@ -69,41 +69,13 @@
               rules: [
                 {
                   required: true,
-                  message: 'Please input your password!',
-                },
-                {
-                  validator: validateToNextPassword,
+                  message: 'Using default 123456',
                 },
               ],
             },
           ]"
           type="password"
-        />
-      </a-form-item>
-      <a-form-item
-        
-        label="Confirm Password"
-        has-feedback
-        :labelCol="{ span: 7 }"
-        :wrapperCol="{ span: 10 }"
-      >
-        <a-input
-          v-decorator="[
-            'confirm',
-            {
-              rules: [
-                {
-                  required: true,
-                  message: 'Please confirm your password!',
-                },
-                {
-                  validator: compareToFirstPassword,
-                },
-              ],
-            },
-          ]"
-          type="password"
-          @blur="handleConfirmBlur"
+          disabled
         />
       </a-form-item>
       <a-form-item  :labelCol="{ span: 7 }"
@@ -210,6 +182,7 @@ export default {
       uploading: false,
       loading: false,
       imageUrl: "",
+      defaultPwd: "123456",
       newUserInfo: {
         id: "",
         name: "",
@@ -284,6 +257,7 @@ export default {
         if (!err) {
           let valuesSubmit = {...values};
           valuesSubmit.avatar = that.imageUrl;
+          valuesSubmit.password = that.defaultPwd;
           console.log(1);
           var myHeaders = new Headers();
           myHeaders.append("token", getAccessToken());
@@ -294,7 +268,6 @@ export default {
             headers: myHeaders,
             body: JSON.stringify(valuesSubmit),
           };
-          console.log(222);
           fetch(`${that.$global.BASE_URL}/api/admin/user/add`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
@@ -322,21 +295,6 @@ export default {
     handleConfirmBlur(e) {
       const value = e.target.value;
       this.confirmDirty = this.confirmDirty || !!value;
-    },
-    compareToFirstPassword(rule, value, callback) {
-      const form = this.form;
-      if (value && value !== form.getFieldValue("password")) {
-        callback("Two passwords that you enter is inconsistent!");
-      } else {
-        callback();
-      }
-    },
-    validateToNextPassword(rule, value, callback) {
-      const form = this.form;
-      if (value && this.confirmDirty) {
-        form.validateFields(["confirm"], { force: true });
-      }
-      callback();
     },
   },
   filter(inputValue, path) {

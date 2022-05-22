@@ -152,6 +152,14 @@ const routes = [
             requireAdmin: true,
             requireLogin: true,
         }
+    },{
+        path: '/admin/book/:id',
+        name: "Book info",
+        component: () => import('../components/admin/BookDetail.vue'),
+        meta: {
+            requireAdmin: true,
+            requireLogin: true,
+        }
     },
     {
         path: '/admin/user/add',
@@ -166,6 +174,24 @@ const routes = [
         path: '/admin/user/:id/edit',
         name: "Edit user",
         component: () => import('../components/admin/UserEdit.vue'),
+        meta: {
+            requireAdmin: true,
+            requireLogin: true,
+        }
+    },
+    {
+        path: '/admin/user/:id/borrowings',
+        name: "User borrowings",
+        component: () => import('../components/admin/UserBorrowings.vue'),
+        meta: {
+            requireAdmin: true,
+            requireLogin: true,
+        }
+    },
+    {
+        path: '/admin/user/:id/reservations',
+        name: "User reservations",
+        component: () => import('../components/admin/UserReservations.vue'),
         meta: {
             requireAdmin: true,
             requireLogin: true,

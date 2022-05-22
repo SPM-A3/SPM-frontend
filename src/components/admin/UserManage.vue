@@ -62,6 +62,22 @@
                   </a-space>
                 </router-link>
               </a-menu-item>
+              <a-menu-item key="1">
+                <router-link :to="`/admin/user/${record.key}/reservations`">
+                  <a-space>
+                    <a-icon type="search" />
+                    <span>Reservations</span>
+                  </a-space>
+                </router-link>
+              </a-menu-item>
+              <a-menu-item key="2">
+                <router-link :to="`/admin/user/${record.key}/borrowings`">
+                  <a-space>
+                    <a-icon type="search" />
+                    <span>Borrowings</span>
+                  </a-space>
+                </router-link>
+              </a-menu-item>
             </a-menu>
           </a-dropdown>
           <a-space direction="vertical"> </a-space>
