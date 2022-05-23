@@ -5,34 +5,28 @@
         :dataSource="reservationList"
         :rowKey="(record) => record.reservation_id"
         :loading="loading"
+        :pagination="pagination"
       >
-        <a-table-column title="book name" data-index="book_name" />
-        <a-table-column title="ISBN" data-index="ISBN" />
+        <a-table-column align="center" title="BOOK NAME" data-index="book_name" />
+        <a-table-column align="center" title="ISBN" data-index="ISBN" />
         <a-table-column
-          title="reservation time"
+          align="center"
+          title="RESERVATION TIME"
           data-index="reservation_time"
         />
-        <a-table-column title="status" data-index="status">
+        <a-table-column align="center" title="STATUS" data-index="status">
           <template slot-scope="text, record">
             <a-tag v-if="record.status == 0" color="green">ON GOING</a-tag>
             <a-tag v-else-if="record.status == 1" color="red">CANCELLED</a-tag>
           </template>
         </a-table-column>
-        <a-table-column title="Action">
+        <a-table-column align="center" title="ACTION">
           <template slot-scope="text, record">
-            <a-tooltip
-              class="item"
-              effect="dark"
-              size="small"
-              content="详情"
-              placement="top"
-            >
               <a-button
                 type="primary"
                 icon="el-icon-edit"
                 @click="routeToDetail(record.reservation_id)"
-              >reservation detail</a-button>
-            </a-tooltip>
+              >RESERVATION DETAIL</a-button>
           </template>
         </a-table-column>
       </a-table>
@@ -43,15 +37,24 @@
 <script>
 import { getAccessToken } from "../../services/user";
 export default {
+  name: "reservation",
+  props: {
+    size: {
+      default: 10,
+      type: Number
+    },
+  },
   data() {
     return {
       access_token: "",
       reservationList: [],
       loading: true,
+      pagination: {}
     };
   },
   created() {
     this.getReservation();
+    this.pagination.pageSize = this.size
   },
   methods: {
     async getReservation() {

@@ -11,6 +11,7 @@
                 mode="horizontal"
                 :style="{ lineHeight: '7.5vh',fontSize: '15px' }"
               >
+                <a-menu-item key="0" @click="changeMenu('/dashboard')"> DASHBOARD </a-menu-item>
                 <a-menu-item key="1" @click="changeMenu('/admin')" v-if="isAdmin"> ADMIN </a-menu-item>
                 <a-menu-item key="2" @click="changeMenu('/book/search')"> SEARCH </a-menu-item>
                 <a-menu-item key="3" @click="changeMenu('/user/borrowing')"> BORROWING </a-menu-item>

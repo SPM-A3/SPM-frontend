@@ -14,7 +14,7 @@ Vue.use(VueRouter)
 const routes = [
     {
         path: '',
-        redirect: '/book/search'
+        redirect: '/dashboard'
     },
     {
         path: '/login',
@@ -22,10 +22,9 @@ const routes = [
         component: () => import('../components/Login.vue'),
     },
     {
-        path: '/register',
-        name: 'Register',
-        // component: () => import('../components/Register.vue'),
-        component: () => import('../components/404.vue')
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: () => import('../components/user/Dashboard.vue')
     },
     {
         path: '/book',
