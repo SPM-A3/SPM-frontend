@@ -17,6 +17,7 @@
         </span>
       </a-form>
     </div>
+    <br />
     <div>
       <!-- 罚款列表 -->
       <standard-table
