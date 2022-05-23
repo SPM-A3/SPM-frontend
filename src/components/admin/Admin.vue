@@ -21,7 +21,7 @@
     </a-layout-sider>
     <a-layout-content :style="{ padding: '0 24px', minHeight: '50vh' }">
       <div v-if="contentNumber==0">
-        <dashboard/>
+        <dashboard @changeContent="changeContent"/>
       </div>
       <div v-else-if="contentNumber==1">
         <book-manage/>
@@ -53,8 +53,8 @@ export default {
     name: 'Admin',
     data() {
         return {
-            contentNumber: 1,
-            defaultSelectedKeys: ['1']
+            contentNumber: 0,
+            defaultSelectedKeys: ['0']
         }
     },
     components: {BookManage, UserManage, BorrowManage,FineManage, ReservationManage, Dashboard},
