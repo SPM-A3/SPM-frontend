@@ -8,49 +8,59 @@
           <a-col :span="8">
             <a-card
               :title="bookInfo.book_name"
-              style="width: 500px;"
+              style="width: 500px"
               :bordered="false"
             >
-            <div>
-              <a-card-grid style="width:50%;text-align:center;font-weight: bold">
-                ISBN:
-              </a-card-grid>
-              <a-card-grid style="width:50%;text-align:center">
-                {{ bookInfo.ISBN }}
-              </a-card-grid>
-            </div>
-            <div>
-              <a-card-grid style="width:50%;text-align:center;font-weight: bold">
-                Author:
-              </a-card-grid>
-              <a-card-grid style="width: 50%;text-align:center">
-                {{ bookInfo.author }}
-              </a-card-grid>
-            </div>
-            <div>
-              <a-card-grid style="width:50%;text-align:center;font-weight: bold">
-                Category:
-              </a-card-grid>
-              <a-card-grid style="width: 50%;text-align:center">
-                {{ bookInfo.category }}
-              </a-card-grid>
-            </div>
-            <div>
-              <a-card-grid style="width:50%;text-align:center;font-weight: bold">
-                Publisher:
-              </a-card-grid>
-              <a-card-grid style="width: 50%;text-align:center">
-                {{ bookInfo.publisher }}
-              </a-card-grid>
-            </div>
-            <div>
-              <a-card-grid style="width:50%;text-align:center;font-weight: bold">
-                Published Time:
-              </a-card-grid>
-              <a-card-grid style="width: 50%;text-align:center">
-                {{ bookInfo.published_time }}
-              </a-card-grid>
-            </div>
+              <div>
+                <a-card-grid
+                  style="width: 50%; text-align: center; font-weight: bold"
+                >
+                  ISBN:
+                </a-card-grid>
+                <a-card-grid style="width: 50%; text-align: center">
+                  {{ bookInfo.ISBN }}
+                </a-card-grid>
+              </div>
+              <div>
+                <a-card-grid
+                  style="width: 50%; text-align: center; font-weight: bold"
+                >
+                  Author:
+                </a-card-grid>
+                <a-card-grid style="width: 50%; text-align: center">
+                  {{ bookInfo.author }}
+                </a-card-grid>
+              </div>
+              <div>
+                <a-card-grid
+                  style="width: 50%; text-align: center; font-weight: bold"
+                >
+                  Category:
+                </a-card-grid>
+                <a-card-grid style="width: 50%; text-align: center">
+                  {{ bookInfo.category }}
+                </a-card-grid>
+              </div>
+              <div>
+                <a-card-grid
+                  style="width: 50%; text-align: center; font-weight: bold"
+                >
+                  Publisher:
+                </a-card-grid>
+                <a-card-grid style="width: 50%; text-align: center">
+                  {{ bookInfo.publisher }}
+                </a-card-grid>
+              </div>
+              <div>
+                <a-card-grid
+                  style="width: 50%; text-align: center; font-weight: bold"
+                >
+                  Published Time:
+                </a-card-grid>
+                <a-card-grid style="width: 50%; text-align: center">
+                  {{ bookInfo.published_time }}
+                </a-card-grid>
+              </div>
             </a-card>
           </a-col>
           <a-col :offset="16">
@@ -84,7 +94,7 @@
                   >Not Reserved</a-radio-button
                 >
               </a-radio-group>
-              <br>
+              <br />
               <!-- <a-switch  @click="reserveBook()" checked-children="Reserved" un-checked-children="Unreserved" /> -->
 
               <br /><br />
@@ -117,7 +127,10 @@
 
         <a-row>
           <a-col :span="8">
-            <a-card style="width: 750px; height: 200px; font-size:20px" :bordered="false">
+            <a-card
+              style="width: 750px; height: 200px; font-size: 20px"
+              :bordered="false"
+            >
               {{ bookInfo.introduction }}
             </a-card>
           </a-col>
@@ -134,25 +147,89 @@
         <template slot="status" slot-scope="status">
           <a-tag v-if="status == 0" color="green">Available</a-tag>
           <a-tag v-else-if="status == 1" color="red">Lent</a-tag>
+          <a-tag v-else-if="status == -1" color="grey">Lost</a-tag>
+          <a-tag v-else-if="status == -2" color="brown">Damaged</a-tag>
+          <a-tag v-else-if="status == -3" color="black">Unavailable</a-tag>
         </template>
 
-        <template slot="barcode" slot-scope="record" >
-          <vue-barcode :value="bookInfo.ISBN+'/'+record.book_id"></vue-barcode>
+        <template slot="barcode" slot-scope="record">
+          <vue-barcode
+            :value="bookInfo.ISBN + '/' + record.book_id"
+          ></vue-barcode>
         </template>
         <template slot="operation" slot-scope="text, record">
+          <!-- Borrow Copy -->
           <a-popconfirm
             title="Sure to Borrow?"
             @confirm="() => borrowBook(record.book_id)"
           >
             <a v-if="record.status == 0" href="javascript:;">BORROW</a>
-            <a
-              v-else-if="record.status == 1"
-              href="javascript:;"
-              disabled="true"
-              >BORROW</a
-            >
+            <a v-else href="javascript:;" disabled="true">BORROW</a>
           </a-popconfirm>
-          
+          <br />
+          <br />
+          <!-- Delete Copy -->
+          <a-popconfirm
+            title="Sure to Delete?"
+            @confirm="() => deleteBook(record.book_id)"
+          >
+            <a v-if="record.status == 1" href="javascript:;" disabled="true"
+              >Delete</a
+            >
+            <a v-else href="javascript:;">Delete</a>
+          </a-popconfirm>
+          <br />
+          <br />
+
+          <!-- Change Status -->
+          <a-dropdown :trigger="['click']">
+            <a class="ant-dropdown-link">
+              Edit Book Status <a-icon type="down" />
+            </a>
+
+            <a-menu slot="overlay" @click="editCurr">
+              <a-menu-item key="0">
+                <a-popconfirm
+                  title="Sure to Edit?"
+                  @confirm="() => editBookStatus(record.book_id)"
+                >
+                  <a v- href="javascript:;">Available</a>
+                </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item key="1">
+                <a-popconfirm
+                  title="Sure to Edit?"
+                  @confirm="() => editBookStatus(record.book_id)"
+                >
+                  <a v- href="javascript:;">Lent</a>
+                </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item key="-1">
+                <a-popconfirm
+                  title="Sure to Edit?"
+                  @confirm="() => editBookStatus(record.book_id)"
+                >
+                  <a v- href="javascript:;">Lost</a>
+                </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item key="-2">
+                <a-popconfirm
+                  title="Sure to Edit?"
+                  @confirm="() => editBookStatus(record.book_id)"
+                >
+                  <a v- href="javascript:;">Damaged</a>
+                </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item key="-3">
+                <a-popconfirm
+                  title="Sure to Edit?"
+                  @confirm="() => editBookStatus(record.book_id)"
+                >
+                  <a v- href="javascript:;">Unavailable</a>
+                </a-popconfirm>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
         </template>
       </a-table>
     </a-card>
@@ -161,9 +238,10 @@
 
 <script>
 import { getAccessToken } from "@/services/user";
-import VueBarcode from '@chenfengyuan/vue-barcode';
+import VueBarcode from "@chenfengyuan/vue-barcode";
 import BASE_URL from "@/services/api";
-
+import { Select } from "antd";
+const { Option } = Select.Option;
 const columns = [
   {
     title: "Book ID",
@@ -210,9 +288,10 @@ const columns = [
 
 export default {
   name: "Detail",
-  components: {VueBarcode},
+  components: { VueBarcode },
   data() {
     return {
+      currentStatus: "0",
       checked1: true,
       isReserved: "b",
       reservation_id: "",
@@ -245,7 +324,7 @@ export default {
       this.visible = false;
     },
 
-    changeContent() {
+    changContent() {
       this.$router.push("/book/search").catch((err) => {
         console.log("输出报错", err);
       });
@@ -273,13 +352,11 @@ export default {
       fetch(`${this.$global.BASE_URL}/api/user/reservation/add`, requestoptions)
         .then((response) => response.json())
         .then((result) => {
-          
           console.log(result);
         });
 
       this.$message.success("Book Reserve Successfully!");
       this.visible = false;
-
 
       // this.getReservation();
     },
@@ -293,10 +370,13 @@ export default {
         method: "POST",
         headers: myHeaders,
         body: JSON.stringify({
-          reservation_id: this.reservation_id
+          reservation_id: this.reservation_id,
         }),
       };
-      fetch(`${this.$global.BASE_URL}/api/user/reservation/cancel`, requestoptions)
+      fetch(
+        `${this.$global.BASE_URL}/api/user/reservation/cancel`,
+        requestoptions
+      )
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
@@ -331,8 +411,8 @@ export default {
       fetch(`${this.$global.BASE_URL}/api/user/borrow`, requestoptions)
         .then((response) => response.json())
         .then((result) => {
-          const {data, code, msg} = result;
-          if(code === 0){
+          const { data, code, msg } = result;
+          if (code === 0) {
             that.$message.success("Book Borrow Successfully!", 1);
             for (let i of this.locationData) {
               if (i.book_id == book_id) {
@@ -346,33 +426,110 @@ export default {
             var requestOptions = {
               method: "POST",
               headers: myHeaders,
-              body: JSON.stringify({borrowing_number}),
+              body: JSON.stringify({ borrowing_number }),
             };
             fetch(
               `${this.$global.EXTRA_FUNCTION}/sendborrowingmsg`,
               requestOptions
             )
-            .then((response) => response.text())
-            .then((result) => {
-              if(result === "success"){
-                console.log("成功发送借书通知")
-              }else{
-                // that.$message.error("Failed to send notification. Please contact the admin.");
-              }
-            })
-            .catch((error) => {
-              that.$message.error("Failed to send notification. API call failed.");
-              console.log(error);
-            });
+              .then((response) => response.text())
+              .then((result) => {
+                if (result === "success") {
+                  console.log("成功发送借书通知");
+                } else {
+                  // that.$message.error("Failed to send notification. Please contact the admin.");
+                }
+              })
+              .catch((error) => {
+                that.$message.error(
+                  "Failed to send notification. API call failed."
+                );
+                console.log(error);
+              });
             console.log(result);
-          }else{
+          } else {
             that.$message.error(msg);
           }
         });
 
       this.visible = false;
     },
+    // 删除副本
+    deleteBook(book_id) {
+      console.log("book_id", book_id);
+      console.log("ISBN", this.getBookISBN());
 
+      let that = this
+
+      let myHeaders = new Headers({
+         "Content-Type": "application/json" 
+      })
+
+      myHeaders.append("token", getAccessToken());
+      let requestOptions={
+        method: "Delete",
+        headers: myHeaders,
+        body: JSON.stringify({
+          ISBN: this.getBookISBN(),
+          book_id: book_id
+        })
+      }
+
+      fetch(`${this.$global.BASE_URL}/api/admin/book/deletecollection`, requestOptions)
+      .then((response)=>response.json())
+      .then((result)=>{
+        console.log(result)
+        const{data,code,msg} = result
+        if(code === 0){
+          that.$message.success("Book Delete Successfully!");
+        }
+      })
+
+      this.$router.go(0)
+
+    },
+    // 改变副本状态
+    editBookStatus(book_id) {
+      console.log("book_id", book_id);
+      console.log("ISBN", this.getBookISBN());
+      console.log("status", this.currentStatus);
+      let that = this
+
+      let myHeaders = new Headers({
+         "Content-Type": "application/json" 
+      })
+
+      myHeaders.append("token", getAccessToken());
+      let requestOptions={
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify({
+          ISBN: this.getBookISBN(),
+          book_id: book_id,
+          status: this.currentStatus
+        })
+      }
+
+      console.log(requestOptions)
+
+      fetch(`${this.$global.BASE_URL}/api/admin/book/editstatus`, requestOptions)
+      .then((response)=>response.json())
+      .then((result)=>{
+        console.log(result)
+        const{data,code,msg} = result
+        if(code === 0){
+          that.$message.success("Book Edit Successfully!");
+        }
+      })
+
+      this.$router.go(0)
+
+    },
+    // 改变当前副本的状态
+    editCurr({ item, key, keyPath }) {
+      this.currentStatus = key;
+      console.log(this.currentStatus)
+    },
     getBookInfo() {
       let BASE_URL = this.$global.BASE_URL;
       this.loading = true;
@@ -386,7 +543,9 @@ export default {
 
       let that = this;
       fetch(
-        `${this.$global.BASE_URL}/api/admin/book/detail?ISBN=${this.getBookISBN()}`,
+        `${
+          this.$global.BASE_URL
+        }/api/admin/book/detail?ISBN=${this.getBookISBN()}`,
         requestoptions
       )
         .then((response) => response.json())
@@ -399,7 +558,7 @@ export default {
             this.bookInfo.book_name = bookInfo.bookName;
             this.bookInfo.introduction = bookInfo.briefIntroduction;
             this.bookInfo.publisher = bookInfo.publisher;
-            this.bookInfo.published_time = bookInfo.publishedTime.slice(0,7);
+            this.bookInfo.published_time = bookInfo.publishedTime.slice(0, 7);
             this.bookInfo.author = bookInfo.author;
             this.bookInfo.category = bookInfo.category;
           }
@@ -419,7 +578,9 @@ export default {
 
       let that = this;
       fetch(
-        `${this.$global.BASE_URL}/api/book/locations?ISBN=${this.getBookISBN()}`,
+        `${
+          this.$global.BASE_URL
+        }/api/book/locations?ISBN=${this.getBookISBN()}`,
         requestoptions
       )
         .then((response) => response.json())
@@ -451,7 +612,6 @@ export default {
     },
 
     getReservation() {
-
       let myHeaders = new Headers({ "Content-Type": "application/json" });
       myHeaders.append("token", getAccessToken());
       let requestoptions = {
@@ -465,18 +625,17 @@ export default {
 
           for (let i of result.data) {
             if (i.ISBN == this.getBookISBN()) {
-              if(i.status == 0){
-                this.isReserved = 'a';
+              if (i.status == 0) {
+                this.isReserved = "a";
+                this.reservation_id = i.reservation_id;
+              } else {
+                this.isReserved = "b";
                 this.reservation_id = i.reservation_id;
               }
-              else{
-                this.isReserved = 'b';
-                this.reservation_id = i.reservation_id;
-              } 
             }
           }
         });
-    },  
+    },
   },
   created() {
     this.id = this.getBookISBN();
