@@ -25,9 +25,11 @@
           reservationDetail.reservation_time
         }}</a-descriptions-item>
 
-        <a-descriptions-item label="status">{{
-          reservationDetail.status
-        }}</a-descriptions-item>
+        <a-descriptions-item label="status">
+          <a-tag v-if="reservationDetail.status == 0" color="green">ON GOING</a-tag>
+          <a-tag v-else-if="reservationDetail.status == 1" color="red">CANCELLED</a-tag>
+          <a-tag v-else-if="reservationDetail.status == 2" color="blue">FINISHED</a-tag>
+        </a-descriptions-item>
       </a-descriptions>
     </template>
     <a-tooltip

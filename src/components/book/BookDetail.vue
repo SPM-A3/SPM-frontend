@@ -76,14 +76,17 @@
                 </template>
                 <a-button type="primary" size="large">RESERVE</a-button>
               </a-popover> -->
-              <a-radio-group :value="isReserved" button-style="solid">
+              <!-- <a-radio-group :value="isReserved" button-style="solid">
                 <a-radio-button value="a" @click="reserveBook()"
-                  >Reserved</a-radio-button
+                  >reserve</a-radio-button
                 >
                 <a-radio-button value="b" @click="cancelReserveBook()"
-                  >Not Reserved</a-radio-button
+                  >cancel</a-radio-button
                 >
-              </a-radio-group>
+              </a-radio-group> -->
+              <a-button @click="reserveBook()">
+                RESERVE
+              </a-button>
               <br>
               <!-- <a-switch  @click="reserveBook()" checked-children="Reserved" un-checked-children="Unreserved" /> -->
 
@@ -276,11 +279,16 @@ export default {
       fetch(`${this.$global.BASE_URL}/api/user/reservation/add`, requestoptions)
         .then((response) => response.json())
         .then((result) => {
-          
+          const {code, data, msg} = result;
+          if(code == 0){
+            this.$message.success("Book Reserve Successfully!");
+          }else{
+            this.$message.error(msg);
+          }
           console.log(result);
         });
 
-      this.$message.success("Book Reserve Successfully!");
+      
       this.visible = false;
 
 

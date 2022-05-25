@@ -18,6 +18,7 @@
           <template slot-scope="text, record">
             <a-tag v-if="record.status == 0" color="green">ON GOING</a-tag>
             <a-tag v-else-if="record.status == 1" color="red">CANCELLED</a-tag>
+            <a-tag v-else-if="record.status == 2" color="blue">FINISHED</a-tag>
           </template>
         </a-table-column>
         <a-table-column align="center" title="ACTION">

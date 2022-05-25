@@ -97,7 +97,7 @@ export default {
     }
   },
   created(){
-    console.log(this.$route)
+    console.log("route", this.$route)
     if(isAdmin()){
       this.isAdmin = true;
     }
