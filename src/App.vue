@@ -9,6 +9,7 @@
             <a-menu
                 theme="dark"
                 mode="horizontal"
+                v-model="section"
                 :style="{ lineHeight: '7.5vh',fontSize: '15px' }"
               >
                 <a-menu-item key="0" @click="changeMenu('/dashboard')"> DASHBOARD </a-menu-item>
@@ -59,6 +60,7 @@ export default {
   name: "app",
   data() {
     return {
+      section: [],
       root: null,
       isLogin: false,
       isAdmin: false,
@@ -93,10 +95,12 @@ export default {
   },
   watch: {
     $route(){
-      document.title = `Bookery | ${this.$route.name}`
+      document.title = `Bookery | ${this.$route.name}`;
+      this.section = [this.$route.meta.number]
     }
   },
   created(){
+    // this.setNumber();
     console.log("route", this.$route)
     if(isAdmin()){
       this.isAdmin = true;

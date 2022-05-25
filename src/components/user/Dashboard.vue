@@ -34,7 +34,12 @@
       <a-col :span="8">
         <a-card :title="lastReturnedBookTitle" :loading="loading" :bordered="false" bodyStyle="font-size: 15px">
           <router-link slot="extra" to="/user/borrowing/history">MORE INFO<a-icon type="right" /></router-link>
-          You recently returned <router-link :to="`/book/${lastReturnedBook}`" style="font-style:italic">{{lastReturnedBookName}}</router-link>.
+          <div v-if="lastReturnedBook === ''">
+            You did not return a book recently.
+          </div>
+          <div v-else>
+            You recently returned <router-link :to="`/book/${lastReturnedBook}`" style="font-style:italic">{{lastReturnedBookName}}</router-link>.
+          </div>
         </a-card>
       </a-col>
       <a-col :span="8"> 

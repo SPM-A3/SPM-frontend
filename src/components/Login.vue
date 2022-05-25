@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="showPage">
     <div class = "top">
       <div class="desc">SPM A3 Library Management System</div>
     </div>
@@ -50,6 +50,7 @@ export default {
   name: 'Login',
   data () {
     return {
+      showPage: false,
       logging: false,
       error: '',
       form: this.$form.createForm(this),
@@ -112,7 +113,12 @@ export default {
         if(code == 0 || code == '0'){
           setUserInfo(data);
           that.$router.push('/');
+        }else{
+          that.showPage = true;
         }
+      })
+      .catch(error => {
+        that.showPage = true;
       })
   }
 }

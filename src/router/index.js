@@ -24,6 +24,10 @@ const routes = [
     {
         path: '/dashboard',
         name: 'Dashboard',
+        meta: {
+            requireLogin: true,
+            number: "0",
+        },
         component: () => import('../components/user/Dashboard.vue')
     },
     {
@@ -34,6 +38,7 @@ const routes = [
         path: '/book/search',
         name: 'Book search',
         meta: {
+            number: "2",
             requireLogin: true
         },
         component: () => import('../components/book/BookSearch.vue')
@@ -42,6 +47,7 @@ const routes = [
         path: '/book/:id',
         name: 'Book detail',
         meta: {
+            number: "2",
             requireLogin: true
         },
         component: () => import('../components/book/BookDetail.vue')
@@ -58,6 +64,7 @@ const routes = [
         path: '/user/borrowing',
         name: 'Borrowing',
         meta: {
+            number: "3",
             requireLogin: true
         },
         component: () => import('../components/user/Borrowing.vue')
@@ -66,6 +73,7 @@ const routes = [
         path: '/user/borrowing/:id/detail',
         name: 'Borrow detail',
         meta: {
+            number: "3",
             requireLogin: true
         },
         component: () => import('../components/user/BorrowingDetail.vue')
@@ -74,6 +82,7 @@ const routes = [
         path: '/user/borrowing/history',
         name: 'Borrow history',
         meta: {
+            number: "4",
             requireLogin: true
         },
         component: () => import('../components/user/BorrowingHistory.vue')
@@ -82,6 +91,7 @@ const routes = [
         path: '/user/reservation',
         name: 'reservation',
         meta: {
+            number: "6",
             requireLogin: true
         },
         component: () => import('../components/user/Reservation.vue')
@@ -90,6 +100,7 @@ const routes = [
         path: '/user/reservation/:id',
         name: 'Reservation detail',
         meta: {
+            number: "6",
             requireLogin: true
         },
         component: () => import('../components/user/ReservationDetail.vue')
@@ -98,6 +109,7 @@ const routes = [
         path: '/user/fine/history',
         name: "Fines",
         meta: {
+            number: "5",
             requireLogin: true
         },
         component: () => import('../components/user/FineHistory.vue')
@@ -112,6 +124,7 @@ const routes = [
         name: "Admin",
         component: () => import('../components/admin/Admin.vue'),
         meta: {
+            number: "1",
             requireAdmin: true,
             requireLogin: true,
         }
@@ -121,6 +134,7 @@ const routes = [
         name: "Add book",
         component: () => import('../components/admin/BookAdd.vue'),
         meta: {
+            number: "1",
             requireAdmin: true,
             requireLogin: true,
         }
@@ -130,6 +144,7 @@ const routes = [
         name: "Add book",
         component: () => import('../components/admin/AddByIsbn.vue'),
         meta: {
+            number: "1",
             requireAdmin: true,
             requireLogin: true,
         }
@@ -139,6 +154,7 @@ const routes = [
         name: "Add collection",
         component: () => import('../components/admin/AddLocation.vue'),
         meta: {
+            number: "1",
             requireAdmin: true,
             requireLogin: true,
         }
@@ -148,6 +164,7 @@ const routes = [
         name: "Edit book",
         component: () => import('../components/admin/BookEdit.vue'),
         meta: {
+            number: "1",
             requireAdmin: true,
             requireLogin: true,
         }
@@ -156,6 +173,7 @@ const routes = [
         name: "Book info",
         component: () => import('../components/admin/BookDetail.vue'),
         meta: {
+            number: "1",
             requireAdmin: true,
             requireLogin: true,
         }
@@ -165,6 +183,7 @@ const routes = [
         name: 'Add user',
         component: () => import('../components/admin/UserAdd.vue'),
         meta: {
+            number: "1",
             requireAdmin: true,
             requireLogin: true,
         }
@@ -174,6 +193,7 @@ const routes = [
         name: "Edit user",
         component: () => import('../components/admin/UserEdit.vue'),
         meta: {
+            number: "1",
             requireAdmin: true,
             requireLogin: true,
         }
@@ -183,6 +203,7 @@ const routes = [
         name: "User borrowings",
         component: () => import('../components/admin/UserBorrowings.vue'),
         meta: {
+            number: "1",
             requireAdmin: true,
             requireLogin: true,
         }
@@ -192,6 +213,7 @@ const routes = [
         name: "User reservations",
         component: () => import('../components/admin/UserReservations.vue'),
         meta: {
+            number: "1",
             requireAdmin: true,
             requireLogin: true,
         }
