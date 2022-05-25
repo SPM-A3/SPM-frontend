@@ -71,6 +71,9 @@ export default {
   },
   methods: {
     changeMenu(route) {
+      if(route == this.$route.fullPath){
+        return;
+      }
       if(!this.$global.IS_LOGIN){
         this.$router.push('/login');
 
