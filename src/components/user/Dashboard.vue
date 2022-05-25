@@ -71,12 +71,12 @@
 <script>
 import Reservation from './Reservation.vue';
 import Borrowing from './Borrowing.vue'
-import {getUserInfo, isAdmin} from '@/services/user'
+import {getUserInfo, isAdmin, getAccessToken} from '@/services/user'
 export default {
   components: {Reservation, Borrowing},
   data(){
     return {
-      loading: false,
+      loading: true,
       borrowingTitle: "CURRENTLY BORROWING",
       borrowingsTitle: "CURRENTLY BORROWING",
       lastReturnedBookTitle: "LAST RETURNED BOOK",
@@ -99,7 +99,30 @@ export default {
   created(){
     this.isAdmin = isAdmin()
     this.userInfo = getUserInfo();
-    console.log('userInfo', this.userInfo)
+    let myHeaders = new Headers({"Content-Type": "application/json"});
+    myHeaders.append("token", getAccessToken());
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+    }
+    const that = this;
+    fetch(`${this.$global.BASE_URL}/api/dashboard`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        const {code, data, msg} = result;
+        that.loading = false
+        if(code == 0){
+          that.borrowing = data.borrowing == null ? 0 : data.borrowing;
+          that.fineAmount = data.fine_amount == null ? 0 : data.fine_amount;
+          that.lastReturnedBook = data.last_returned_book == null ? "" : data.last_returned_book;
+          that.lastReturnedBookName = data.last_returned_book_name == null ? "" : data.last_returned_book_name;
+        }else{
+          that.$message.error(msg);
+        }
+      })
+      .catch((error) => {
+        that.$message.error("API call failed");
+      })
   }
 }
 </script>

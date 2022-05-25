@@ -132,8 +132,11 @@
     <a-card>
       <a-table :columns="columns" :data-source="locationData" rowKey="book_id">
         <template slot="status" slot-scope="status">
-          <a-tag v-if="status == 0" color="green">Available</a-tag>
-          <a-tag v-else-if="status == 1" color="red">Lent</a-tag>
+          <a-tag v-if="status == 0" color="green">AVAILABLE</a-tag>
+          <a-tag v-else-if="status == 1" color="red">LENT</a-tag>
+          <a-tag v-else-if="status == -1" color="red">LOST</a-tag>
+          <a-tag v-else-if="status == -2" color="red">DAMAGED</a-tag>
+          <a-tag v-else-if="status == -3" color="gray">UNAVAILABLE</a-tag>
         </template>
 
         <template slot="barcode" slot-scope="record" >
@@ -146,7 +149,7 @@
           >
             <a v-if="record.status == 0" href="javascript:;">BORROW</a>
             <a
-              v-else-if="record.status == 1"
+              v-else-if="record.status != 0"
               href="javascript:;"
               disabled="true"
               >BORROW</a
