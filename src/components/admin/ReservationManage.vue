@@ -224,7 +224,7 @@ const columns = [
 }
 */
 import { getAccessToken } from "@/services/user";
-import options from "./category";
+import category from "./category";
 import VueBarcode from "@chenfengyuan/vue-barcode";
 
 export default {
@@ -240,7 +240,7 @@ export default {
       reservationConclusion: [], // 获得总结性预约信息
       selectedRows: [],
       loading: true,
-      options: options.options,
+      options: [],
       searchQuery: {
         book_name: "",
         author: "",
@@ -411,7 +411,8 @@ export default {
       };
     },
   },
-  created() {
+  async created() {
+    this.options = await category.getOptions();
     this.loading = true;
 
     // 获得reservation全部信息

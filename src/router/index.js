@@ -179,6 +179,16 @@ const routes = [
         }
     },
     {
+        path: '/admin/book/category/add',
+        name: "Add category",
+        component: () => import('../components/admin/AddCategory.vue'),
+        meta: {
+            number: "1",
+            requireAdmin: true,
+            requireLogin: true,
+        }
+    },
+    {
         path: '/admin/user/add',
         name: 'Add user',
         component: () => import('../components/admin/UserAdd.vue'),

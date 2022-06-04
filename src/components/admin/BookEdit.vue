@@ -96,7 +96,7 @@
 
 <script>
 import { getAccessToken } from '../../services/user';
-import options from './category'
+import category from './category'
 import moment from 'moment'
 function getBase64(img, callback) {
   const reader = new FileReader();
@@ -135,10 +135,11 @@ export default {
                 cover: undefined,
                 brief_introduction: undefined,
             },
-            options: options.options,     
+            options: []    
         }
     },
-    created(){
+    async created(){
+      this.options = await category.getOptions();
       const ISBN = this.$route.params.id;
       this.bookInfo.ISBN = ISBN;
       var myHeaders = new Headers();

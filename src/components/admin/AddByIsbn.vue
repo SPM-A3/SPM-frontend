@@ -125,7 +125,7 @@
 
 <script>
 import { getAccessToken } from '../../services/user';
-import options from './category'
+import category from './category'
 import moment from 'moment'
 
 function getBase64(img, callback) {
@@ -164,11 +164,12 @@ export default {
                 cover: undefined,
                 brief_introduction: undefined,
             },
-            options: options.options,
+            options: [],
             language: "zh",
         }
     },
-    created(){
+    async created(){
+      this.options = await category.getOptions();
       console.log(moment().format())
     },
     methods: {

@@ -43,7 +43,7 @@
 <script>
 import StandardTable from "@/components/table/StandardTable";
 import { getAccessToken } from '../../services/user';
-import options from "./category";
+import category from "./category";
 import VueBarcode from "@chenfengyuan/vue-barcode";
 const columns = [
   {
@@ -97,7 +97,7 @@ export default {
       dataSource: [],
       selectedRows: [],
       loading: false,
-      options: options.options,
+      options: [],
       barcode: undefined,
       searchQuery: {},
       id:""
@@ -179,7 +179,8 @@ export default {
         .catch((error) => console.log("error", error));
     },*/
   },
-  created() {
+  async created() {
+    this.options = await category.getOptions();
     this.loading = true;
     let myHeaders = new Headers();
     myHeaders.append("token", getAccessToken());

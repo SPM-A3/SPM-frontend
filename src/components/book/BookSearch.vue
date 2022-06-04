@@ -170,7 +170,7 @@
 
 <script>
 import { getAccessToken } from "@/services/user";
-import options from "../admin/category";
+import category from "../admin/category";
 
 export default {
   name: "Search",
@@ -188,7 +188,7 @@ export default {
         },
         pageSize: 10,
       },
-      options: options.options,
+      options: [],
       //查询表单
       form: this.$form.createForm(this, { name: "advanced_search" }),
 
@@ -341,7 +341,8 @@ export default {
     },
   },
 
-  created() {
+  async created() {
+    this.options = await category.getOptions();
     console.log("创建bookSearch组件");
   },
 };

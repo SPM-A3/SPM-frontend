@@ -89,6 +89,9 @@
           Add
           <a-menu slot="overlay">
             <a-menu-item key="1" @click="()=>{this.$router.push('/admin/book/add')}">Add book manually</a-menu-item>
+            <a-menu-item key="2" @click="() => {this.$router.push('/admin/book/category/add')}">
+              Add category
+            </a-menu-item>
           </a-menu>
           <a-icon type="down" slot="icon"/>
         </a-dropdown-button>
@@ -231,7 +234,7 @@ const columns = [
 }
 */
 import { getAccessToken } from '@/services/user'
-import options from './category'
+import category from './category'
 import VueBarcode from '@chenfengyuan/vue-barcode';
 
 export default {
@@ -245,7 +248,7 @@ export default {
       dataSource: [],
       selectedRows: [],
       loading: true,
-      options: options.options,
+      options: [],
       searchQuery: {
         book_name: "",
         author: "",
@@ -401,8 +404,10 @@ export default {
       }
     }
   },
-  created() {
+  async created() {
+
     this.loading = true;
+    this.options = await category.getOptions();
     let myHeaders = new Headers();
     myHeaders.append("token", getAccessToken());
 

@@ -121,7 +121,7 @@ const columns = [
 }
 */
 import { getAccessToken } from "@/services/user";
-import options from "./category";
+import category from "./category";
 import VueBarcode from "@chenfengyuan/vue-barcode";
 
 export default {
@@ -136,7 +136,7 @@ export default {
       dataSource: [],
       selectedRows: [],
       loadingTable: false,
-      options: options.options,
+      options: [],
       barcode: undefined,
       searchQuery: {},
     };
@@ -293,7 +293,9 @@ export default {
         })
     }
   },
-  created() {},
+  async created() {
+    this.options = await category.getOptions();
+  },
 };
 </script>
 
