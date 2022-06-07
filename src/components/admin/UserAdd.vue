@@ -60,7 +60,7 @@
           ]"
         />
       </a-form-item>
-      <a-form-item  label="Password" has-feedback :labelCol="{ span: 7 }"
+      <!-- <a-form-item  label="Password" has-feedback :labelCol="{ span: 7 }"
         :wrapperCol="{ span: 10 }">
         <a-input
           v-decorator="[
@@ -77,7 +77,7 @@
           type="password"
           disabled
         />
-      </a-form-item>
+      </a-form-item> -->
       <a-form-item  :labelCol="{ span: 7 }"
         :wrapperCol="{ span: 10 }">
         <span slot="label"> Name </span>
